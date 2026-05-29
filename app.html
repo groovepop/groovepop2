@@ -1,0 +1,2057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>GROOVE POP</title>
+<link rel="icon" type="image/png" href="/GPicon.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GROOVE POP">
+<link rel="apple-touch-icon" href="/GPicon-192.png">
+<meta name="theme-color" content="#c8a84b">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Caveat:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0a0a0a; --white: #f5f2ec; --gold: #c8a84b; --gold-light: #e8cc7a;
+    --rust: #c4522a; --muted: #6b6560; --surface: #1a1714; --surface2: #221f1b;
+    --border: rgba(200,168,75,0.2); --border-dim: rgba(200,168,75,0.1);
+  }
+  body { background:#111; color:var(--white); font-family:'DM Sans',sans-serif; min-height:100vh; overflow-x:hidden; display:flex; justify-content:center; align-items:flex-start; }
+  #app { width:100%; max-width:480px; background:var(--black); position:relative; min-height:100vh; box-shadow:0 0 60px rgba(0,0,0,0.8); }
+  .screen { display:none; flex-direction:column; min-height:100vh; }
+  .screen.active { display:flex; }
+
+  /* ── AUTHGATE ── */
+  #screen-authgate { align-items:center; justify-content:center; gap:1rem; }
+  .authgate-logo { font-family:'Bebas Neue',sans-serif; font-size:3rem; letter-spacing:0.1em; line-height:0.85; text-align:center; }
+  .authgate-logo .groove { color:var(--white); } .authgate-logo .pop { color:var(--gold); }
+  .authgate-dots span { display:inline-block; width:4px; height:4px; border-radius:50%; background:var(--muted); margin:0 3px; animation:pulse-dot 1.4s ease-in-out infinite; }
+  .authgate-dots span:nth-child(2){animation-delay:.2s;} .authgate-dots span:nth-child(3){animation-delay:.4s;}
+  @keyframes pulse-dot { 0%,80%,100%{opacity:.2;transform:scale(.8)} 40%{opacity:1;transform:scale(1.2)} }
+
+  /* ── APP BAR ── */
+  .app-bar { width:100%; padding:0.875rem 1.25rem; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--black); z-index:20; flex-shrink:0; }
+  .app-bar-right { display:flex; align-items:center; gap:0.5rem; }
+
+  /* ── BACK BTN ── */
+  .back-btn { width:36px; height:36px; border:1px solid var(--border); border-radius:50%; background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--white); }
+  .back-btn svg { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2; }
+
+  /* ── BUTTONS ── */
+  .btn-primary { width:100%; padding:1rem; background:var(--gold); color:var(--black); border:none; border-radius:2px; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.15em; cursor:pointer; transition:background 0.2s,transform 0.1s; }
+  .btn-primary:hover { background:var(--gold-light); }
+  .btn-primary:active { transform:scale(0.98); }
+  .btn-primary:disabled { background:var(--muted); cursor:not-allowed; opacity:0.6; }
+  .btn-ghost { background:transparent; color:var(--muted); border:1px solid var(--border); border-radius:2px; font-family:'Bebas Neue',sans-serif; letter-spacing:0.12em; cursor:pointer; transition:all 0.2s; }
+  .btn-ghost:hover { border-color:var(--gold); color:var(--gold); }
+  .btn-ghost.lit { background:var(--gold); color:var(--black); border-color:var(--black); }
+  .btn-action { padding:0.875rem 0.5rem; background:var(--surface); color:var(--white); border:1px solid var(--border); border-radius:2px; font-family:'Bebas Neue',sans-serif; font-size:0.95rem; letter-spacing:0.12em; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:0.4rem; text-align:center; }
+  .btn-action svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:1.8; flex-shrink:0; }
+  .btn-action:hover { border-color:var(--gold); color:var(--gold); }
+  .btn-action.primary { background:var(--gold); color:var(--black); border-color:var(--gold); }
+  .btn-action.primary:hover { background:var(--gold-light); }
+  .btn-danger { padding:0.875rem; background:transparent; color:var(--rust); border:1px solid rgba(196,82,42,0.3); border-radius:2px; font-family:'Bebas Neue',sans-serif; font-size:0.95rem; letter-spacing:0.12em; cursor:pointer; transition:all 0.2s; width:100%; }
+  .btn-danger:hover { background:rgba(196,82,42,0.1); border-color:var(--rust); }
+
+  /* ── SECTION HEADINGS ── */
+  .section-heading { padding:1rem 1.25rem 0.5rem; display:flex; align-items:baseline; gap:0.4em; flex-shrink:0; }
+  .section-heading-num { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:0.05em; color:var(--white); line-height:1; }
+  .section-heading-text { font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:0.12em; color:var(--white); line-height:1; }
+  .section-heading-text .accent { color:var(--gold); }
+
+  /* ══════════════════════════════════════════
+     SCREEN: HOME — single surface
+  ══════════════════════════════════════════ */
+  #screen-home { flex-direction:column; min-height:100vh; overflow-y:auto; }
+  .home-body { display:flex; flex-direction:column; }
+
+  /* ── IMAGE ZONE — three states ── */
+  .image-zone {
+    width:100%; position:relative; flex-shrink:0;
+    background:var(--surface); border-bottom:1px solid var(--border);
+  }
+
+  /* STATE: upload (two side-by-side zones) */
+  .upload-state { display:grid; grid-template-columns:1fr 1fr; gap:2px; background:var(--border); }
+  .upload-state.hidden { display:none; }
+  .photo-zone { aspect-ratio:3/4; background:var(--surface); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.75rem; cursor:pointer; transition:background 0.2s; }
+  .photo-zone:hover { background:var(--surface2); }
+  .upload-icon { width:44px; height:44px; border:1px solid var(--border); border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .upload-icon svg { width:20px; height:20px; stroke:var(--gold); fill:none; stroke-width:1.5; }
+  .upload-hint { font-size:0.68rem; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; text-align:center; }
+  #file-input, #selfie-input { display:none; }
+
+  /* STATE: generating — filter animation on image */
+  .generating-state { display:none; position:relative; overflow:hidden; }
+  .generating-state.active { display:block; }
+  .gen-zone-img { width:100%; height:auto; display:block; }
+  .gen-zone-overlay { position:absolute; inset:0; }
+  .gen-grid-lines { position:absolute; inset:0; background-image:linear-gradient(rgba(200,168,75,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(200,168,75,0.05) 1px,transparent 1px); background-size:40px 40px; opacity:1; transition:opacity 2s ease; pointer-events:none; }
+  .gen-grid-lines.fade-out { opacity:0; }
+  .gen-scan { position:absolute; top:0; bottom:0; width:2px; background:linear-gradient(to bottom,transparent,var(--gold),transparent); box-shadow:0 0 10px var(--gold), 0 0 20px rgba(200,168,75,0.4); animation:scan-line-horizontal 4s linear infinite; opacity:0.85; }
+  @keyframes scan-line-horizontal { 0%{left:0%} 100%{left:100%} }
+  .gen-static { position:absolute; inset:0; opacity:0; pointer-events:none; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E"); background-size:cover; mix-blend-mode:screen; }
+  .generating-state.phase-whiteout .gen-static { animation:static-flicker 0.08s steps(1) infinite; }
+  @keyframes static-flicker { 0%{opacity:.4;transform:translate(0,0)} 25%{opacity:.7;transform:translate(-2px,1px)} 50%{opacity:.5;transform:translate(1px,-1px)} 75%{opacity:.8;transform:translate(-1px,2px)} 100%{opacity:.4;transform:translate(2px,0)} }
+  /* Brackets on generating state */
+  .gen-brackets { position:absolute; inset:0; pointer-events:none; }
+  .gen-bracket { position:absolute; width:20px; height:20px; border-color:var(--gold); border-style:solid; opacity:0.5; transition:all 0.8s ease; }
+  .gen-bracket.tl{top:8px;left:8px;border-width:1px 0 0 1px} .gen-bracket.tr{top:8px;right:8px;border-width:1px 1px 0 0} .gen-bracket.bl{bottom:8px;left:8px;border-width:0 0 1px 1px} .gen-bracket.br{bottom:8px;right:8px;border-width:0 1px 1px 0}
+  .generating-state.phase-sepia .gen-bracket{opacity:0.7;width:24px;height:24px}
+  .generating-state.phase-colour .gen-bracket{opacity:1;width:28px;height:28px}
+  .generating-state.phase-vivid .gen-bracket{opacity:1;width:32px;height:32px;border-color:white}
+  .generating-state.phase-whiteout .gen-bracket{opacity:0}
+
+  /* STATUS BAR — shown during generation */
+  .gen-status-bar { display:none; flex-direction:column; gap:0.6rem; padding:0.875rem 1.25rem; background:var(--surface); border-bottom:1px solid var(--border); }
+  .gen-status-bar.active { display:flex; }
+  .gen-status-top { display:flex; align-items:center; justify-content:space-between; }
+  .gen-phase-label { font-size:0.55rem; letter-spacing:0.3em; color:var(--muted); text-transform:uppercase; transition:color 1s; }
+  .gen-phase-label.phase-sepia{color:rgba(200,168,75,0.6)} .gen-phase-label.phase-colour{color:var(--gold)} .gen-phase-label.phase-vivid,.gen-phase-label.phase-whiteout{color:white}
+  .gen-dots span { display:inline-block; width:4px; height:4px; border-radius:50%; background:var(--muted); margin:0 2px; animation:pulse-dot 1.4s ease-in-out infinite; transition:background 1s; }
+  .gen-dots.phase-sepia span{background:rgba(200,168,75,0.5)} .gen-dots.phase-colour span{background:var(--gold)} .gen-dots.phase-vivid span,.gen-dots.phase-whiteout span{background:white;animation-duration:0.5s}
+  .gen-dots span:nth-child(2){animation-delay:0.2s} .gen-dots span:nth-child(3){animation-delay:0.4s}
+  .gen-main-text { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.15em; color:var(--gold); transition:opacity 0.4s,color 0.6s; }
+  .gen-main-text.is-snippet { font-family:'Caveat',cursive; font-size:1rem; letter-spacing:0.02em; color:var(--white); font-style:italic; }
+  .gen-progress-wrap { height:1px; background:rgba(200,168,75,0.15); position:relative; }
+  .gen-progress-bar { position:absolute; left:0; top:0; bottom:0; background:var(--gold); width:0%; transition:width 0.5s ease; box-shadow:0 0 6px var(--gold); }
+
+  /* STATE: result — generated image */
+  .result-state { display:none; }
+  .result-state.active { display:block; }
+  .result-zone-img { width:100%; height:auto; display:block; }
+
+  /* CHANGE PHOTO btn — shown over preview and result */
+  .photo-change-btn { position:absolute; bottom:0.75rem; right:0.75rem; padding:0.35rem 0.75rem; background:rgba(10,10,10,0.75); border:1px solid rgba(200,168,75,0.5); border-radius:2px; color:var(--gold); font-family:'Bebas Neue',sans-serif; font-size:0.75rem; letter-spacing:0.12em; cursor:pointer; display:flex; align-items:center; gap:0.35rem; backdrop-filter:blur(4px); transition:all 0.2s; }
+  .photo-change-btn:hover { border-color:var(--gold); background:rgba(10,10,10,0.9); }
+
+  /* RESULT ACTIONS */
+  .result-actions { display:none; flex-direction:column; gap:0.75rem; padding:1rem 1.25rem; border-bottom:1px solid var(--border); }
+  .result-actions.active { display:flex; }
+  .result-action-row { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+
+  /* ERROR CARD */
+  .error-card { display:none; flex-direction:column; align-items:center; gap:0.75rem; padding:1.25rem; margin:0; background:rgba(196,82,42,0.1); border-bottom:1px solid rgba(196,82,42,0.3); text-align:center; }
+  .error-card.visible { display:flex; }
+  .error-card-icon { width:40px; height:40px; border:1px solid rgba(196,82,42,0.4); border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .error-card-icon svg { width:18px; height:18px; stroke:#e8896a; fill:none; stroke-width:1.5; }
+  .error-card-msg { font-size:0.78rem; color:#e8896a; line-height:1.6; }
+  .error-card-retry { padding:0.625rem 1.5rem; background:transparent; border:1px solid rgba(196,82,42,0.4); border-radius:2px; color:#e8896a; font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:0.12em; cursor:pointer; }
+
+  /* STYLE PICKER */
+  .subtheme-scroll { display:flex; flex-wrap:wrap; gap:0.4rem; padding:0.5rem 1.25rem 0.75rem; background:var(--black); }
+  .sub-tab { padding:0.3rem 0.75rem; border:1px solid var(--border); border-radius:100px; background:transparent; color:var(--muted); font-family:'DM Sans',sans-serif; font-size:0.68rem; letter-spacing:0.08em; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  .sub-tab:hover { border-color:var(--gold); color:var(--white); }
+  .sub-tab.active { background:var(--gold); border-color:var(--gold); color:var(--black); font-weight:500; }
+  .style-grid-wrap { flex:1; position:relative; }
+  .styles-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); padding:1px; }
+  .style-card { background:var(--surface); cursor:pointer; display:flex; flex-direction:column; transition:background 0.15s; position:relative; overflow:hidden; }
+  .style-card:hover { background:var(--surface2); }
+  .style-card.selected { background:var(--surface2); outline:2px solid var(--gold); outline-offset:-2px; z-index:1; }
+  .style-card-info { padding:0.5rem 0.5rem 0.55rem; }
+  .style-card-label { font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:0.05em; color:var(--white); line-height:1; }
+  .style-card-check { position:absolute; top:0.35rem; right:0.35rem; width:16px; height:16px; background:var(--gold); border-radius:50%; display:none; align-items:center; justify-content:center; z-index:2; }
+  .style-card.selected .style-card-check { display:flex; }
+  .style-card-check svg { width:8px; height:8px; stroke:var(--black); fill:none; stroke-width:2.5; }
+
+  /* TRANSFORM SECTION */
+  .transform-section { padding:1rem 1.25rem 1.5rem; display:flex; flex-direction:column; gap:0.6rem; flex-shrink:0; }
+  .selected-style-name { font-family:'Bebas Neue',sans-serif; font-size:0.85rem; letter-spacing:0.08em; color:var(--gold); min-height:1.2rem; }
+
+  /* ── SCREEN: PRINT ── */
+  #screen-print { flex-direction:column; min-height:100vh; }
+  .print-header { padding:1rem 1.25rem; display:flex; align-items:center; gap:1rem; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--black); z-index:10; }
+  .print-header-text { flex:1; }
+  .print-header-title { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:0.1em; color:var(--gold); }
+  .print-header-sub { font-size:0.65rem; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; }
+  .print-body { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:1.25rem; display:flex; flex-direction:column; gap:1.5rem; }
+  .print-section-label { font-size:0.65rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); margin-bottom:0.6rem; }
+  .product-type-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; }
+  .product-type-card { background:var(--surface); border:1px solid var(--border); border-radius:2px; padding:0.875rem 0.75rem; cursor:pointer; transition:all 0.15s; position:relative; }
+  .product-type-card:hover { border-color:rgba(200,168,75,0.5); }
+  .product-type-card.selected { border-color:var(--gold); background:var(--surface2); }
+  .product-type-check { position:absolute; top:0.5rem; right:0.5rem; width:16px; height:16px; background:var(--gold); border-radius:50%; display:none; align-items:center; justify-content:center; }
+  .product-type-card.selected .product-type-check { display:flex; }
+  .product-type-check svg { width:8px; height:8px; stroke:var(--black); fill:none; stroke-width:2.5; }
+  .product-type-name { font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:0.06em; color:var(--white); line-height:1.1; margin-bottom:0.2rem; }
+  .product-type-desc { font-size:0.6rem; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; line-height:1.4; }
+  .size-picker { display:none; flex-direction:column; gap:0.4rem; }
+  .size-picker.visible { display:flex; }
+  .size-row { display:flex; align-items:center; justify-content:space-between; padding:0.75rem 0.875rem; background:var(--surface); border:1px solid var(--border); border-radius:2px; cursor:pointer; transition:all 0.15s; }
+  .size-row:hover { border-color:rgba(200,168,75,0.5); }
+  .size-row.selected { border-color:var(--gold); background:var(--surface2); }
+  .size-row-left { display:flex; align-items:center; gap:0.6rem; }
+  .size-dot { width:8px; height:8px; border-radius:50%; border:1px solid var(--border); flex-shrink:0; transition:all 0.15s; }
+  .size-row.selected .size-dot { background:var(--gold); border-color:var(--gold); }
+  .size-label { font-family:'Bebas Neue',sans-serif; font-size:0.95rem; letter-spacing:0.06em; color:var(--white); }
+  .size-price { font-size:0.78rem; color:var(--gold); font-weight:500; }
+  .print-form { display:flex; flex-direction:column; gap:0.6rem; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; }
+  .form-field { display:flex; flex-direction:column; gap:0.3rem; }
+  .form-label { font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); }
+  .form-input { width:100%; padding:0.625rem 0.75rem; background:var(--surface); border:1px solid var(--border); border-radius:2px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:0.82rem; transition:border-color 0.15s; -webkit-appearance:none; }
+  .form-input:focus { outline:none; border-color:var(--gold); }
+  .form-input::placeholder { color:var(--muted); opacity:0.5; }
+  .order-summary { background:var(--surface); border:1px solid var(--border); border-radius:2px; padding:1rem; display:none; flex-direction:column; gap:0.5rem; }
+  .order-summary.visible { display:flex; }
+  .summary-row { display:flex; justify-content:space-between; font-size:0.78rem; color:var(--muted); }
+  .summary-row.total { color:var(--white); font-weight:500; padding-top:0.5rem; border-top:1px solid var(--border); margin-top:0.25rem; }
+  .summary-note { font-size:0.6rem; color:var(--muted); opacity:0.5; text-align:center; margin-top:0.25rem; line-height:1.5; }
+  .print-footer { padding:1rem 1.25rem; background:var(--black); border-top:1px solid var(--border); position:sticky; bottom:0; display:flex; flex-direction:column; gap:0.6rem; }
+  .print-error { padding:0.75rem 1rem; background:rgba(196,82,42,0.15); border:1px solid rgba(196,82,42,0.4); border-radius:2px; font-size:0.75rem; color:#e8896a; display:none; line-height:1.5; }
+  .print-confirm { display:none; flex-direction:column; align-items:center; justify-content:center; gap:1rem; padding:3rem 2rem; text-align:center; flex:1; }
+  .print-confirm.visible { display:flex; }
+  .confirm-icon { width:56px; height:56px; border:1px solid var(--gold); border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .confirm-icon svg { width:24px; height:24px; stroke:var(--gold); fill:none; stroke-width:1.5; }
+  .confirm-title { font-family:'Bebas Neue',sans-serif; font-size:1.6rem; letter-spacing:0.12em; color:var(--gold); }
+  .confirm-sub { font-size:0.75rem; color:var(--muted); line-height:1.6; max-width:260px; }
+  .confirm-order-id { font-size:0.65rem; letter-spacing:0.12em; color:var(--muted); opacity:0.4; text-transform:uppercase; }
+
+  /* ── GALLERY ITEM INLINE ACTIONS ── */
+  .gallery-item { position:relative; aspect-ratio:2/3; overflow:hidden; background:var(--surface2); cursor:pointer; outline:1px solid rgba(200,168,75,0.2); outline-offset:3px; }
+  .gallery-item img { width:100%; height:100%; object-fit:cover; transition:transform 0.3s ease; display:block; }
+  .gallery-item:hover img { transform:scale(1.03); }
+  .gallery-item-overlay { position:absolute; inset:0; background:linear-gradient(to bottom, transparent 40%, rgba(10,10,10,0.9) 100%); display:flex; flex-direction:column; justify-content:flex-end; padding:0.4rem; opacity:0; transition:opacity 0.2s; }
+  .gallery-item:hover .gallery-item-overlay { opacity:1; }
+  .gallery-item-label { font-family:'Bebas Neue',sans-serif; font-size:0.65rem; letter-spacing:0.08em; color:var(--white); line-height:1.2; margin-bottom:0.35rem; }
+  .gallery-item-actions { display:flex; gap:2px; }
+  .gallery-item-btn { flex:1; padding:0.3rem 0; background:rgba(10,10,10,0.7); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.15s; border-radius:1px; }
+  .gallery-item-btn:hover { background:var(--gold); }
+  .gallery-item-btn svg { width:11px; height:11px; stroke:var(--white); fill:none; stroke-width:2; }
+  .gallery-item-btn:hover svg { stroke:var(--black); }
+  .gallery-item-btn.delete:hover { background:var(--rust); }
+  .gallery-item-btn.delete:hover svg { stroke:var(--white); }
+
+  /* ── PILL BUTTONS ── */
+  .pill-btn {
+    padding:0.3rem 0.75rem;
+    background:transparent;
+    color:var(--muted);
+    border:1px solid var(--border);
+    border-radius:100px;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:0.75rem;
+    letter-spacing:0.1em;
+    cursor:pointer;
+    transition:all 0.15s;
+    white-space:nowrap;
+  }
+  .pill-btn:hover { border-color:var(--gold); color:var(--white); }
+  .pill-btn:disabled { opacity:0.3; cursor:not-allowed; }
+  .pill-btn.lit { background:var(--gold); color:var(--black); border-color:var(--gold); }
+
+  /* ── APP BAR LOGO — hidden during generation ── */
+  .app-bar-logo { flex-shrink:0; transition:opacity 0.3s ease; }
+  .app-bar-logo.hidden { opacity:0; pointer-events:none; }
+
+  /* ── GENERATION LOGO ZONE ── */
+  /* ── GENERATION LOGO ZONE ── */
+  .gen-logo-zone {
+    display:none;
+    position:relative;
+    width:100%;
+    height:80px;
+    background:var(--black);
+    border-bottom:1px solid var(--border);
+    flex-shrink:0;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  .gen-logo-zone.active { display:flex; }
+
+  /* Outer inner — full width, centers the image-wrap */
+  .gen-logo-inner {
+    position:relative;
+    height:72px;
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /* Image wrap — explicit width so absolutely-positioned children aren't clipped to zero */
+  .gen-logo-image-wrap {
+    position:relative;
+    height:72px;
+    width:90%;
+    max-width:360px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+
+  /* Both layers stacked — opacity transition only, no animation here */
+  .gen-logo-inner img {
+    position:absolute;
+    height:72px;
+    width:auto;
+    max-width:100%;
+    object-fit:contain;
+    display:block;
+    transition:opacity 4s ease;
+  }
+  .gen-logo-inner .layer-a { opacity:1; z-index:2; }
+  .gen-logo-inner .layer-b { opacity:0; z-index:1; }
+
+  /* Hue cycle on the wrap div, not the imgs — keeps opacity transition uncontested */
+  .gen-logo-zone.active .gen-logo-image-wrap {
+    animation:logo-hue-cycle 3s linear infinite;
+  }
+
+  @keyframes logo-hue-cycle {
+    0%   { filter: sepia(1) saturate(8) hue-rotate(0deg)   brightness(1.4); }
+    14%  { filter: sepia(1) saturate(8) hue-rotate(51deg)  brightness(1.4); }
+    28%  { filter: sepia(1) saturate(8) hue-rotate(102deg) brightness(1.4); }
+    42%  { filter: sepia(1) saturate(8) hue-rotate(153deg) brightness(1.4); }
+    57%  { filter: sepia(1) saturate(8) hue-rotate(210deg) brightness(1.4); }
+    71%  { filter: sepia(1) saturate(8) hue-rotate(261deg) brightness(1.4); }
+    85%  { filter: sepia(1) saturate(8) hue-rotate(312deg) brightness(1.4); }
+    100% { filter: sepia(1) saturate(8) hue-rotate(360deg) brightness(1.4); }
+  }
+
+  /* Scan — constrained to logo image bounds, ping-pong 15%→85% */
+  .gen-logo-scan {
+    position:absolute;
+    /* Match logo image width: logos are 400x160px displayed at 72px height = ~180px wide */
+    /* Centre the scan bar over the logo, not the full wrap */
+    left:50%; transform:translateX(-50%);
+    width:180px;
+    height:2px; z-index:5;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,0.95), transparent);
+    box-shadow:0 0 8px rgba(255,255,255,0.9);
+    top:15%; opacity:0; pointer-events:none;
+  }
+  .gen-logo-zone.active:not(.logo-cycling):not(.logo-static) .gen-logo-scan {
+    opacity:1;
+    animation:logo-scan-pingpong 4s ease-in-out infinite;
+  }
+  @keyframes logo-scan-pingpong {
+    0%   { top:15%; }
+    50%  { top:85%; }
+    100% { top:15%; }
+  }
+
+  /* Final logo — clean hold, no animation, no scan */
+  .gen-logo-zone.logo-final .gen-logo-image-wrap {
+    animation:none !important;
+  }
+  .gen-logo-zone.logo-final .gen-logo-scan {
+    opacity:0 !important;
+    animation:none !important;
+  }
+
+  /* Static — whiteout state */
+  .gen-logo-static {
+    position:absolute; inset:0; opacity:0; pointer-events:none; z-index:6;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    background-size:cover; mix-blend-mode:screen;
+  }
+  .gen-logo-zone.logo-static .gen-logo-static {
+    animation:static-flicker 0.08s steps(1) infinite;
+    opacity:0.85;
+  }
+  .gen-logo-zone.logo-static .gen-logo-inner img {
+    filter: brightness(20) saturate(0) !important;
+    animation:none !important;
+  }
+
+  /* ── RESULT FRAME ── */
+  .result-state {
+    display:none;
+    position:relative;
+    border:1px solid rgba(200,168,75,0.35);
+    margin:0.5rem;
+    border-radius:2px;
+    overflow:hidden;
+  }
+  .result-state.active { display:block; }
+
+  /* Buttons inside frame at bottom */
+  .result-actions-inline {
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr 1fr;
+    gap:1px;
+    background:var(--border);
+    border-top:1px solid rgba(200,168,75,0.35);
+  }
+  .result-actions-inline .btn-action {
+    border:none;
+    border-radius:0;
+    padding:0.75rem;
+    background:var(--surface);
+  }
+  .result-actions-inline .btn-action.primary {
+    background:var(--gold);
+    color:var(--black);
+  }
+  .result-actions-inline .btn-action.primary:hover { background:var(--gold-light); }
+  .result-actions-inline .btn-action:not(.primary):hover { background:var(--surface2); }  .version-tag { text-align:center; padding:0.75rem; font-size:0.55rem; color:var(--muted); letter-spacing:0.15em; opacity:0.3; }
+
+  /* ── GALLERY ── */
+  #screen-gallery { flex-direction:column; }
+  .gallery-header { padding:1rem 1.25rem; display:flex; align-items:center; gap:1rem; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--black); z-index:10; }
+  .gallery-header-text { flex:1; }
+  .gallery-header-title { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:0.1em; color:var(--gold); }
+  .gallery-header-sub { font-size:0.65rem; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; }
+  .gallery-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; padding:6px; flex:1; background:var(--surface); }
+  .gallery-item { position:relative; aspect-ratio:2/3; overflow:hidden; background:var(--surface2); cursor:pointer; outline:1px solid rgba(200,168,75,0.2); outline-offset:3px; }
+  .gallery-item img { width:100%; height:100%; object-fit:cover; transition:transform 0.3s ease; display:block; }
+  .gallery-item:hover img { transform:scale(1.05); }
+  .gallery-item-overlay { position:absolute; inset:0; background:rgba(10,10,10,0); transition:background 0.2s; display:flex; align-items:flex-end; padding:0.4rem; }
+  .gallery-item:hover .gallery-item-overlay { background:rgba(10,10,10,0.5); }
+  .gallery-item-label { font-family:'Bebas Neue',sans-serif; font-size:0.7rem; letter-spacing:0.08em; color:var(--white); opacity:0; transition:opacity 0.2s; line-height:1.2; }
+  .gallery-item:hover .gallery-item-label { opacity:1; }
+  .gallery-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.75rem; padding:4rem 2rem; text-align:center; color:var(--muted); grid-column:1/-1; background:var(--black); }
+  .gallery-empty-title { font-family:'Bebas Neue',sans-serif; font-size:1.2rem; letter-spacing:0.1em; opacity:0.4; }
+  .gallery-empty-sub { font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; opacity:0.25; }
+  .gallery-loading { display:flex; align-items:center; justify-content:center; padding:4rem; grid-column:1/-1; background:var(--black); }
+
+  /* ── GALLERY LIGHTBOX ── */
+  .gallery-lightbox { position:fixed; inset:0; background:rgba(10,10,10,0.96); z-index:100; display:none; flex-direction:column; }
+  .gallery-lightbox.open { display:flex; }
+  .lightbox-header { padding:1rem 1.25rem; display:flex; align-items:center; gap:1rem; flex-shrink:0; }
+  .lightbox-title { flex:1; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.1em; color:var(--gold); }
+  .lightbox-sub { font-size:0.6rem; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; }
+  .lightbox-image-wrap { flex:1; display:flex; align-items:center; justify-content:center; overflow:hidden; padding:0 1rem; }
+  .lightbox-image-wrap img { max-width:100%; max-height:100%; object-fit:contain; }
+  .lightbox-actions { padding:1rem 1.25rem; display:flex; flex-direction:column; gap:0.6rem; flex-shrink:0; }
+
+  /* ── SHARE SHEET ── */
+  .share-sheet { position:fixed; inset:0; background:rgba(10,10,10,0.8); z-index:200; display:none; align-items:flex-end; }
+  .share-sheet.open { display:flex; }
+  .share-sheet-inner { width:100%; background:var(--surface); border-top:1px solid var(--border); border-radius:8px 8px 0 0; padding:1.25rem; display:flex; flex-direction:column; gap:0.75rem; }
+  .share-sheet-title { font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); text-align:center; margin-bottom:0.25rem; }
+  .share-option { display:flex; align-items:center; gap:1rem; padding:0.875rem 1rem; background:var(--surface2); border:1px solid var(--border); border-radius:2px; cursor:pointer; transition:all 0.15s; font-family:'Bebas Neue',sans-serif; font-size:0.95rem; letter-spacing:0.1em; color:var(--white); }
+  .share-option:hover { border-color:var(--gold); color:var(--gold); }
+  .share-option svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.5; flex-shrink:0; }
+  .share-sheet-cancel { padding:0.875rem; background:transparent; border:none; font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:0.1em; color:var(--muted); cursor:pointer; text-align:center; width:100%; }
+
+  /* ── INSTALL PROMPT ── */
+  .install-banner {
+    position: fixed;
+    bottom: 1.25rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(120%);
+    width: calc(100% - 2.5rem);
+    max-width: 420px;
+    background: var(--surface);
+    border: 1px solid var(--gold);
+    border-radius: 4px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    z-index: 400;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  }
+  .install-banner.visible { transform: translateX(-50%) translateY(0); }
+
+  .install-banner-top {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+  }
+  .install-banner-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+  .install-banner-icon img { width: 100%; height: 100%; object-fit: cover; }
+  .install-banner-text { flex: 1; }
+  .install-banner-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem; letter-spacing: 0.1em;
+    color: var(--white); line-height: 1;
+  }
+  .install-banner-sub {
+    font-size: 0.65rem; color: var(--muted);
+    letter-spacing: 0.06em; margin-top: 0.2rem;
+    line-height: 1.4;
+  }
+  .install-banner-dismiss {
+    background: transparent; border: none;
+    color: var(--muted); cursor: pointer;
+    font-size: 0.6rem; letter-spacing: 0.12em;
+    text-transform: uppercase; font-family: 'DM Sans', sans-serif;
+    flex-shrink: 0; opacity: 0.5;
+    padding: 0;
+  }
+  .install-banner-dismiss:hover { opacity: 1; }
+  .install-banner-actions { display: flex; gap: 0.6rem; }
+  .install-banner-btn {
+    flex: 1; padding: 0.625rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem; letter-spacing: 0.12em;
+    border-radius: 2px; cursor: pointer;
+    transition: all 0.2s; border: none;
+    text-align: center;
+  }
+  .install-banner-btn.primary { background: var(--gold); color: var(--black); }
+  .install-banner-btn.primary:hover { background: var(--gold-light); }
+  .install-banner-btn.ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .install-banner-btn.ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* iOS instruction steps */
+  .install-ios-steps {
+    display: flex; flex-direction: column; gap: 0.4rem;
+  }
+  .install-ios-step {
+    display: flex; align-items: center; gap: 0.6rem;
+    font-size: 0.7rem; color: var(--muted); line-height: 1.4;
+  }
+  .install-ios-step svg { width: 16px; height: 16px; stroke: var(--gold); fill: none; stroke-width: 1.5; flex-shrink: 0; }
+  .install-ios-step span { color: var(--white); }
+  .share-toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(10px); background:var(--surface2); border:1px solid var(--border); color:var(--white); font-size:0.75rem; letter-spacing:0.1em; padding:0.6rem 1.2rem; border-radius:100px; opacity:0; transition:all 0.3s ease; pointer-events:none; white-space:nowrap; z-index:300; }
+  .share-toast.visible { opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- AUTH GATE -->
+<section class="screen active" id="screen-authgate">
+  <div class="authgate-logo"><span class="groove">GROOVE</span><br><span class="pop">POP</span></div>
+  <div class="authgate-dots"><span></span><span></span><span></span></div>
+</section>
+
+<!-- ══ SCREEN: HOME — single surface ══ -->
+<section class="screen" id="screen-home">
+  <div class="app-bar">
+    <div class="app-bar-logo" id="app-bar-logo-wrap">
+      <img id="app-bar-logo-img" src="/logos/gp-logo-001.jpg" alt="GROOVE POP"
+        style="height:32px;width:auto;max-width:180px;object-fit:contain;display:block;">
+    </div>
+    <div class="app-bar-right" style="flex-shrink:0;margin-left:auto;gap:0.5rem;">
+      <button class="pill-btn" id="btn-randomize" disabled onclick="randomizeGeneration()">⚡ SURPRISE ME</button>
+      <button class="pill-btn" id="btn-install" onclick="showInstallBanner()" style="display:none;" title="Add to home screen">⊕ INSTALL</button>
+      <button class="pill-btn" onclick="drawerGoGallery()">GALLERY</button>
+    </div>
+  </div>
+
+  <div class="home-body">
+
+    <!-- 1. CHOOSE AN IMAGE -->
+    <div class="section-heading">
+      <span class="section-heading-num">1</span>
+      <span class="section-heading-text">CHOOSE <span class="accent">AN IMAGE</span></span>
+    </div>
+
+    <!-- GENERATION LOGO ZONE — appears above image during transformation -->
+    <div class="gen-logo-zone" id="gen-logo-zone">
+      <div class="gen-logo-inner" id="gen-logo-inner">
+        <div class="gen-logo-image-wrap">
+          <img id="gen-logo-a" class="layer-a" src="/logos/gp-logo-001.jpg" alt="GROOVE POP">
+          <img id="gen-logo-b" class="layer-b" src="/logos/gp-logo-001.jpg" alt="GROOVE POP">
+          <div class="gen-logo-scan"></div>
+          <div class="gen-logo-static" id="gen-logo-static"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IMAGE ZONE — three states -->
+    <div class="image-zone" id="image-zone">
+
+      <!-- Upload preview — hidden during generation, shown before and after -->
+      <div class="upload-preview-zone" id="upload-preview-zone">
+        <!-- Two upload zones — shown before any photo selected -->
+        <div class="upload-state" id="upload-state">
+          <div class="photo-zone" onclick="document.getElementById('file-input').click()">
+            <div class="upload-icon"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>
+            <span class="upload-hint">Upload</span>
+          </div>
+          <div class="photo-zone" onclick="document.getElementById('selfie-input').click()">
+            <div class="upload-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M6.343 6.343a8 8 0 1011.314 0M12 2v4"/></svg></div>
+            <span class="upload-hint">Take a Selfie</span>
+          </div>
+        </div>
+      </div>
+      <input type="file" id="file-input" accept="image/*">
+      <input type="file" id="selfie-input" accept="image/*" capture="user">
+
+      <!-- Generating state — full width filter animation, no upload preview -->
+      <div class="generating-state" id="generating-state">
+        <img class="gen-zone-img" id="gen-zone-img" src="" alt="">
+        <div class="gen-zone-overlay">
+          <div class="gen-grid-lines" id="gen-grid"></div>
+          <div class="gen-scan"></div>
+          <div class="gen-static"></div>
+          <div class="gen-brackets">
+            <div class="gen-bracket tl"></div><div class="gen-bracket tr"></div>
+            <div class="gen-bracket bl"></div><div class="gen-bracket br"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result state — generated image + actions inside frame -->
+      <div class="result-state" id="result-state">
+        <img class="result-zone-img" id="result-img" src="" alt="Generated image">
+        <div class="result-actions-inline">
+          <button class="btn-action primary" onclick="downloadImage()" title="Download">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          </button>
+          <button class="btn-action" onclick="openShareSheet()" title="Share">
+            <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+          </button>
+          <button class="btn-action" onclick="goToPrint()" title="Print Poster" style="border-color:rgba(200,168,75,0.5);color:var(--gold);">
+            <svg viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
+          </button>
+          <button class="btn-action" onclick="startGeneration()" title="Try That Again">
+            <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg>
+          </button>
+
+        </div>
+      </div>
+
+    </div><!-- /#image-zone -->
+
+    <!-- Status bar — shown during generation -->
+    <div class="gen-status-bar" id="gen-status-bar">
+      <div class="gen-status-top">
+        <div class="gen-phase-label" id="gen-phase-label">PROCESSING</div>
+        <div class="gen-dots" id="gen-dots"><span></span><span></span><span></span></div>
+      </div>
+      <div class="gen-main-text" id="gen-main-text">READING IMAGE</div>
+      <div class="gen-progress-wrap"><div class="gen-progress-bar" id="gen-progress-bar"></div></div>
+    </div>
+
+    <!-- Error card -->
+    <div class="error-card" id="error-card">
+      <div class="error-card-icon"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>
+      <div class="error-card-msg" id="error-card-msg"></div>
+      <button class="error-card-retry" onclick="startGeneration()">TRY THAT AGAIN</button>
+    </div>
+
+    <!-- 2. CHOOSE A STYLE -->
+    <div class="section-heading" style="margin-top:0.5rem;">
+      <span class="section-heading-num">2</span>
+      <span class="section-heading-text">CHOOSE <span class="accent">A STYLE</span></span>
+    </div>
+    <div class="subtheme-scroll" id="subtheme-tabs"></div>
+    <div class="style-grid-wrap">
+      <div class="styles-grid" id="styles-grid"></div>
+    </div>
+
+    <!-- 3. TRANSFORM -->
+    <div class="transform-section">
+      <span class="selected-style-name" id="selected-style-name" style="opacity:0.3;">No style selected</span>
+      <button class="btn-primary" id="btn-generate" disabled onclick="startGeneration()" style="display:flex;align-items:center;justify-content:center;gap:0.5em;">
+        <span style="font-size:1.8rem;line-height:1;letter-spacing:0.05em;">3</span>
+        <span style="font-size:1.1rem;letter-spacing:0.15em;">TRANSFORM IMAGE</span>
+      </button>
+    </div>
+
+    <div class="version-tag">GROOVE POP v2.26</div>
+
+  </div><!-- /.home-body -->
+</section>
+
+<!-- ══ SCREEN: PRINT ══ -->
+<section class="screen" id="screen-print">
+  <div class="print-header">
+    <button class="back-btn" onclick="goTo('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+    <div class="print-header-text">
+      <div class="print-header-title">PRINT POSTER</div>
+      <div class="print-header-sub">Ship a print to your door · prices in CAD</div>
+    </div>
+  </div>
+  <div style="width:100%;background:var(--surface);border-bottom:1px solid var(--border);">
+    <img id="print-preview-img" src="" alt="" style="width:100%;height:auto;display:block;max-height:35vh;object-fit:contain;">
+  </div>
+  <div class="print-body" id="print-form-body">
+    <div>
+      <div class="print-section-label">Choose a product</div>
+      <div class="product-type-grid" id="product-type-grid"></div>
+    </div>
+    <div id="size-section" style="display:none;">
+      <div class="print-section-label">Choose a size</div>
+      <div class="size-picker visible" id="size-picker"></div>
+    </div>
+    <div>
+      <div class="print-section-label">Ship to</div>
+      <div class="print-form">
+        <div class="form-field"><label class="form-label">Full name</label><input class="form-input" id="pf-name" type="text" placeholder="Jane Smith" autocomplete="name"></div>
+        <div class="form-field"><label class="form-label">Email</label><input class="form-input" id="pf-email" type="email" placeholder="jane@example.com" autocomplete="email"></div>
+        <div class="form-field"><label class="form-label">Address</label><input class="form-input" id="pf-address1" type="text" placeholder="123 Main St" autocomplete="address-line1"></div>
+        <div class="form-field"><label class="form-label">Apt / Unit (optional)</label><input class="form-input" id="pf-address2" type="text" placeholder="Apt 4B" autocomplete="address-line2"></div>
+        <div class="form-row">
+          <div class="form-field"><label class="form-label">City</label><input class="form-input" id="pf-city" type="text" placeholder="Toronto" autocomplete="address-level2"></div>
+          <div class="form-field"><label class="form-label">Province / State</label><input class="form-input" id="pf-state" type="text" placeholder="ON" autocomplete="address-level1"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-field"><label class="form-label">Postal / ZIP</label><input class="form-input" id="pf-zip" type="text" placeholder="M5V 1A1" autocomplete="postal-code"></div>
+          <div class="form-field"><label class="form-label">Country code</label><input class="form-input" id="pf-country" type="text" placeholder="CA" maxlength="2" autocomplete="country"></div>
+        </div>
+      </div>
+    </div>
+    <div class="order-summary" id="order-summary">
+      <div class="print-section-label" style="margin:0 0 0.25rem;">Order summary</div>
+      <div class="summary-row"><span id="summary-product-label">Product</span><span id="summary-product-price">—</span></div>
+      <div class="summary-row"><span>Shipping</span><span>Calculated at checkout</span></div>
+      <div class="summary-row total"><span>Total</span><span id="summary-total">—</span></div>
+      <div class="summary-note">Exact shipping added at Stripe checkout · Charged in CAD</div>
+    </div>
+  </div>
+  <div class="print-confirm" id="print-confirm">
+    <div class="confirm-icon"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+    <div class="confirm-title">ORDER PLACED</div>
+    <div class="confirm-sub">Your print is heading into production.</div>
+    <div class="confirm-order-id" id="confirm-order-id"></div>
+    <button class="btn-action" onclick="goTo('home')" style="margin-top:1rem;width:100%;">MAKE ANOTHER</button>
+  </div>
+  <div class="print-footer" id="print-footer">
+    <div class="print-error" id="print-error"></div>
+    <button class="btn-action primary" id="btn-place-order" onclick="placeOrder()" style="width:100%;">CHECKOUT</button>
+  </div>
+</section>
+
+<!-- ══ SCREEN: GALLERY ══ -->
+<section class="screen" id="screen-gallery">
+  <div class="gallery-header">
+    <button class="back-btn" onclick="goTo('home')"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+    <div class="gallery-header-text">
+      <div class="gallery-header-title">YOUR GALLERY</div>
+      <div class="gallery-header-sub" id="gallery-count">Loading…</div>
+    </div>
+  </div>
+  <div class="gallery-grid" id="gallery-grid">
+    <div class="gallery-loading"><div class="gen-dots"><span></span><span></span><span></span></div></div>
+  </div>
+</section>
+
+<!-- Gallery lightbox, share sheet, install banners below -->
+
+<!-- GALLERY LIGHTBOX -->
+<div class="gallery-lightbox" id="gallery-lightbox">
+  <div class="lightbox-header">
+    <button class="back-btn" onclick="closeLightbox()"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    <div><div class="lightbox-title" id="lightbox-title"></div><div class="lightbox-sub" id="lightbox-sub"></div></div>
+  </div>
+  <div class="lightbox-image-wrap"><img id="lightbox-img" src="" alt=""></div>
+  <div class="lightbox-actions">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+      <button class="btn-action primary" onclick="downloadLightboxImage()">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>DOWNLOAD
+      </button>
+      <button class="btn-action" onclick="shareLightboxImage()">
+        <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>SHARE
+      </button>
+    </div>
+    <button class="btn-action" onclick="printLightboxImage()" style="border-color:rgba(200,168,75,0.5);color:var(--gold);">
+      <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>PRINT POSTER
+    </button>
+    <button class="btn-danger" onclick="confirmDeleteImage()">DELETE FROM GALLERY</button>
+  </div>
+</div>
+
+<!-- SHARE SHEET -->
+<div class="share-sheet" id="share-sheet" onclick="closeShareSheet(event)">
+  <div class="share-sheet-inner">
+    <div class="share-sheet-title">Share your image</div>
+    <button class="share-option" onclick="shareViaSystem()"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>Share via…</button>
+    <button class="share-option" onclick="copyImageLink()"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>Copy link</button>
+    <button class="share-option" onclick="shareToInstagram()"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;stroke:none;flex-shrink:0;"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>Instagram</button>
+    <button class="share-option" onclick="shareToX()"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;stroke:none;flex-shrink:0;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>Post on X</button>
+    <button class="share-option" onclick="shareToFacebook()"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;stroke:none;flex-shrink:0;"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Share on Facebook</button>
+    <button class="share-option" onclick="shareToPinterest()"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;stroke:none;flex-shrink:0;"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>Pin to Pinterest</button>
+    <button class="share-option" onclick="shareToWhatsApp()"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;stroke:none;flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Send via WhatsApp</button>
+    <button class="share-sheet-cancel" onclick="closeShareSheet()">Cancel</button>
+  </div>
+</div>
+
+<!-- INSTALL PROMPT — Android (native) -->
+<div class="install-banner" id="install-banner-android">
+  <div class="install-banner-top">
+    <div class="install-banner-icon"><img src="/GPicon-192.png" alt="GROOVE POP"></div>
+    <div class="install-banner-text">
+      <div class="install-banner-title">INSTALL GROOVE POP</div>
+      <div class="install-banner-sub">Add to your home screen for the full experience</div>
+    </div>
+    <button class="install-banner-dismiss" onclick="dismissInstallBanner()">✕</button>
+  </div>
+  <div class="install-banner-actions">
+    <button class="install-banner-btn primary" onclick="triggerAndroidInstall()">INSTALL</button>
+    <button class="install-banner-btn ghost" onclick="dismissInstallBanner()">NOT NOW</button>
+  </div>
+</div>
+
+<!-- INSTALL PROMPT — iOS (instructional) -->
+<div class="install-banner" id="install-banner-ios">
+  <div class="install-banner-top">
+    <div class="install-banner-icon"><img src="/GPicon-192.png" alt="GROOVE POP"></div>
+    <div class="install-banner-text">
+      <div class="install-banner-title">INSTALL GROOVE POP</div>
+      <div class="install-banner-sub">Add to your home screen</div>
+    </div>
+    <button class="install-banner-dismiss" onclick="dismissInstallBanner()">✕</button>
+  </div>
+  <div class="install-ios-steps">
+    <div class="install-ios-step">
+      <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+      <div>Tap the <span>Share</span> button in Safari</div>
+    </div>
+    <div class="install-ios-step">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      <div>Tap <span>Add to Home Screen</span></div>
+    </div>
+  </div>
+  <button class="install-banner-btn ghost" onclick="dismissInstallBanner()" style="width:100%;">GOT IT</button>
+</div>
+
+<div class="share-toast" id="share-toast"></div>
+</div><!-- /#app -->
+
+<script>
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+// Set this after Azure Function App deploy (see AZURE-SETUP.md)
+const API_BASE = 'https://YOUR-APP-NAME.azurewebsites.net/api';
+
+let STYLES = [], STYLES_MULTI = [];
+let uploadedDataUrl = null;
+let selectedStyle = null;
+let chosenVariant = null;   // pinned variant for Try That Again
+let generatedCaption = null;
+let subjectCount = 'single';
+let currentSubtheme = null;
+let currentUser = null;
+let currentCloudinaryUrl = null;
+let galleryImages = [];
+let lightboxImage = null;
+let waitIntervals = [];
+let captionSnippets = [];
+let snippetsUnlocked = false;
+let snippetQueue = null;
+let printImageUrl = null;
+let PRINT_CATALOG = {}, PRINT_PRODUCTS = [];
+let selectedProductType = null, selectedSize = null;
+
+// Image zone state: 'upload' | 'generating' | 'result'
+let imageZoneState = 'upload';
+
+// ══════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════
+function initAuth() {
+  if (typeof netlifyIdentity === 'undefined') { redirectToLanding(); return; }
+  netlifyIdentity.on('init', user => { if (!user) redirectToLanding(); else { currentUser = user; onAuthReady(user); } });
+  netlifyIdentity.on('login', user => { currentUser = user; netlifyIdentity.close(); onAuthReady(user); });
+  netlifyIdentity.on('logout', () => redirectToLanding());
+  netlifyIdentity.init();
+}
+function redirectToLanding() { window.location.href = '/'; }
+function handleSignOut() { if (typeof netlifyIdentity !== 'undefined') netlifyIdentity.logout(); }
+async function onAuthReady(user) { await initApp(); }
+
+// ══════════════════════════════════════════
+// APP INIT
+// ══════════════════════════════════════════
+async function initApp() {
+  try {
+    const [single, multi] = await Promise.all([
+      fetch('/styles.json').then(r => r.json()).catch(() => []),
+      fetch('/styles-multi.json').then(r => r.json()).catch(() => [])
+    ]);
+    STYLES = single; STYLES_MULTI = multi;
+  } catch(e) { console.error('Failed to load styles', e); }
+
+  document.getElementById('file-input').addEventListener('change', e => handleFileInput(e.target.files[0]));
+  document.getElementById('selfie-input').addEventListener('change', e => handleFileInput(e.target.files[0]));
+
+  buildPicker();
+  initLogo();
+  goTo('home');
+}
+
+// ══════════════════════════════════════════
+// SCREEN ROUTING
+// ══════════════════════════════════════════
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ══════════════════════════════════════════
+// IMAGE ZONE STATE MACHINE
+// ══════════════════════════════════════════
+function setImageZoneState(state) {
+  imageZoneState = state;
+  const previewZone = document.getElementById('upload-preview-zone');
+  if (previewZone) previewZone.style.display = state === 'generating' ? 'none' : '';
+  document.getElementById('upload-state').classList.toggle('hidden', state !== 'upload');
+  document.getElementById('generating-state').classList.toggle('active', state === 'generating');
+  document.getElementById('result-state').classList.toggle('active', state === 'result');
+  document.getElementById('gen-status-bar').classList.toggle('active', state === 'generating');
+  if (state !== 'result') document.getElementById('error-card').classList.remove('visible');
+}
+
+// ══════════════════════════════════════════
+// FILE HANDLING
+// ══════════════════════════════════════════
+function handleFileInput(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    uploadedDataUrl = ev.target.result;
+    // If currently showing a result, go back to upload state momentarily
+    // then user can pick new style and transform
+    setImageZoneState('upload');
+    // Show the uploaded image in the upload zones briefly then switch to a preview
+    // We keep upload-state hidden and show the generating zone with the photo
+    // Actually — just store the data, user picks style and hits transform
+    // The upload zones remain. We show a mini preview badge.
+    showUploadedPreview();
+    const randomBtn = document.getElementById('btn-randomize');
+    randomBtn.disabled = false;
+    randomBtn.classList.add('lit');
+    updateGenerateButton();
+  };
+  reader.readAsDataURL(file);
+}
+
+function showUploadedPreview() {
+  const previewZone = document.getElementById('upload-preview-zone');
+  // Remove any existing preview
+  const existing = document.getElementById('upload-preview');
+  if (existing) existing.remove();
+  // Hide the two upload zones
+  document.getElementById('upload-state').classList.add('hidden');
+  // Insert preview into the preview zone
+  const preview = document.createElement('div');
+  preview.id = 'upload-preview';
+  preview.style.cssText = 'position:relative;';
+  preview.innerHTML = `
+    <img src="${uploadedDataUrl}" style="width:100%;max-height:220px;object-fit:cover;display:block;">
+    <button class="photo-change-btn" onclick="resetPhoto()">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+      CHANGE
+    </button>`;
+  previewZone.appendChild(preview);
+}
+
+function resetPhoto() {
+  uploadedDataUrl = null;
+  currentCloudinaryUrl = null;
+  chosenVariant = null;
+  selectedStyle = null;
+  // Remove preview img
+  const preview = document.getElementById('upload-preview');
+  if (preview) preview.remove();
+  // Ensure preview zone is visible
+  const previewZone = document.getElementById('upload-preview-zone');
+  if (previewZone) previewZone.style.display = '';
+  // Show upload zones
+  document.getElementById('upload-state').classList.remove('hidden');
+  // Reset to upload state
+  setImageZoneState('upload');
+  // Reset inputs
+  document.getElementById('file-input').value = '';
+  document.getElementById('selfie-input').value = '';
+  // Reset buttons
+  const randomBtn = document.getElementById('btn-randomize');
+  randomBtn.disabled = true;
+  randomBtn.classList.remove('lit');
+  // Reset selected style label
+  document.getElementById('selected-style-name').textContent = 'No style selected';
+  document.getElementById('selected-style-name').style.opacity = '0.3';
+  renderGrid();
+  updateGenerateButton();
+}
+
+// ══════════════════════════════════════════
+// DRAWER
+// ══════════════════════════════════════════
+async function drawerGoGallery() { goTo('gallery'); await loadGallery(); }
+
+// ══════════════════════════════════════════
+// STYLE PICKER
+// ══════════════════════════════════════════
+function buildPicker() {
+  const subthemes = [...new Set(STYLES.map(s => s.subtheme).filter(Boolean))];
+  const tabsEl = document.getElementById('subtheme-tabs');
+  tabsEl.innerHTML = '';
+  subthemes.forEach(st => {
+    const btn = document.createElement('button');
+    btn.className = 'sub-tab' + (st === currentSubtheme ? ' active' : '');
+    btn.textContent = st;
+    btn.onclick = () => selectSubtheme(st);
+    tabsEl.appendChild(btn);
+  });
+  renderGrid();
+}
+
+function selectSubtheme(st) {
+  currentSubtheme = st;
+  document.querySelectorAll('.sub-tab').forEach(b => b.classList.toggle('active', b.textContent === st));
+  renderGrid();
+}
+
+function renderGrid() {
+  const grid = document.getElementById('styles-grid');
+  grid.innerHTML = '';
+  if (!currentSubtheme) return;
+  const filtered = STYLES.filter(s => s.subtheme === currentSubtheme);
+  filtered.forEach(style => {
+    const card = document.createElement('div');
+    // Use strict family_key match — only one card should ever be selected
+    const isSelected = selectedStyle && selectedStyle.family_key === style.family_key;
+    card.className = 'style-card' + (isSelected ? ' selected' : '');
+    card.innerHTML = `
+      <div class="style-card-info"><div class="style-card-label">${style.family_label}</div></div>
+      <div class="style-card-check"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>`;
+    card.onclick = () => selectStyle(style);
+    grid.appendChild(card);
+  });
+}
+
+function selectStyle(style) {
+  selectedStyle = style;
+  chosenVariant = null; // clear pinned variant when style changes
+  document.getElementById('selected-style-name').textContent = `${style.family_label} · ${style.subtheme}`;
+  document.getElementById('selected-style-name').style.opacity = '1';
+  updateGenerateButton();
+  renderGrid();
+}
+
+function updateGenerateButton() {
+  document.getElementById('btn-generate').disabled = !(uploadedDataUrl && selectedStyle);
+}
+
+// ══════════════════════════════════════════
+// RANDOMIZE — proper shuffle with no repeats
+// ══════════════════════════════════════════
+function shuffledPool(pool) {
+  const a = [...pool];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+async function randomizeGeneration() {
+  if (!uploadedDataUrl) return;
+  const pool = (subjectCount === 'multiple' && STYLES_MULTI.length) ? STYLES_MULTI : STYLES;
+  const filtered = pool.filter(s => s.subtheme !== 'Uncanny');
+  const shuffled = shuffledPool(filtered);
+  selectedStyle = shuffled[0];
+  chosenVariant = null;
+  startGeneration();
+}
+
+async function surpriseFromResult() {
+  if (!uploadedDataUrl) return;
+  const pool = (subjectCount === 'multiple' && STYLES_MULTI.length) ? STYLES_MULTI : STYLES;
+  // Exclude current family, exclude Uncanny, then shuffle
+  const filtered = pool.filter(s => s.subtheme !== 'Uncanny' && (!selectedStyle || s.family_key !== selectedStyle.family_key));
+  const shuffled = shuffledPool(filtered);
+  selectedStyle = shuffled[0];
+  chosenVariant = null;
+  startGeneration();
+}
+
+// ══════════════════════════════════════════
+// GENERATION
+// ══════════════════════════════════════════
+async function startGeneration() {
+  if (!selectedStyle || !uploadedDataUrl) return;
+
+  // Switch image zone to generating state
+  document.getElementById('gen-zone-img').src = uploadedDataUrl;
+  setImageZoneState('generating');
+  document.getElementById('error-card').classList.remove('visible');
+  startWaitScreen();
+  startLogoTransformation(); // logo goes wild in sync
+
+  try {
+    const captionData = await generateCaption(uploadedDataUrl);
+    generatedCaption = captionData.caption;
+    subjectCount = captionData.subjectCount || 'single';
+    storeCaptionSnippets(generatedCaption);
+
+    let imageUrl;
+    try {
+      imageUrl = await generateImage(generatedCaption, selectedStyle);
+    } catch(firstErr) {
+      const is429 = (firstErr.message||'').includes('429') || (firstErr.message||'').includes('EngineOverloaded');
+      if (!is429) throw firstErr;
+      clearWaitIntervals();
+      startRetryWaitScreen();
+      await new Promise(r => setTimeout(r, 8000));
+      imageUrl = await generateImage(generatedCaption, selectedStyle);
+    }
+
+    clearWaitIntervals();
+    document.getElementById('result-img').src = imageUrl;
+    currentCloudinaryUrl = null;
+    setImageZoneState('result');
+    renderGrid();
+    // End with whatever logo is currently showing — no new pick
+    endLogoTransformation(currentLogoIndex);
+    document.getElementById('image-zone').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    autoUploadToCloudinary(imageUrl, selectedStyle);
+
+  } catch(err) {
+    clearWaitIntervals();
+    clearLogoIntervals();
+    const zone = document.getElementById('gen-logo-zone');
+    if (zone) zone.classList.remove('active','logo-cycling','logo-static');
+    const barLogo = document.getElementById('app-bar-logo-wrap');
+    if (barLogo) barLogo.classList.remove('hidden');
+    const raw = err.message || '';
+    let msg;
+    if (raw.includes('EngineOverloaded') || raw.includes('429')) msg = "Still overwhelmed. Give it a minute and try again — it's worth it.";
+    else if (raw.includes('content_policy') || raw.includes('400')) msg = "This image couldn't be processed. Try a different photo.";
+    else if (raw.includes('timeout') || raw.includes('504')) msg = "The machine took too long this time. Try again — it's usually faster.";
+    else if (raw.includes('NetworkError') || raw.includes('fetch')) msg = "Connection lost. Check your internet and try again.";
+    else msg = "Something went wrong. Please try again.";
+    document.getElementById('result-img').src = '';
+    document.getElementById('error-card-msg').textContent = msg;
+    setImageZoneState('result');
+    document.getElementById('error-card').classList.add('visible');
+  }
+}
+
+// ══════════════════════════════════════════
+// CAPTION
+// ══════════════════════════════════════════
+async function generateCaption(dataUrl) {
+  const compressed = await resizeImage(dataUrl, 512);
+  const base64 = compressed.split(',')[1];
+  const mimeType = compressed.split(';')[0].split(':')[1];
+  const res = await fetch(`${API_BASE}/caption`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ base64, mimeType })
+  });
+  if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Caption failed'); }
+  const data = await res.json();
+  return { caption: data.caption, subjectCount: data.subjectCount || 'single' };
+}
+
+// ══════════════════════════════════════════
+// IMAGE GENERATION — Azure Function App (key stays server-side)
+// ══════════════════════════════════════════
+async function generateImage(caption, style) {
+  const activeStyle = (subjectCount === 'multiple' && STYLES_MULTI.length)
+    ? (STYLES_MULTI.find(s => s.family_key === style.family_key) || style) : style;
+  const pool = activeStyle.variants || [];
+  if (!pool.length) throw new Error('No variants found for this style');
+
+  // Use pinned variant if set (Try That Again), otherwise pick randomly and pin it
+  let chosen = chosenVariant;
+  if (!chosen) {
+    chosen = pool[Math.floor(Math.random() * pool.length)];
+    chosenVariant = chosen; // pin for Try That Again
+  }
+
+  const fullPrompt = `${caption}\n\n---\n\n${chosen.prompt.map(l => `"${l}",`).join('\n')}`;
+  const base64Image = uploadedDataUrl.split(',')[1];
+  const mimeType = uploadedDataUrl.split(';')[0].split(':')[1] || 'image/jpeg';
+
+  const res = await fetch(`${API_BASE}/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      prompt: fullPrompt,
+      base64Image,
+      mimeType,
+      size: chosen.size || '1024x1536',
+      quality: 'medium',
+    }),
+  });
+  if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Generation failed'); }
+  const data = await res.json();
+  return data.imageUrl;
+}
+
+// ══════════════════════════════════════════
+// WAIT SCREEN — adapted for image zone
+// ══════════════════════════════════════════
+function clearWaitIntervals() {
+  waitIntervals.forEach(id => { if (id && id._isRaf) id._id(); else { clearInterval(id); clearTimeout(id); } });
+  waitIntervals = [];
+}
+
+function startWaitScreen() {
+  const genStateEl = document.getElementById('generating-state');
+  const imgEl      = document.getElementById('gen-zone-img');
+  const gridEl     = document.getElementById('gen-grid');
+  const phaseEl    = document.getElementById('gen-phase-label');
+  const mainEl     = document.getElementById('gen-main-text');
+  const dotsEl     = document.getElementById('gen-dots');
+  const progressEl = document.getElementById('gen-progress-bar');
+
+  const phases = ['phase-sepia','phase-colour','phase-vivid','phase-whiteout'];
+  genStateEl.classList.remove(...phases);
+  phaseEl.classList.remove(...phases);
+  dotsEl.classList.remove(...phases);
+  gridEl.classList.remove('fade-out');
+  mainEl.classList.remove('is-snippet');
+  progressEl.style.width = '0%';
+  captionSnippets = []; snippetsUnlocked = false;
+
+  const KF = [[0,1,.0,1,.5,1],[15,0,.85,1,.8,1],[30,0,0,1,1,1],[45,0,0,4,1.4,1.3],[65,0,0,0,20,0]];
+  function lerp(a,b,t){return a+(b-a)*t}
+  function ease(t){return t<.5?2*t*t:-1+(4-2*t)*t}
+  function filterAtTime(sec){
+    if(sec<=KF[0][0])return KF[0].slice(1);
+    if(sec>=KF[KF.length-1][0])return KF[KF.length-1].slice(1);
+    for(let i=0;i<KF.length-1;i++){
+      if(sec>=KF[i][0]&&sec<KF[i+1][0]){
+        const t=ease((sec-KF[i][0])/(KF[i+1][0]-KF[i][0]));
+        return KF[i].slice(1).map((v,j)=>lerp(v,KF[i+1][j+1],t));
+      }
+    }
+  }
+  let rafId=null; const startTime=performance.now();
+  function tick(){
+    const e=(performance.now()-startTime)/1000;
+    const[gs,sp,sat,br,con]=filterAtTime(Math.min(e,65));
+    imgEl.style.filter=`grayscale(${gs.toFixed(3)}) sepia(${sp.toFixed(3)}) saturate(${sat.toFixed(3)}) brightness(${br.toFixed(3)}) contrast(${con.toFixed(3)})`;
+    if(e<65){rafId=requestAnimationFrame(tick);}
+    else{genStateEl.classList.add('phase-whiteout');}
+  }
+  rafId=requestAnimationFrame(tick);
+  waitIntervals.push({_isRaf:true,_id:()=>cancelAnimationFrame(rafId)});
+
+  function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  function makeQueue(arr){let q=[];return{next(){if(!q.length)q=shuffle([...arr]);return q.pop();}};}
+  const bwQ    = makeQueue(['READING IMAGE','ANALYSING COMPOSITION','EXTRACTING ESSENCE']);
+  const sepiaQ = makeQueue(['CALIBRATING STYLE','INITIALISING RENDER','PROCESSING']);
+  const colourQ= makeQueue(['SOMETHING IS HAPPENING','THE MACHINE IS DREAMING','COMING INTO FOCUS']);
+  const vividQ = makeQueue(['ALMOST THERE','STAY WITH US','WORTH THE WAIT']);
+  const whiteQ = makeQueue(['HOLD TIGHT',"IT'S COMING",'ANY MOMENT NOW']);
+  let currentQueue=bwQ, showingSnippet=false;
+
+  function crossfadeTo(text,isSnippet){
+    mainEl.style.opacity='0';
+    setTimeout(()=>{mainEl.textContent=isSnippet?`... ${text} ...`:text;mainEl.classList.toggle('is-snippet',isSnippet);mainEl.style.opacity='1';},400);
+  }
+  crossfadeTo(bwQ.next(),false);
+
+  const msgI=setInterval(()=>{
+    if(snippetsUnlocked&&snippetQueue){
+      if(!showingSnippet){crossfadeTo(snippetQueue.next(),true);showingSnippet=true;}
+      else{crossfadeTo(currentQueue.next(),false);showingSnippet=false;}
+    }else{crossfadeTo(currentQueue.next(),false);}
+  },5000);
+  waitIntervals.push(msgI);
+
+  const startMs=Date.now();
+  const timerI=setInterval(()=>{
+    const e=Math.floor((Date.now()-startMs)/1000);
+    progressEl.style.width=Math.min(95,(e/75)*100)+'%';
+  },1000);
+  waitIntervals.push(timerI);
+
+  function setPhase(phase){
+    genStateEl.classList.remove(...phases); genStateEl.classList.add(phase);
+    phaseEl.classList.remove(...phases); phaseEl.classList.add(phase);
+    dotsEl.classList.remove(...phases); dotsEl.classList.add(phase);
+    if(['phase-colour','phase-vivid','phase-whiteout'].includes(phase))gridEl.classList.add('fade-out');
+  }
+  const t1=setTimeout(()=>{setPhase('phase-sepia');currentQueue=sepiaQ;},15000);
+  const t2=setTimeout(()=>{setPhase('phase-colour');currentQueue=colourQ;snippetsUnlocked=true;},30000);
+  const t3=setTimeout(()=>{setPhase('phase-vivid');currentQueue=vividQ;},45000);
+  const t4=setTimeout(()=>{setPhase('phase-whiteout');currentQueue=whiteQ;},65000);
+  [t1,t2,t3,t4].forEach(t=>waitIntervals.push(t));
+}
+
+function startRetryWaitScreen() {
+  const genStateEl = document.getElementById('generating-state');
+  const imgEl      = document.getElementById('gen-zone-img');
+  const gridEl     = document.getElementById('gen-grid');
+  const phaseEl    = document.getElementById('gen-phase-label');
+  const mainEl     = document.getElementById('gen-main-text');
+  const dotsEl     = document.getElementById('gen-dots');
+  const progressEl = document.getElementById('gen-progress-bar');
+
+  const phases=['phase-sepia','phase-colour','phase-vivid','phase-whiteout'];
+  genStateEl.classList.remove(...phases);
+  phaseEl.classList.remove(...phases); dotsEl.classList.remove(...phases);
+  gridEl.classList.remove('fade-out'); mainEl.classList.remove('is-snippet');
+  progressEl.style.width='0%'; snippetsUnlocked=false;
+
+  const KF=[[0,1,0,1,0,1],[10,1,0,1,.5,1],[25,0,.85,1,.8,1],[40,0,0,1,1,1],[55,0,0,4,1.4,1.3],[75,0,0,0,20,0]];
+  function lerp(a,b,t){return a+(b-a)*t}
+  function ease(t){return t<.5?2*t*t:-1+(4-2*t)*t}
+  function filterAtTime(sec){
+    if(sec<=KF[0][0])return KF[0].slice(1);
+    if(sec>=KF[KF.length-1][0])return KF[KF.length-1].slice(1);
+    for(let i=0;i<KF.length-1;i++){
+      if(sec>=KF[i][0]&&sec<KF[i+1][0]){
+        const t=ease((sec-KF[i][0])/(KF[i+1][0]-KF[i][0]));
+        return KF[i].slice(1).map((v,j)=>lerp(v,KF[i+1][j+1],t));
+      }
+    }
+  }
+  let rafId=null; const rafStart=performance.now();
+  function tick(){
+    const e=(performance.now()-rafStart)/1000;
+    const[gs,sp,sat,br,con]=filterAtTime(Math.min(e,75));
+    imgEl.style.filter=`grayscale(${gs.toFixed(3)}) sepia(${sp.toFixed(3)}) saturate(${sat.toFixed(3)}) brightness(${br.toFixed(3)}) contrast(${con.toFixed(3)})`;
+    if(e<75){rafId=requestAnimationFrame(tick);}
+    else{genStateEl.classList.add('phase-whiteout');}
+  }
+  rafId=requestAnimationFrame(tick);
+  waitIntervals.push({_isRaf:true,_id:()=>cancelAnimationFrame(rafId)});
+
+  function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  function makeQueue(arr){let q=[];return{next(){if(!q.length)q=shuffle([...arr]);return q.pop();}};}
+  const bwQ    = makeQueue(['TRYING TO COMPOSE ITSELF','ONE MORE TIME','SORRY ABOUT THAT','RECALIBRATING']);
+  const sepiaQ = makeQueue(['PICKING UP WHERE IT LEFT OFF','THE VISION IS RETURNING','ALMOST BACK']);
+  const colourQ= makeQueue(['MUCH MORE CONFIDENT THIS TIME','THE ENERGY IS DIFFERENT NOW']);
+  const vividQ = makeQueue(['SO CLOSE THIS TIME, GENUINELY','THE MACHINE IS FOCUSED']);
+  const whiteQ = makeQueue(['ANY SECOND NOW, WE PROMISE','IT IS HAPPENING']);
+  let curQ=bwQ, showingSnippet=false;
+
+  function crossfadeTo(text,isSnippet){
+    mainEl.style.opacity='0';
+    setTimeout(()=>{mainEl.textContent=isSnippet?`... ${text} ...`:text;mainEl.classList.toggle('is-snippet',isSnippet);mainEl.style.opacity='1';},400);
+  }
+  mainEl.style.opacity='0';
+  setTimeout(()=>{mainEl.textContent='THE MACHINE BECAME OVERWHELMED';mainEl.classList.remove('is-snippet');mainEl.style.opacity='1';},400);
+  const firstCycle=setTimeout(()=>{
+    crossfadeTo(bwQ.next(),false);
+    const msgI=setInterval(()=>{
+      if(snippetsUnlocked&&snippetQueue){
+        if(!showingSnippet){crossfadeTo(snippetQueue.next(),true);showingSnippet=true;}
+        else{crossfadeTo(curQ.next(),false);showingSnippet=false;}
+      }else{crossfadeTo(curQ.next(),false);}
+    },5000);
+    waitIntervals.push(msgI);
+  },10000);
+  waitIntervals.push(firstCycle);
+
+  const startMs=Date.now();
+  const timerI=setInterval(()=>{
+    const e=Math.floor((Date.now()-startMs)/1000);
+    progressEl.style.width=Math.min(95,(e/75)*100)+'%';
+  },1000);
+  waitIntervals.push(timerI);
+
+  function setPhase(phase){
+    genStateEl.classList.remove(...phases); genStateEl.classList.add(phase);
+    phaseEl.classList.remove(...phases); phaseEl.classList.add(phase);
+    dotsEl.classList.remove(...phases); dotsEl.classList.add(phase);
+    if(['phase-colour','phase-vivid','phase-whiteout'].includes(phase))gridEl.classList.add('fade-out');
+  }
+  const t1=setTimeout(()=>{setPhase('phase-sepia');curQ=sepiaQ;},25000);
+  const t2=setTimeout(()=>{setPhase('phase-colour');curQ=colourQ;snippetsUnlocked=true;},40000);
+  const t3=setTimeout(()=>{setPhase('phase-vivid');curQ=vividQ;},55000);
+  const t4=setTimeout(()=>{setPhase('phase-whiteout');curQ=whiteQ;},75000);
+  [t1,t2,t3,t4].forEach(t=>waitIntervals.push(t));
+}
+
+// ══════════════════════════════════════════
+// CAPTION SNIPPETS
+// ══════════════════════════════════════════
+function storeCaptionSnippets(caption) {
+  const words=caption.split(' ');const snippets=[];const used=new Set();
+  for(let a=0;a<40&&snippets.length<8;a++){
+    const len=3+Math.floor(Math.random()*3);
+    const start=Math.floor(Math.random()*Math.max(1,words.length-len));
+    const key=start+'-'+len; if(used.has(key))continue; used.add(key);
+    const phrase=words.slice(start,start+len).join(' ').replace(/[.,!?;:]+$/,'').toLowerCase();
+    if(phrase.length>8)snippets.push(phrase);
+  }
+  captionSnippets=snippets;
+  let q=[];
+  snippetQueue={next(){if(!q.length){q=[...snippets];for(let i=q.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[q[i],q[j]]=[q[j],q[i]];}}return q.pop();}};
+}
+
+// ══════════════════════════════════════════
+// CLOUDINARY AUTO-UPLOAD
+// ══════════════════════════════════════════
+async function autoUploadToCloudinary(imageDataUrl, style) {
+  if (!currentUser) return;
+  try {
+    const res = await fetch('/.netlify/functions/upload-image', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        base64: imageDataUrl.split(',')[1], mimeType: 'image/jpeg',
+        userId: currentUser.id || currentUser.email,
+        styleKey: style.family_key || '',
+        styleName: style.family_label || '',
+        subtheme: style.subtheme || '',
+        variantKey: chosenVariant?.key || '',
+        caption: generatedCaption ? generatedCaption.slice(0, 200) : ''
+      })
+    });
+    const data = await res.json();
+    if (res.ok) currentCloudinaryUrl = data.url;
+  } catch(err) { console.warn('Gallery upload failed:', err.message); }
+}
+
+function openResultFullscreen() {
+  // Open the generated image in the lightbox
+  const src = document.getElementById('result-img').src;
+  if (!src) return;
+  lightboxImage = {
+    url: currentCloudinaryUrl || src,
+    styleName: selectedStyle ? selectedStyle.family_label : 'GROOVE POP',
+    subtheme: selectedStyle ? selectedStyle.subtheme : '',
+    publicId: null
+  };
+  document.getElementById('lightbox-img').src = lightboxImage.url;
+  document.getElementById('lightbox-title').textContent = lightboxImage.styleName;
+  document.getElementById('lightbox-sub').textContent = lightboxImage.subtheme;
+  document.getElementById('gallery-lightbox').classList.add('open');
+}
+
+// ══════════════════════════════════════════
+// DOWNLOAD
+// ══════════════════════════════════════════
+async function downloadImage() {
+  const src = document.getElementById('result-img').src;
+  const url = currentCloudinaryUrl;
+  if (url) {
+    try {
+      const blob = await fetch(url).then(r => r.blob());
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `groovepop-${selectedStyle ? selectedStyle.family_key : 'output'}.jpg`;
+      a.click(); URL.revokeObjectURL(a.href); return;
+    } catch {}
+  }
+  const a = document.createElement('a');
+  a.href = src;
+  a.download = `groovepop-${selectedStyle ? selectedStyle.family_key : 'output'}.jpg`;
+  a.click();
+}
+
+async function downloadLightboxImage() {
+  if (!lightboxImage) return;
+  try {
+    const blob = await fetch(lightboxImage.url).then(r => r.blob());
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `groovepop-${lightboxImage.styleKey || 'image'}.jpg`;
+    a.click(); URL.revokeObjectURL(a.href);
+  } catch { window.open(lightboxImage.url, '_blank'); }
+}
+
+// ══════════════════════════════════════════
+// SHARE SHEET
+// ══════════════════════════════════════════
+let shareContext = 'result';
+function openShareSheet(ctx) { shareContext = ctx || 'result'; document.getElementById('share-sheet').classList.add('open'); }
+function closeShareSheet(e) { if (e && e.target !== document.getElementById('share-sheet')) return; document.getElementById('share-sheet').classList.remove('open'); }
+function getShareUrl() { if (shareContext==='lightbox'&&lightboxImage) return lightboxImage.url; return currentCloudinaryUrl||null; }
+function getShareImageSrc() { if (shareContext==='lightbox'&&lightboxImage) return lightboxImage.url; return document.getElementById('result-img').src; }
+
+async function shareViaSystem() {
+  closeShareSheet();
+  const url=getShareUrl(), src=getShareImageSrc();
+  if (navigator.share) {
+    try {
+      const blob=await fetch(src).then(r=>r.blob());
+      const file=new File([blob],'groovepop.jpg',{type:'image/jpeg'});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({title:'GROOVE POP',text:'Made with GROOVE POP — groovepop2.netlify.app',files:[file]});return;}
+      await navigator.share({title:'GROOVE POP',text:'Made with GROOVE POP',url:url||'https://groovepop2.netlify.app'});
+    } catch(err){if(err.name!=='AbortError')showToast('Could not share');}
+  } else { copyImageLink(); }
+}
+async function copyImageLink() {
+  closeShareSheet();
+  const url=getShareUrl();
+  if(!url){try{const blob=await fetch(getShareImageSrc()).then(r=>r.blob());await navigator.clipboard.write([new ClipboardItem({'image/jpeg':blob})]);showToast('Image copied to clipboard');}catch{showToast('Could not copy');}return;}
+  try{await navigator.clipboard.writeText(url);showToast('Link copied to clipboard');}catch{showToast('Could not copy link');}
+}
+function shareToInstagram(){closeShareSheet();const url=getShareUrl();if(!url){showToast('Save the image first, then share to Instagram');return;}navigator.clipboard.writeText(url).catch(()=>{});showToast('Link copied — paste in Instagram');setTimeout(()=>window.open('instagram://app','_blank'),800);}
+function shareToX(){closeShareSheet();const url=getShareUrl()||'https://groovepop2.netlify.app';window.open(`https://x.com/intent/tweet?text=${encodeURIComponent('Made with GROOVE POP — rewrite your story.')}&url=${encodeURIComponent(url)}`);}
+function shareToFacebook(){closeShareSheet();const url=getShareUrl()||'https://groovepop2.netlify.app';window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,'_blank','width=600,height=400');}
+function shareToPinterest(){closeShareSheet();const url=getShareUrl()||'https://groovepop2.netlify.app';window.open(`https://pinterest.com/pin/create/button/?url=${encodeURIComponent('https://groovepop2.netlify.app')}&media=${encodeURIComponent(url)}&description=${encodeURIComponent('Made with GROOVE POP — rewrite your story.')}`);}
+function shareToWhatsApp(){closeShareSheet();const url=getShareUrl()||'https://groovepop2.netlify.app';window.open(`https://wa.me/?text=${encodeURIComponent('Made with GROOVE POP — rewrite your story. '+url)}`);}
+function shareLightboxImage(){openShareSheet('lightbox');}
+
+// ══════════════════════════════════════════
+// GALLERY
+// ══════════════════════════════════════════
+async function loadGallery() {
+  const grid=document.getElementById('gallery-grid'), countEl=document.getElementById('gallery-count');
+  grid.innerHTML='<div class="gallery-loading"><div class="gen-dots"><span></span><span></span><span></span></div></div>';
+  try {
+    const res=await fetch('/.netlify/functions/get-gallery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:currentUser.id||currentUser.email})});
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.error||'Failed to load');
+    galleryImages=data.images||[];
+    countEl.textContent=galleryImages.length?`${galleryImages.length} image${galleryImages.length!==1?'s':''}`:'Empty';
+    if(!galleryImages.length){grid.innerHTML='<div class="gallery-empty"><div class="gallery-empty-title">NO IMAGES YET</div><div class="gallery-empty-sub">Generate something and it\'ll appear here</div></div>';return;}
+    grid.innerHTML=galleryImages.map((img,i)=>`
+      <div class="gallery-item">
+        <img src="${img.thumbUrl}" alt="${img.styleName}" loading="lazy" onclick="openLightbox(${i})">
+        <div class="gallery-item-overlay">
+          <div class="gallery-item-label">${img.styleName||img.subtheme||''}</div>
+          <div class="gallery-item-actions">
+            <button class="gallery-item-btn" onclick="downloadGalleryItem(${i})" title="Download">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            </button>
+            <button class="gallery-item-btn" onclick="shareGalleryItem(${i})" title="Share">
+              <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+            </button>
+            <button class="gallery-item-btn" onclick="printGalleryItem(${i})" title="Print">
+              <svg viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
+            </button>
+            <button class="gallery-item-btn delete" onclick="deleteGalleryItem(${i})" title="Delete">
+              <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>`).join('');
+  } catch(err) {
+    grid.innerHTML=`<div class="gallery-empty"><div class="gallery-empty-title">COULD NOT LOAD</div><div class="gallery-empty-sub">${err.message}</div></div>`;
+    countEl.textContent='Error';
+  }
+}
+
+async function downloadGalleryItem(index) {
+  const img = galleryImages[index];
+  try {
+    const blob = await fetch(img.url).then(r => r.blob());
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `groovepop-${img.styleKey || 'image'}.jpg`;
+    a.click(); URL.revokeObjectURL(a.href);
+  } catch { window.open(img.url, '_blank'); }
+}
+
+function shareGalleryItem(index) {
+  lightboxImage = galleryImages[index];
+  openShareSheet('lightbox');
+}
+
+function printGalleryItem(index) {
+  const img = galleryImages[index];
+  currentCloudinaryUrl = img.url;
+  document.getElementById('result-img').src = img.url;
+  printImageUrl = img.url;
+  goToPrint();
+}
+
+async function deleteGalleryItem(index) {
+  const img = galleryImages[index];
+  if (!confirm('Delete this image from your gallery? This cannot be undone.')) return;
+  try {
+    const res = await fetch('/.netlify/functions/delete-image', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ publicId: img.publicId, userId: currentUser.id || currentUser.email })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Delete failed');
+    showToast('Image deleted');
+    await loadGallery();
+  } catch(err) { showToast('Could not delete: ' + err.message); }
+}
+
+function openLightbox(index) {
+  lightboxImage=galleryImages[index];
+  document.getElementById('lightbox-img').src=lightboxImage.url;
+  document.getElementById('lightbox-title').textContent=lightboxImage.styleName||'GROOVE POP';
+  document.getElementById('lightbox-sub').textContent=[lightboxImage.subtheme,lightboxImage.descriptor].filter(Boolean).join(' · ');
+  document.getElementById('gallery-lightbox').classList.add('open');
+}
+function closeLightbox(){document.getElementById('gallery-lightbox').classList.remove('open');lightboxImage=null;}
+
+async function confirmDeleteImage() {
+  if(!lightboxImage)return;
+  if(!confirm('Delete this image from your gallery? This cannot be undone.'))return;
+  try {
+    const res=await fetch('/.netlify/functions/delete-image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({publicId:lightboxImage.publicId,userId:currentUser.id||currentUser.email})});
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.error||'Delete failed');
+    closeLightbox(); showToast('Image deleted'); await loadGallery();
+  } catch(err){showToast('Could not delete: '+err.message);}
+}
+
+function printLightboxImage() {
+  if(!lightboxImage)return;
+  currentCloudinaryUrl=lightboxImage.url;
+  closeLightbox();
+  document.getElementById('result-img').src=lightboxImage.url;
+  printImageUrl=lightboxImage.url;
+  goToPrint();
+}
+
+// ══════════════════════════════════════════
+// PRINT
+// ══════════════════════════════════════════
+async function loadPrintProducts() {
+  try {
+    const res=await fetch('/print-products.json');const data=await res.json();
+    PRINT_PRODUCTS=data;PRINT_CATALOG={};
+    for(const p of data)PRINT_CATALOG[p.key]=p;
+    renderProductTypeGrid();
+  } catch(err){document.getElementById('product-type-grid').innerHTML='<p style="color:var(--muted);font-size:.75rem;padding:1rem 0;">Products unavailable.</p>';}
+}
+
+function renderProductTypeGrid() {
+  document.getElementById('product-type-grid').innerHTML=PRINT_PRODUCTS.map(p=>`
+    <div class="product-type-card" id="pt-${p.key}" onclick="selectProductType('${p.key}')">
+      <div class="product-type-check"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <div class="product-type-name">${p.name}</div>
+      <div class="product-type-desc">${p.desc} · from $${p.fromPrice} CAD</div>
+    </div>`).join('');
+}
+
+async function goToPrint() {
+  selectedProductType=null; selectedSize=null;
+  document.getElementById('size-section').style.display='none';
+  document.getElementById('order-summary').classList.remove('visible');
+  document.getElementById('print-confirm').classList.remove('visible');
+  document.getElementById('print-form-body').style.display='flex';
+  document.getElementById('print-footer').style.display='flex';
+  document.getElementById('print-error').style.display='none';
+  document.getElementById('btn-place-order').textContent='CHECKOUT';
+  document.getElementById('btn-place-order').disabled=false;
+  goTo('print');
+  const resultImg=document.getElementById('result-img');
+  if(resultImg&&resultImg.src) document.getElementById('print-preview-img').src=resultImg.src;
+  await loadPrintProducts();
+  if(printImageUrl)return;
+  if(currentCloudinaryUrl){printImageUrl=currentCloudinaryUrl;return;}
+  const img=document.getElementById('result-img');
+  if(!img||!img.src||!img.src.startsWith('data:'))return;
+  try {
+    const res=await fetch('/.netlify/functions/upload-image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({base64:img.src.split(',')[1],mimeType:'image/jpeg'})});
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.error||'Upload failed');
+    printImageUrl=data.url; currentCloudinaryUrl=data.url;
+  } catch(err){showPrintError('Image upload failed: '+err.message);}
+}
+
+function selectProductType(typeKey) {
+  selectedProductType=typeKey; selectedSize=null;
+  document.querySelectorAll('.product-type-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById(`pt-${typeKey}`).classList.add('selected');
+  const product=PRINT_CATALOG[typeKey];
+  document.getElementById('size-picker').innerHTML=product.sizes.map((s,i)=>`
+    <div class="size-row" id="sr-${i}" onclick="selectSize(${i})">
+      <div class="size-row-left"><div class="size-dot"></div><span class="size-label">${s.size}</span></div>
+      <span class="size-price">$${s.price} CAD</span>
+    </div>`).join('');
+  document.getElementById('size-section').style.display='block';
+  document.getElementById('order-summary').classList.remove('visible');
+}
+
+function selectSize(index) {
+  const product=PRINT_CATALOG[selectedProductType]; selectedSize=product.sizes[index];
+  document.querySelectorAll('.size-row').forEach(r=>r.classList.remove('selected'));
+  document.getElementById(`sr-${index}`).classList.add('selected');
+  document.getElementById('order-summary').classList.add('visible');
+  document.getElementById('summary-product-label').textContent=`${product.name} · ${selectedSize.size}`;
+  document.getElementById('summary-product-price').textContent=`$${selectedSize.price} CAD`;
+  document.getElementById('summary-total').textContent='Calculated at checkout';
+}
+
+async function placeOrder() {
+  const btn=document.getElementById('btn-place-order');
+  document.getElementById('print-error').style.display='none';
+  if(!selectedProductType){showPrintError('Please choose a product type.');return;}
+  if(!selectedSize){showPrintError('Please choose a size.');return;}
+  if(!printImageUrl){showPrintError('Image is still uploading — please wait a moment.');return;}
+  const name=document.getElementById('pf-name').value.trim(),email=document.getElementById('pf-email').value.trim();
+  const address1=document.getElementById('pf-address1').value.trim(),city=document.getElementById('pf-city').value.trim();
+  const state=document.getElementById('pf-state').value.trim(),zip=document.getElementById('pf-zip').value.trim();
+  const country=document.getElementById('pf-country').value.trim().toUpperCase();
+  if(!name||!email||!address1||!city||!state||!zip||!country){showPrintError('Please fill in all address fields.');return;}
+  if(country.length!==2){showPrintError('Country must be a 2-letter code, e.g. CA or US.');return;}
+  const address2=document.getElementById('pf-address2').value.trim();
+  const recipient={name,email,address1,city,state_code:state,country_code:country,zip};
+  if(address2)recipient.address2=address2;
+  btn.textContent='CALCULATING SHIPPING…'; btn.disabled=true;
+  let shippingRate,shippingName,shippingId;
+  try {
+    const sr=await fetch('/.netlify/functions/get-shipping',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({variantId:selectedSize.variantId,recipient})});
+    const sd=await sr.json();if(!sr.ok)throw new Error(sd.error||'Could not calculate shipping');
+    const cheapest=sd.rates[0];shippingRate=cheapest.rate;shippingName=cheapest.name;shippingId=cheapest.id;
+  } catch(err){showPrintError('Could not calculate shipping: '+err.message);btn.textContent='CHECKOUT';btn.disabled=false;return;}
+  btn.textContent='OPENING CHECKOUT…';
+  const product=PRINT_CATALOG[selectedProductType];
+  try {
+    const cr=await fetch('/.netlify/functions/create-checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({productName:`${product.name} · ${selectedSize.size}`,productPrice:selectedSize.price,shippingName,shippingRate,shippingId,variantId:selectedSize.variantId,imageUrl:printImageUrl,recipient})});
+    const cd=await cr.json();if(!cr.ok)throw new Error(cd.error||'Could not create checkout');
+    window.location.href=cd.url;
+  } catch(err){showPrintError(err.message);btn.textContent='CHECKOUT';btn.disabled=false;}
+}
+
+async function handleStripeReturn() {
+  const params=new URLSearchParams(window.location.search);
+  const sessionId=params.get('session_id'),cancelled=params.get('print');
+  if(cancelled==='cancelled'){window.history.replaceState({},'','/app.html');showToast('Order cancelled — your image is still here.');return;}
+  if(!sessionId)return;
+  window.history.replaceState({},'','/app.html');
+  goTo('print');
+  document.getElementById('print-form-body').style.display='none';
+  document.getElementById('print-footer').style.display='none';
+  const confirmEl=document.getElementById('print-confirm');
+  confirmEl.classList.add('visible');
+  document.getElementById('confirm-order-id').textContent='Placing your order…';
+  try {
+    const res=await fetch('/.netlify/functions/confirm-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId})});
+    const data=await res.json();
+    if(!res.ok){document.getElementById('confirm-order-id').textContent=data.sessionId?`Payment ref: ${data.sessionId}`:'';document.querySelector('.confirm-title').textContent='PAYMENT RECEIVED';document.querySelector('.confirm-sub').textContent='Payment succeeded but there was an issue with your order. Please contact us.';return;}
+    document.querySelector('.confirm-title').textContent='ORDER PLACED';
+    document.querySelector('.confirm-sub').textContent="Your print is heading into production. You'll get a confirmation email when it ships.";
+    document.getElementById('confirm-order-id').textContent=`Printful order #${data.orderId}`;
+  } catch{document.querySelector('.confirm-title').textContent='PAYMENT RECEIVED';document.querySelector('.confirm-sub').textContent='Payment succeeded but we could not confirm your order. Please contact us.';}
+}
+
+function showPrintError(msg){const el=document.getElementById('print-error');el.textContent=msg;el.style.display='block';}
+
+// ══════════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════════
+function resizeImage(dataUrl,maxSize){return new Promise(resolve=>{const img=new Image();img.onload=()=>{const canvas=document.createElement('canvas');let w=img.width,h=img.height;if(w>h){if(w>maxSize){h=h*maxSize/w;w=maxSize;}}else{if(h>maxSize){w=w*maxSize/h;h=maxSize;}}canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);resolve(canvas.toDataURL('image/jpeg',.8));};img.src=dataUrl;});}
+function showToast(msg){const t=document.getElementById('share-toast');t.textContent=msg;t.classList.add('visible');setTimeout(()=>t.classList.remove('visible'),2800);}
+
+// ══════════════════════════════════════════
+// INSTALL PROMPT
+// ══════════════════════════════════════════
+let deferredInstallPrompt = null;
+let installShown = false;
+
+// Intercept Android/desktop Chrome install prompt — reveal opt-in button
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const btn = document.getElementById('btn-install');
+  if (btn && !isInStandaloneMode()) btn.style.display = '';
+});
+
+function isIOS() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+}
+
+function isInStandaloneMode() {
+  return window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone === true;
+}
+
+// Reveal install button for iOS Safari (no beforeinstallprompt event)
+window.addEventListener('load', () => {
+  if (isIOS() && !isInStandaloneMode()
+      && navigator.userAgent.includes('Safari')
+      && !navigator.userAgent.includes('CriOS')
+      && !sessionStorage.getItem('gp-install-dismissed')) {
+    const btn = document.getElementById('btn-install');
+    if (btn) btn.style.display = '';
+  }
+});
+
+function shouldShowInstallPrompt() {
+  if (isInStandaloneMode()) return false;
+  if (installShown) return false;
+  // Only suppress for this session, not permanently
+  if (sessionStorage.getItem('gp-install-dismissed')) return false;
+  if (deferredInstallPrompt) return true;
+  if (isIOS() && navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('CriOS')) return true;
+  return false;
+}
+
+function showInstallBanner() {
+  if (!shouldShowInstallPrompt()) return;
+  installShown = true;
+
+  if (deferredInstallPrompt) {
+    document.getElementById('install-banner-android').classList.add('visible');
+  } else if (isIOS()) {
+    document.getElementById('install-banner-ios').classList.add('visible');
+  }
+}
+
+async function triggerAndroidInstall() {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  dismissInstallBanner();
+  if (outcome === 'accepted') showToast('GROOVE POP installed!');
+}
+
+function dismissInstallBanner() {
+  document.getElementById('install-banner-android').classList.remove('visible');
+  document.getElementById('install-banner-ios').classList.remove('visible');
+  sessionStorage.setItem('gp-install-dismissed', '1');
+  const btn = document.getElementById('btn-install');
+  if (btn) btn.style.display = 'none';
+}
+
+// ══════════════════════════════════════════
+// LOGO SYSTEM
+// ══════════════════════════════════════════
+const GROOVE_POP_LOGOS = [
+  "/logos/gp-logo-001.jpg","/logos/gp-logo-002.jpg","/logos/gp-logo-003.jpg","/logos/gp-logo-004.jpg","/logos/gp-logo-005.jpg",
+  "/logos/gp-logo-006.jpg","/logos/gp-logo-007.jpg","/logos/gp-logo-008.jpg","/logos/gp-logo-009.jpg","/logos/gp-logo-010.jpg",
+  "/logos/gp-logo-011.jpg","/logos/gp-logo-012.jpg","/logos/gp-logo-013.jpg","/logos/gp-logo-014.jpg","/logos/gp-logo-015.jpg",
+  "/logos/gp-logo-016.jpg","/logos/gp-logo-017.jpg","/logos/gp-logo-018.jpg","/logos/gp-logo-019.jpg","/logos/gp-logo-020.jpg",
+  "/logos/gp-logo-021.jpg","/logos/gp-logo-022.jpg","/logos/gp-logo-023.jpg","/logos/gp-logo-024.jpg","/logos/gp-logo-025.jpg",
+  "/logos/gp-logo-026.jpg","/logos/gp-logo-027.jpg","/logos/gp-logo-028.jpg","/logos/gp-logo-029.jpg","/logos/gp-logo-030.jpg",
+  "/logos/gp-logo-031.jpg","/logos/gp-logo-032.jpg","/logos/gp-logo-033.jpg","/logos/gp-logo-034.jpg","/logos/gp-logo-035.jpg",
+  "/logos/gp-logo-036.jpg","/logos/gp-logo-037.jpg","/logos/gp-logo-038.jpg","/logos/gp-logo-039.jpg","/logos/gp-logo-040.jpg",
+  "/logos/gp-logo-041.jpg","/logos/gp-logo-042.jpg","/logos/gp-logo-043.jpg","/logos/gp-logo-044.jpg","/logos/gp-logo-045.jpg",
+  "/logos/gp-logo-046.jpg","/logos/gp-logo-047.jpg","/logos/gp-logo-048.jpg","/logos/gp-logo-049.jpg","/logos/gp-logo-050.jpg",
+  "/logos/gp-logo-051.jpg","/logos/gp-logo-052.jpg","/logos/gp-logo-053.jpg","/logos/gp-logo-054.jpg","/logos/gp-logo-055.jpg",
+  "/logos/gp-logo-056.jpg","/logos/gp-logo-057.jpg","/logos/gp-logo-058.jpg","/logos/gp-logo-059.jpg","/logos/gp-logo-060.jpg",
+  "/logos/gp-logo-061.jpg","/logos/gp-logo-062.jpg","/logos/gp-logo-063.jpg","/logos/gp-logo-064.jpg","/logos/gp-logo-065.jpg",
+  "/logos/gp-logo-066.jpg","/logos/gp-logo-067.jpg","/logos/gp-logo-068.jpg","/logos/gp-logo-069.jpg","/logos/gp-logo-070.jpg",
+  "/logos/gp-logo-071.jpg","/logos/gp-logo-072.jpg","/logos/gp-logo-073.jpg","/logos/gp-logo-074.jpg","/logos/gp-logo-075.jpg",
+  "/logos/gp-logo-076.jpg","/logos/gp-logo-077.jpg","/logos/gp-logo-078.jpg","/logos/gp-logo-079.jpg","/logos/gp-logo-080.jpg",
+  "/logos/gp-logo-081.jpg","/logos/gp-logo-082.jpg","/logos/gp-logo-083.jpg","/logos/gp-logo-084.jpg","/logos/gp-logo-085.jpg",
+  "/logos/gp-logo-086.jpg","/logos/gp-logo-087.jpg","/logos/gp-logo-088.jpg","/logos/gp-logo-089.jpg","/logos/gp-logo-090.jpg",
+  "/logos/gp-logo-091.jpg","/logos/gp-logo-092.jpg","/logos/gp-logo-093.jpg","/logos/gp-logo-094.jpg","/logos/gp-logo-095.jpg",
+  "/logos/gp-logo-096.jpg","/logos/gp-logo-097.jpg","/logos/gp-logo-098.jpg","/logos/gp-logo-099.jpg","/logos/gp-logo-100.jpg",
+  "/logos/gp-logo-101.jpg","/logos/gp-logo-102.jpg","/logos/gp-logo-103.jpg","/logos/gp-logo-104.jpg","/logos/gp-logo-105.jpg",
+  "/logos/gp-logo-106.jpg","/logos/gp-logo-107.jpg","/logos/gp-logo-108.jpg","/logos/gp-logo-109.jpg","/logos/gp-logo-110.jpg",
+  "/logos/gp-logo-111.jpg","/logos/gp-logo-112.jpg","/logos/gp-logo-113.jpg","/logos/gp-logo-114.jpg","/logos/gp-logo-115.jpg",
+  "/logos/gp-logo-116.jpg","/logos/gp-logo-117.jpg","/logos/gp-logo-118.jpg","/logos/gp-logo-119.jpg","/logos/gp-logo-120.jpg",
+  "/logos/gp-logo-121.jpg","/logos/gp-logo-122.jpg","/logos/gp-logo-123.jpg","/logos/gp-logo-124.jpg","/logos/gp-logo-125.jpg",
+  "/logos/gp-logo-126.jpg","/logos/gp-logo-127.jpg","/logos/gp-logo-128.jpg","/logos/gp-logo-129.jpg","/logos/gp-logo-130.jpg",
+  "/logos/gp-logo-131.jpg","/logos/gp-logo-132.jpg","/logos/gp-logo-133.jpg","/logos/gp-logo-134.jpg","/logos/gp-logo-135.jpg",
+  "/logos/gp-logo-136.jpg","/logos/gp-logo-137.jpg","/logos/gp-logo-138.jpg","/logos/gp-logo-139.jpg","/logos/gp-logo-140.jpg",
+  "/logos/gp-logo-141.jpg","/logos/gp-logo-142.jpg","/logos/gp-logo-143.jpg","/logos/gp-logo-144.jpg","/logos/gp-logo-145.jpg",
+  "/logos/gp-logo-146.jpg","/logos/gp-logo-147.jpg","/logos/gp-logo-148.jpg","/logos/gp-logo-149.jpg","/logos/gp-logo-150.jpg",
+  "/logos/gp-logo-151.jpg","/logos/gp-logo-152.jpg","/logos/gp-logo-153.jpg","/logos/gp-logo-154.jpg","/logos/gp-logo-155.jpg",
+  "/logos/gp-logo-156.jpg","/logos/gp-logo-157.jpg","/logos/gp-logo-158.jpg","/logos/gp-logo-159.jpg","/logos/gp-logo-160.jpg",
+  "/logos/gp-logo-161.jpg","/logos/gp-logo-162.jpg","/logos/gp-logo-163.jpg","/logos/gp-logo-164.jpg","/logos/gp-logo-165.jpg",
+  "/logos/gp-logo-166.jpg","/logos/gp-logo-167.jpg","/logos/gp-logo-168.jpg","/logos/gp-logo-169.jpg","/logos/gp-logo-170.jpg",
+  "/logos/gp-logo-171.jpg","/logos/gp-logo-172.jpg","/logos/gp-logo-173.jpg","/logos/gp-logo-174.jpg","/logos/gp-logo-175.jpg",
+  "/logos/gp-logo-176.jpg","/logos/gp-logo-177.jpg","/logos/gp-logo-178.jpg","/logos/gp-logo-179.jpg","/logos/gp-logo-180.jpg",
+  "/logos/gp-logo-181.jpg","/logos/gp-logo-182.jpg","/logos/gp-logo-183.jpg","/logos/gp-logo-184.jpg","/logos/gp-logo-185.jpg",
+  "/logos/gp-logo-186.jpg","/logos/gp-logo-187.jpg","/logos/gp-logo-188.jpg","/logos/gp-logo-189.jpg","/logos/gp-logo-190.jpg",
+  "/logos/gp-logo-191.jpg","/logos/gp-logo-192.jpg","/logos/gp-logo-193.jpg","/logos/gp-logo-194.jpg","/logos/gp-logo-195.jpg",
+  "/logos/gp-logo-196.jpg","/logos/gp-logo-197.jpg","/logos/gp-logo-198.jpg","/logos/gp-logo-199.jpg","/logos/gp-logo-200.jpg",
+  "/logos/gp-logo-201.jpg","/logos/gp-logo-202.jpg","/logos/gp-logo-203.jpg","/logos/gp-logo-204.jpg","/logos/gp-logo-205.jpg",
+  "/logos/gp-logo-206.jpg","/logos/gp-logo-207.jpg","/logos/gp-logo-208.jpg","/logos/gp-logo-209.jpg","/logos/gp-logo-210.jpg",
+  "/logos/gp-logo-211.jpg","/logos/gp-logo-212.jpg","/logos/gp-logo-213.jpg","/logos/gp-logo-214.jpg","/logos/gp-logo-215.jpg",
+  "/logos/gp-logo-216.jpg","/logos/gp-logo-217.jpg","/logos/gp-logo-218.jpg","/logos/gp-logo-219.jpg","/logos/gp-logo-220.jpg",
+  "/logos/gp-logo-221.jpg","/logos/gp-logo-222.jpg","/logos/gp-logo-223.jpg","/logos/gp-logo-224.jpg","/logos/gp-logo-225.jpg",
+  "/logos/gp-logo-226.jpg","/logos/gp-logo-227.jpg","/logos/gp-logo-228.jpg","/logos/gp-logo-229.jpg","/logos/gp-logo-230.jpg",
+  "/logos/gp-logo-231.jpg","/logos/gp-logo-232.jpg","/logos/gp-logo-233.jpg","/logos/gp-logo-234.jpg","/logos/gp-logo-235.jpg",
+  "/logos/gp-logo-236.jpg","/logos/gp-logo-237.jpg","/logos/gp-logo-238.jpg","/logos/gp-logo-239.jpg","/logos/gp-logo-240.jpg",
+  "/logos/gp-logo-241.jpg","/logos/gp-logo-242.jpg","/logos/gp-logo-243.jpg","/logos/gp-logo-244.jpg","/logos/gp-logo-245.jpg",
+  "/logos/gp-logo-246.jpg","/logos/gp-logo-247.jpg","/logos/gp-logo-248.jpg","/logos/gp-logo-249.jpg","/logos/gp-logo-250.jpg",
+  "/logos/gp-logo-251.jpg","/logos/gp-logo-252.jpg","/logos/gp-logo-253.jpg","/logos/gp-logo-254.jpg","/logos/gp-logo-255.jpg",
+  "/logos/gp-logo-256.jpg","/logos/gp-logo-257.jpg","/logos/gp-logo-258.jpg","/logos/gp-logo-259.jpg","/logos/gp-logo-260.jpg",
+  "/logos/gp-logo-261.jpg","/logos/gp-logo-262.jpg","/logos/gp-logo-263.jpg","/logos/gp-logo-264.jpg","/logos/gp-logo-265.jpg",
+  "/logos/gp-logo-266.jpg","/logos/gp-logo-267.jpg","/logos/gp-logo-268.jpg","/logos/gp-logo-269.jpg","/logos/gp-logo-270.jpg",
+  "/logos/gp-logo-271.jpg","/logos/gp-logo-272.jpg","/logos/gp-logo-273.jpg","/logos/gp-logo-274.jpg","/logos/gp-logo-275.jpg",
+  "/logos/gp-logo-276.jpg","/logos/gp-logo-277.jpg","/logos/gp-logo-278.jpg","/logos/gp-logo-279.jpg","/logos/gp-logo-280.jpg",
+  "/logos/gp-logo-281.jpg","/logos/gp-logo-282.jpg","/logos/gp-logo-283.jpg","/logos/gp-logo-284.jpg","/logos/gp-logo-285.jpg",
+  "/logos/gp-logo-286.jpg","/logos/gp-logo-287.jpg","/logos/gp-logo-288.jpg","/logos/gp-logo-289.jpg","/logos/gp-logo-290.jpg",
+  "/logos/gp-logo-291.jpg","/logos/gp-logo-292.jpg","/logos/gp-logo-293.jpg"
+];
+
+// ── Logo colour sequence handled by CSS animation ──
+
+let logoIntervals = [];
+let currentLogoIndex = 0;
+let usedLogoIndices = new Set();
+let activeLayer = 'a'; // module-scoped so endLogoTransformation can read it
+
+function pickRandomLogo(excludeCurrent = true) {
+  let pool = GROOVE_POP_LOGOS.map((_, i) => i).filter(i =>
+    !excludeCurrent || i !== currentLogoIndex
+  );
+  // Avoid recently used ones if pool is large enough
+  if (pool.length > 20) {
+    pool = pool.filter(i => !usedLogoIndices.has(i));
+    if (!pool.length) { usedLogoIndices.clear(); pool = GROOVE_POP_LOGOS.map((_, i) => i).filter(i => i !== currentLogoIndex); }
+  }
+  const idx = pool[Math.floor(Math.random() * pool.length)];
+  usedLogoIndices.add(idx);
+  if (usedLogoIndices.size > 50) {
+    const first = usedLogoIndices.values().next().value;
+    usedLogoIndices.delete(first);
+  }
+  return idx;
+}
+
+function setLogoImage(index) {
+  currentLogoIndex = index;
+  const img = document.getElementById('app-bar-logo-img');
+  if (img) img.src = GROOVE_POP_LOGOS[index];
+}
+
+function clearLogoIntervals() {
+  logoIntervals.forEach(id => { clearInterval(id); clearTimeout(id); });
+  logoIntervals = [];
+}
+
+function startLogoTransformation() {
+  clearLogoIntervals();
+
+  const zone    = document.getElementById('gen-logo-zone');
+  const barLogo = document.getElementById('app-bar-logo-wrap');
+  const layerA  = document.getElementById('gen-logo-a');
+  const layerB  = document.getElementById('gen-logo-b');
+  if (!zone || !layerA || !layerB) return;
+
+  // Hide app bar logo
+  if (barLogo) barLogo.classList.add('hidden');
+
+  // Set starting logo on layer A, reset layer B
+  layerA.src = GROOVE_POP_LOGOS[currentLogoIndex];
+  layerA.style.opacity = '1';
+  layerA.style.zIndex  = '2';
+  layerB.src = GROOVE_POP_LOGOS[currentLogoIndex];
+  layerB.style.opacity = '0';
+  layerB.style.zIndex  = '1';
+  zone.classList.remove('logo-cycling', 'logo-static');
+  zone.classList.add('active');
+
+  // Crossfade state — activeLayer is module-scoped, reset here each run
+  activeLayer = 'a';
+
+  // Crossfade rhythm — fade IS the motion, almost always in transition
+  // HOLD: how long fully visible before next starts fading in
+  // FADE: must match CSS transition on img (2.5s)
+  const HOLD = 800;   // brief fully-opaque moment
+  const FADE = 2500;  // slow crossfade — this is what you see most
+
+  function crossfadeToNext() {
+    const idx = pickRandomLogo(true);
+    currentLogoIndex = idx;
+
+    if (activeLayer === 'a') {
+      // Load next logo into B, fade B in, fade A out
+      layerB.src = GROOVE_POP_LOGOS[idx];
+      layerB.style.zIndex  = '3'; // B comes on top
+      layerA.style.zIndex  = '2';
+      layerB.style.opacity = '1';
+      layerA.style.opacity = '0';
+      activeLayer = 'b';
+    } else {
+      // Load next logo into A, fade A in, fade B out
+      layerA.src = GROOVE_POP_LOGOS[idx];
+      layerA.style.zIndex  = '3'; // A comes on top
+      layerB.style.zIndex  = '2';
+      layerA.style.opacity = '1';
+      layerB.style.opacity = '0';
+      activeLayer = 'a';
+    }
+  }
+
+  // Start crossfade loop — fire crossfade every HOLD + FADE ms
+  const crossfadeInterval = setInterval(crossfadeToNext, HOLD + FADE);
+  logoIntervals.push(crossfadeInterval);
+
+  // 60s — stop, return whatever is currently showing to app bar
+  const returnStart = setTimeout(() => {
+    clearLogoIntervals();
+    const finalIdx = currentLogoIndex;
+    zone.classList.remove('active', 'logo-cycling', 'logo-static');
+
+    const barImg = document.getElementById('app-bar-logo-img');
+    if (barImg) {
+      barImg.style.opacity = '0';
+      barImg.src = GROOVE_POP_LOGOS[finalIdx];
+      barImg.onload = () => { barImg.style.opacity = '1'; };
+    }
+    if (barLogo) barLogo.classList.remove('hidden');
+  }, 63000);
+  logoIntervals.push(returnStart);
+}
+
+function endLogoTransformation(finalLogoIndex) {
+  clearLogoIntervals();
+  const zone    = document.getElementById('gen-logo-zone');
+  const barImg  = document.getElementById('app-bar-logo-img');
+  const barLogo = document.getElementById('app-bar-logo-wrap');
+  const wrap    = zone ? zone.querySelector('.gen-logo-image-wrap') : null;
+
+  // Detect which layer is visible. activeLayer is the JS-tracked string ('a' or 'b').
+  // Fall back to CSS class if activeLayer is somehow unset.
+  const layerA  = document.getElementById('gen-logo-a');
+  const layerB  = document.getElementById('gen-logo-b');
+  // activeLayer is the module-level var updated by crossfadeToNext — trust it directly
+  const topLayer = (typeof activeLayer !== 'undefined' && activeLayer === 'b') ? layerB : layerA;
+
+  // Stop crossfade animation, suppress hue-cycle and scan
+  if (zone) {
+    zone.classList.remove('logo-cycling', 'logo-static');
+    zone.classList.add('logo-final');
+  }
+
+  // Freeze whichever layer is on top — no src touch, no transition
+  if (topLayer) {
+    topLayer.style.transition = 'none';
+    topLayer.style.opacity    = '1';
+    topLayer.style.zIndex     = '3';
+  }
+  // Snap the other layer away instantly
+  const otherLayer = (topLayer === layerA) ? layerB : layerA;
+  if (otherLayer) {
+    otherLayer.style.transition = 'none';
+    otherLayer.style.opacity    = '0';
+  }
+
+  // Enlarge wrap — pure transform, no image load involved
+  if (wrap) {
+    wrap.style.transition = 'transform 0.4s ease';
+    wrap.style.animation  = 'none';
+    // Force a reflow so the transition fires from scale(1)
+    void wrap.offsetWidth;
+    wrap.style.transform = 'scale(1.12)';
+  }
+
+  // After 3s hold — shrink, dismiss zone, restore bar with the SAME logo
+  setTimeout(() => {
+    if (wrap) wrap.style.transform = 'scale(1)';
+    setTimeout(() => {
+      if (zone) zone.classList.remove('active', 'logo-final');
+      // Clean up inline styles
+      [layerA, layerB].forEach(l => { if (l) { l.style.transition = ''; l.style.transform = ''; } });
+      if (wrap) { wrap.style.transition = ''; wrap.style.transform = ''; wrap.style.animation = ''; }
+      // Restore bar with the logo that was actually showing
+      const shownSrc = topLayer ? topLayer.src : GROOVE_POP_LOGOS[finalLogoIndex];
+      if (barImg) {
+        barImg.style.opacity = '0';
+        barImg.src = shownSrc;
+        barImg.onload = () => { barImg.style.opacity = '1'; };
+      }
+      if (barLogo) barLogo.classList.remove('hidden');
+    }, 400);
+  }, 3000);
+
+  currentLogoIndex = finalLogoIndex;
+}
+
+// Fixed start logo — always gp-logo-001 on fresh load, random on each generation
+function initLogo() {
+  currentLogoIndex = 0;
+  const barImg = document.getElementById('app-bar-logo-img');
+  const layerA = document.getElementById('gen-logo-a');
+  const layerB = document.getElementById('gen-logo-b');
+  if (barImg) barImg.src = GROOVE_POP_LOGOS[0];
+  if (layerA) layerA.src = GROOVE_POP_LOGOS[0];
+  if (layerB) layerB.src = GROOVE_POP_LOGOS[0];
+}
+
+// ══════════════════════════════════════════
+// KICK OFF
+// ══════════════════════════════════════════
+handleStripeReturn();
+initAuth();
+</script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/sw.js")
+        .then(reg => console.log("[GP] SW registered:", reg.scope))
+        .catch(err => console.warn("[GP] SW registration failed:", err));
+    });
+  }
+</script>
+</body>
+</html>

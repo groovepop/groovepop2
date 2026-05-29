@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AZURE_OPENAI_KEY": "paste-your-key-here",
+    "AZURE_OPENAI_ENDPOINT": "https://green-mos1tune-eastus2.openai.azure.com",
+    "AZURE_CAPTION_DEPLOYMENT": "groovepop-vision",
+    "AZURE_IMAGE_DEPLOYMENT": "gpt-image-2",
+    "CORS_ORIGIN": "*"
+  }
+}

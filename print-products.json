@@ -1,0 +1,57 @@
+[
+  {
+    "key": "matte",
+    "name": "Matte Poster",
+    "desc": "Enhanced matte paper",
+    "fromPrice": 16,
+    "currency": "CAD",
+    "sizes": [
+      { "size": "12″ × 16″", "variantId": 1349,  "price": 16 },
+      { "size": "12″ × 18″", "variantId": 3876,  "price": 16 },
+      { "size": "16″ × 20″", "variantId": 3877,  "price": 17 },
+      { "size": "18″ × 24″", "variantId": 1,     "price": 18 },
+      { "size": "20″ × 30″", "variantId": 16365, "price": 19 }
+    ]
+  },
+  {
+    "key": "luster",
+    "name": "Luster Poster",
+    "desc": "Premium luster paper",
+    "fromPrice": 18,
+    "currency": "CAD",
+    "sizes": [
+      { "size": "12″ × 16″", "variantId": 6875,  "price": 18 },
+      { "size": "12″ × 18″", "variantId": 6876,  "price": 19 },
+      { "size": "16″ × 20″", "variantId": 6878,  "price": 19 },
+      { "size": "18″ × 24″", "variantId": 6880,  "price": 22 },
+      { "size": "20″ × 30″", "variantId": 19524, "price": 24 }
+    ]
+  },
+  {
+    "key": "framed-poster",
+    "name": "Framed Poster",
+    "desc": "Matte paper · black frame",
+    "fromPrice": 36,
+    "currency": "CAD",
+    "sizes": [
+      { "size": "12″ × 16″", "variantId": 1350,  "price": 36 },
+      { "size": "12″ × 18″", "variantId": 4398,  "price": 37 },
+      { "size": "16″ × 20″", "variantId": 4399,  "price": 49 },
+      { "size": "18″ × 24″", "variantId": 3,     "price": 52 },
+      { "size": "20″ × 30″", "variantId": 19520, "price": 68 }
+    ]
+  },
+  {
+    "key": "canvas",
+    "name": "Framed Canvas",
+    "desc": "Gallery canvas · black frame",
+    "fromPrice": 64,
+    "currency": "CAD",
+    "sizes": [
+      { "size": "12″ × 16″", "variantId": 16035, "price": 64  },
+      { "size": "16″ × 20″", "variantId": 16037, "price": 77  },
+      { "size": "18″ × 24″", "variantId": 16038, "price": 89  },
+      { "size": "24″ × 36″", "variantId": 16039, "price": 123 }
+    ]
+  }
+]
