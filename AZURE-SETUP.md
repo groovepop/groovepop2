@@ -96,9 +96,17 @@ Push to `main` (or **Actions** → **Deploy Azure Functions** → **Run workflow
 After green checkmark, your URLs are:
 
 ```
-https://YOUR-APP-NAME.azurewebsites.net/api/health
-https://YOUR-APP-NAME.azurewebsites.net/api/caption
-https://YOUR-APP-NAME.azurewebsites.net/api/generate
+https://YOUR-APP-NAME-<hash>.<region>-01.azurewebsites.net/api/health
+https://YOUR-APP-NAME-<hash>.<region>-01.azurewebsites.net/api/caption
+https://YOUR-APP-NAME-<hash>.<region>-01.azurewebsites.net/api/generate
+```
+
+**Flex Consumption note:** The live URL is **not** `https://your-app-name.azurewebsites.net`. Copy the full **Default domain** from Function App → **Overview** (e.g. `groovepop-engine-f7ged0hndrbucafm.eastus2-01.azurewebsites.net`).
+
+Groove Pop engine (live):
+
+```
+https://groovepop-engine-f7ged0hndrbucafm.eastus2-01.azurewebsites.net/api/health
 ```
 
 ---
