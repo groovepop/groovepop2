@@ -744,14 +744,8 @@
 
   <!-- Demo result -->
   <div id="demo-result-wrap" style="display:none;width:100%;padding:0 1.5rem 1rem;">
-    <div style="width:100%;max-width:360px;margin:0 auto;position:relative;overflow:hidden;">
+    <div style="width:100%;max-width:360px;margin:0 auto;">
       <img id="demo-result-img" alt="Your Groove Pop" style="width:100%;display:block;">
-      <div class="watermark">
-        <div class="watermark-inner">
-          <div class="watermark-logo">GROOVE<span style="color:var(--gold);">POP</span></div>
-          <div class="watermark-sub">GROOVEPOP.CA</div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -1097,7 +1091,8 @@ async function runDemo() {
     if (!genRes.ok) { const e = await genRes.json(); throw new Error(e.error || 'Generation failed'); }
     const { imageUrl } = await genRes.json();
 
-    document.getElementById('demo-result-img').src = imageUrl;
+    const watermarked = await bakeWatermark(imageUrl);
+    document.getElementById('demo-result-img').src = watermarked;
     document.getElementById('demo-result-wrap').style.display = '';
     showUnlockBanner();
     status.style.display = 'none';
@@ -1125,6 +1120,43 @@ function showUnlockBanner() {
       <button class="btn-ghost" style="padding:0.75rem;width:100%;" onclick="showAuth('signin')">ALREADY HAVE AN ACCOUNT</button>`;
   }
   banner.style.display = 'flex';
+}
+
+async function bakeWatermark(dataUrl) {
+  await document.fonts.ready;
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+
+      ctx.save();
+      ctx.globalAlpha = 0.38;
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(-20 * Math.PI / 180);
+
+      const fs = Math.round(canvas.width * 0.13);
+      ctx.font = `bold ${fs}px 'Bebas Neue', sans-serif`;
+      ctx.fillStyle = 'white';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'alphabetic';
+      ctx.shadowColor = 'rgba(0,0,0,0.7)';
+      ctx.shadowBlur = 10;
+      ctx.fillText('GROOVE POP', 0, 0);
+
+      const sf = Math.round(canvas.width * 0.038);
+      ctx.font = `${sf}px 'DM Sans', sans-serif`;
+      ctx.shadowBlur = 6;
+      ctx.fillText('GROOVEPOP.CA', 0, sf * 1.8);
+
+      ctx.restore();
+      resolve(canvas.toDataURL('image/jpeg', 0.9));
+    };
+    img.src = dataUrl;
+  });
 }
 
 function demoResizeImage(dataUrl, maxSize) {
