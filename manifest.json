@@ -35,5 +35,7 @@
     }
   ],
   "categories": ["photo", "entertainment"],
-  "lang": "en"
+  "lang": "en",
+  "dir": "ltr",
+  "id": "/"
 }
