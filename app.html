@@ -20,7 +20,8 @@
     --rust: #c4522a; --muted: #6b6560; --surface: #1a1714; --surface2: #221f1b;
     --border: rgba(200,168,75,0.2); --border-dim: rgba(200,168,75,0.1);
   }
-  body { background:#111; color:var(--white); font-family:'DM Sans',sans-serif; min-height:100vh; overflow-x:hidden; display:flex; justify-content:center; align-items:flex-start; }
+  html { overflow:hidden; overscroll-behavior:none; }
+  body { background:#111; color:var(--white); font-family:'DM Sans',sans-serif; min-height:100vh; overflow:hidden; overscroll-behavior:none; display:flex; justify-content:center; align-items:flex-start; }
   #app { width:100%; max-width:480px; background:var(--black); position:relative; min-height:100vh; box-shadow:0 0 60px rgba(0,0,0,0.8); }
   .screen { display:none; flex-direction:column; min-height:100vh; }
   .screen.active { display:flex; }
@@ -76,12 +77,13 @@
   /* Content split */
   .home-content { display:grid; grid-template-columns:1fr 1fr; min-height:0; overflow:hidden; }
   .home-left { display:flex; flex-direction:column; overflow:hidden; border-right:1px solid var(--border); min-height:0; position:relative; }
-  .home-right { display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; min-height:0; }
+  .home-right { display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; min-height:0; overscroll-behavior:contain; }
 
-  /* Upload zones — stacked vertically in left panel */
-  .upload-state-v { display:flex; flex-direction:column; flex:1; background:var(--border); gap:1px; }
-  .upload-state-v .photo-zone { flex:1; background:var(--surface); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.6rem; cursor:pointer; transition:background 0.2s; }
-  .upload-state-v .photo-zone:hover { background:var(--surface2); }
+  /* Upload zone — single unified field with upload + selfie side by side */
+  .upload-unified { display:flex; flex:1; background:var(--surface); }
+  .upload-opt { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.7rem; cursor:pointer; transition:background 0.2s; }
+  .upload-opt:hover { background:var(--surface2); }
+  .upload-opt-divider { width:1px; background:var(--border); flex-shrink:0; align-self:stretch; margin:1.5rem 0; }
   .upload-icon { width:40px; height:40px; border:1px solid var(--border); border-radius:50%; display:flex; align-items:center; justify-content:center; }
   .upload-icon svg { width:18px; height:18px; stroke:var(--gold); fill:none; stroke-width:1.5; }
   .upload-hint { font-size:0.6rem; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; }
@@ -491,13 +493,14 @@
         <span class="home-section-text">CHOOSE <span class="accent">AN IMAGE</span></span>
       </div>
 
-      <!-- Upload: two zones stacked -->
-      <div class="upload-state-v" id="upload-state">
-        <div class="photo-zone" onclick="document.getElementById('file-input').click()">
+      <!-- Upload: single unified field -->
+      <div class="upload-unified" id="upload-state">
+        <div class="upload-opt" onclick="document.getElementById('file-input').click()">
           <div class="upload-icon"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>
           <span class="upload-hint">UPLOAD</span>
         </div>
-        <div class="photo-zone" onclick="document.getElementById('selfie-input').click()">
+        <div class="upload-opt-divider"></div>
+        <div class="upload-opt" onclick="document.getElementById('selfie-input').click()">
           <div class="upload-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M6.343 6.343a8 8 0 1011.314 0M12 2v4"/></svg></div>
           <span class="upload-hint">SELFIE</span>
         </div>
