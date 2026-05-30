@@ -296,7 +296,7 @@
   }
   .gen-logo-inner img {
     position:absolute; height:72px; width:auto; max-width:100%;
-    object-fit:contain; display:block; transition:opacity 1.8s ease;
+    object-fit:contain; display:block; transition:opacity 2.8s ease;
   }
   .gen-logo-inner .layer-a { opacity:1; z-index:2; }
   .gen-logo-inner .layer-b { opacity:0; z-index:1; }
@@ -318,7 +318,7 @@
     box-shadow:0 0 8px rgba(255,255,255,0.9);
     top:15%; opacity:0; pointer-events:none;
   }
-  .gen-logo-zone.active:not(.logo-final) .gen-logo-scan { opacity:1; animation:logo-scan-pingpong 4s ease-in-out infinite; }
+  .gen-logo-zone.active:not(.logo-final) .gen-logo-scan { opacity:1; animation:logo-scan-pingpong 6s ease-in-out infinite; }
   @keyframes logo-scan-pingpong { 0%{top:15%} 50%{top:85%} 100%{top:15%} }
   .gen-logo-zone.logo-final .gen-logo-image-wrap { animation:none !important; filter:none !important; }
   .gen-logo-zone.logo-final .gen-logo-scan { opacity:0 !important; animation:none !important; }
@@ -1892,17 +1892,17 @@ function startLogoTransformation() {
 
   // Two-phase logo swap — separates preload from opacity swap to eliminate flash.
   //
-  // Timing (SCAN_CYCLE = 4s, one logo per 2 cycles = 8s):
-  //   t=0        scan at top going DOWN  → preload logo#2 into hidden back layer
-  //   t=6000ms   scan at bottom going UP → opacity swap (logo#2 fades in over 1.8s)
-  //   t=8000ms   scan back at TOP        → logo#2 fully visible, preload logo#3
-  //   t=14000ms  scan at bottom going UP → swap to logo#3 …and so on
+  // Timing (SCAN_CYCLE = 6s, one logo per cycle):
+  //   t=0        scan at top going DOWN  → preload logo#2 into hidden back layer (3s to load)
+  //   t=3000ms   scan at BOTTOM going UP → opacity swap starts (2.8s fade — full upward journey)
+  //   t=6000ms   scan back at TOP        → logo#2 fully visible, preload logo#3
+  //   t=9000ms   scan at bottom going UP → swap to logo#3 …and so on
   //
-  // Result: ~8 logos over 65s. Each downward pass the scan "reveals" a fresh logo.
+  // Result: ~10 logos over 65s. Downward sweep = logo revealed. Upward sweep = gradual fade to next.
 
-  const SCAN_CYCLE = 4000;           // must match logo-scan-pingpong CSS duration
-  const SWAP_MS    = SCAN_CYCLE * 2; // 8000ms — one logo every two full scan cycles
-  const FADE_LEAD  = SCAN_CYCLE / 2; // 2000ms — start fade when scan hits bottom
+  const SCAN_CYCLE = 6000;           // must match logo-scan-pingpong CSS duration
+  const SWAP_MS    = SCAN_CYCLE;     // one logo per scan cycle — new logo every sweep
+  const FADE_LEAD  = SCAN_CYCLE / 2; // 3000ms — start fade exactly when scan hits bottom
 
   function getBack() { return activeLayer === 'a' ? layerB : layerA; }
 
