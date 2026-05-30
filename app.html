@@ -68,7 +68,7 @@
      SCREEN: HOME — three-state grid
   ══════════════════════════════════════════ */
   #screen-home { flex-direction:column; overflow:hidden; }
-  #screen-home.active { display:grid !important; grid-template-rows:auto 1fr auto; height:100dvh; }
+  #screen-home.active { display:grid !important; grid-template-rows:auto 1fr auto; height:100dvh; min-height:0; max-height:100dvh; }
 
   /* App bar generating overlay */
   .app-bar-generating { display:none; width:100%; align-items:center; justify-content:space-between; }
