@@ -9,13 +9,13 @@ app.http('caption', {
     const options = handleOptions(request);
     if (options) return options;
 
-    const azure = getAzureConfig();
+    const azure = getAzureConfig(request);
     if (azure.error) return azure.error;
 
     try {
       const { base64, mimeType } = await request.json();
       if (!base64 || !mimeType) {
-        return jsonResponse(400, { error: 'Missing base64 or mimeType' });
+        return jsonResponse(400, { error: 'Missing base64 or mimeType' }, request);
       }
 
       const url = `${azure.endpoint}/openai/deployments/${azure.captionDeployment}/chat/completions?api-version=2025-03-01-preview`;
@@ -52,7 +52,7 @@ Respond with only the single word. Nothing else.`,
 
       if (!classifyRes.ok) {
         const err = await classifyRes.text();
-        return jsonResponse(classifyRes.status, { error: `Classification failed: ${err}` });
+        return jsonResponse(classifyRes.status, { error: `Classification failed: ${err}` }, request);
       }
 
       const classifyData = await classifyRes.json();
@@ -80,16 +80,16 @@ Respond with only the single word. Nothing else.`,
 
       if (!captionRes.ok) {
         const err = await captionRes.text();
-        return jsonResponse(captionRes.status, { error: `Caption failed: ${err}` });
+        return jsonResponse(captionRes.status, { error: `Caption failed: ${err}` }, request);
       }
 
       const captionData = await captionRes.json();
       const caption = captionData.choices[0].message.content.trim();
 
-      return jsonResponse(200, { caption, subjectCount });
+      return jsonResponse(200, { caption, subjectCount }, request);
     } catch (err) {
       context.error('caption error:', err);
-      return jsonResponse(500, { error: err.message || 'Internal error' });
+      return jsonResponse(500, { error: err.message || 'Internal error' }, request);
     }
   },
 });

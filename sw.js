@@ -40,7 +40,7 @@ self.addEventListener('fetch', (event) => {
 
   // Network-only: API calls
   const networkOnly = [
-    'openai.azure.com', 'res.cloudinary.com', 'api.cloudinary.com',
+    'openai.azure.com', 'azurewebsites.net', 'res.cloudinary.com', 'api.cloudinary.com',
     'stripe.com', 'netlify.com', '/.netlify/',
   ];
   if (networkOnly.some((p) => url.href.includes(p))) return;

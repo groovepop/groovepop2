@@ -9,14 +9,14 @@ app.http('generate', {
     const options = handleOptions(request);
     if (options) return options;
 
-    const azure = getAzureConfig();
+    const azure = getAzureConfig(request);
     if (azure.error) return azure.error;
 
     try {
       const { prompt, base64Image, mimeType, size, quality } = await request.json();
 
       if (!prompt || !base64Image) {
-        return jsonResponse(400, { error: 'Missing prompt or base64Image' });
+        return jsonResponse(400, { error: 'Missing prompt or base64Image' }, request);
       }
 
       const url = `${azure.endpoint}/openai/deployments/${azure.imageDeployment}/images/edits?api-version=2025-04-01-preview`;
@@ -43,16 +43,16 @@ app.http('generate', {
 
       if (!response.ok) {
         const errText = await response.text();
-        return jsonResponse(response.status, { error: `Azure error ${response.status}: ${errText}` });
+        return jsonResponse(response.status, { error: `Azure error ${response.status}: ${errText}` }, request);
       }
 
       const data = await response.json();
       const b64 = data.data[0].b64_json;
 
-      return jsonResponse(200, { imageUrl: `data:image/jpeg;base64,${b64}` });
+      return jsonResponse(200, { imageUrl: `data:image/jpeg;base64,${b64}` }, request);
     } catch (err) {
       context.error('generate error:', err);
-      return jsonResponse(500, { error: err.message || 'Internal error' });
+      return jsonResponse(500, { error: err.message || 'Internal error' }, request);
     }
   },
 });

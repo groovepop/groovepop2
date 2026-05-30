@@ -1102,6 +1102,7 @@ async function startGeneration() {
     autoUploadToCloudinary(imageUrl, selectedStyle);
 
   } catch(err) {
+    console.error('[GP] generation failed:', err);
     clearWaitIntervals();
     clearLogoIntervals();
     const zone = document.getElementById('gen-logo-zone');
@@ -1113,7 +1114,7 @@ async function startGeneration() {
     if (raw.includes('EngineOverloaded') || raw.includes('429')) msg = "Still overwhelmed. Give it a minute and try again — it's worth it.";
     else if (raw.includes('content_policy') || raw.includes('400')) msg = "This image couldn't be processed. Try a different photo.";
     else if (raw.includes('timeout') || raw.includes('504')) msg = "The machine took too long this time. Try again — it's usually faster.";
-    else if (raw.includes('NetworkError') || raw.includes('fetch')) msg = "Connection lost. Check your internet and try again.";
+    else if (raw.includes('Failed to fetch') || raw.includes('NetworkError') || raw.includes('fetch')) msg = "Can't reach the Azure engine. Check CORS in Azure (add your Netlify URL).";
     else msg = "Something went wrong. Please try again.";
     document.getElementById('result-img').src = '';
     document.getElementById('error-card-msg').textContent = msg;

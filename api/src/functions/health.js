@@ -13,6 +13,6 @@ app.http('health', {
       ok: true,
       service: 'groovepop-api',
       functions: ['health', 'caption', 'generate'],
-    });
+    }, request);
   },
 });

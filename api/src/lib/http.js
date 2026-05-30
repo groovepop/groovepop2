@@ -1,22 +1,35 @@
-function corsOrigin() {
-  return process.env.CORS_ORIGIN || '*';
-}
+function corsHeaders(request, extra = {}) {
+  const configured = (process.env.CORS_ORIGIN || '*').trim();
+  const origin = request?.headers?.get('origin');
+  let allowOrigin = '*';
 
-function corsHeaders(extra = {}) {
+  if (configured === '*') {
+    allowOrigin = origin || '*';
+  } else {
+    const allowed = configured.split(',').map((s) => s.trim()).filter(Boolean);
+    if (origin && allowed.includes(origin)) {
+      allowOrigin = origin;
+    } else if (allowed.length === 1) {
+      allowOrigin = allowed[0];
+    } else {
+      allowOrigin = origin || allowed[0] || '*';
+    }
+  }
+
   return {
-    'Access-Control-Allow-Origin': corsOrigin(),
+    'Access-Control-Allow-Origin': allowOrigin,
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     ...extra,
   };
 }
 
-function jsonResponse(status, body, extraHeaders = {}) {
+function jsonResponse(status, body, request, extraHeaders = {}) {
   return {
     status,
     headers: {
       'Content-Type': 'application/json',
-      ...corsHeaders(extraHeaders),
+      ...corsHeaders(request, extraHeaders),
     },
     jsonBody: body,
   };
@@ -24,15 +37,15 @@ function jsonResponse(status, body, extraHeaders = {}) {
 
 function handleOptions(request) {
   if (request.method === 'OPTIONS') {
-    return { status: 204, headers: corsHeaders() };
+    return { status: 204, headers: corsHeaders(request) };
   }
   return null;
 }
 
-function getAzureConfig() {
+function getAzureConfig(request) {
   const apiKey = process.env.AZURE_OPENAI_KEY;
   if (!apiKey) {
-    return { error: jsonResponse(500, { error: 'Azure API key not configured' }) };
+    return { error: jsonResponse(500, { error: 'Azure API key not configured' }, request) };
   }
 
   return {
