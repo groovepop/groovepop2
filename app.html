@@ -101,7 +101,8 @@
   .gen-zone-overlay { position:absolute; inset:0; }
   .gen-grid-lines { position:absolute; inset:0; background-image:linear-gradient(rgba(200,168,75,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(200,168,75,0.05) 1px,transparent 1px); background-size:40px 40px; opacity:1; transition:opacity 2s ease; pointer-events:none; }
   .gen-grid-lines.fade-out { opacity:0; }
-  .gen-scan { position:absolute; top:0; bottom:0; width:2px; background:linear-gradient(to bottom,transparent,var(--gold),transparent); box-shadow:0 0 10px var(--gold),0 0 20px rgba(200,168,75,0.4); animation:scan-line-horizontal 4s linear infinite; opacity:0.85; }
+  .gen-scan { position:absolute; top:0; bottom:0; width:2px; background:linear-gradient(to bottom,transparent,var(--gold),transparent); box-shadow:0 0 10px var(--gold),0 0 20px rgba(200,168,75,0.4); animation:scan-line-horizontal 4s linear infinite; opacity:0.85; transition:opacity 0.5s ease; }
+  .generating-state.phase-whiteout .gen-scan { opacity:0; animation:none; }
   @keyframes scan-line-horizontal { 0%{left:0%} 100%{left:100%} }
   .gen-static { position:absolute; inset:0; opacity:0; pointer-events:none; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E"); background-size:cover; mix-blend-mode:screen; }
   .generating-state.phase-whiteout .gen-static { animation:static-flicker 0.08s steps(1) infinite; }
@@ -295,7 +296,7 @@
   }
   .gen-logo-inner img {
     position:absolute; height:72px; width:auto; max-width:100%;
-    object-fit:contain; display:block; transition:opacity 4s ease;
+    object-fit:contain; display:block; transition:opacity 0.5s ease;
   }
   .gen-logo-inner .layer-a { opacity:1; z-index:2; }
   .gen-logo-inner .layer-b { opacity:0; z-index:1; }
@@ -1889,11 +1890,9 @@ function startLogoTransformation() {
   // Crossfade state — activeLayer is module-scoped, reset here each run
   activeLayer = 'a';
 
-  // Crossfade rhythm — fade IS the motion, almost always in transition
-  // HOLD: how long fully visible before next starts fading in
-  // FADE: must match CSS transition on img (2.5s)
-  const HOLD = 800;   // brief fully-opaque moment
-  const FADE = 2500;  // slow crossfade — this is what you see most
+  // Crossfade rhythm — locked to scan animation cycle (4s = logo-scan-pingpong duration)
+  // Fires exactly when scan returns to top, so each downward pass "reveals" a fresh logo
+  const SCAN_CYCLE = 4000; // must stay in sync with logo-scan-pingpong CSS duration
 
   function crossfadeToNext() {
     const idx = pickRandomLogo(true);
@@ -1918,8 +1917,8 @@ function startLogoTransformation() {
     }
   }
 
-  // Start crossfade loop — fire crossfade every HOLD + FADE ms
-  const crossfadeInterval = setInterval(crossfadeToNext, HOLD + FADE);
+  // Start crossfade loop — fire every scan cycle so each pass shows a new logo
+  const crossfadeInterval = setInterval(crossfadeToNext, SCAN_CYCLE);
   logoIntervals.push(crossfadeInterval);
 
   // 65s — stop cycling, hold final logo clean (no hue, no scan)
