@@ -168,6 +168,14 @@
   .btn-result-action.primary { background:var(--gold); color:var(--black); }
   .btn-result-action.primary:hover { background:var(--gold-light); }
 
+  /* Section headings — compact for narrow panels */
+  .home-section-heading { padding:0.55rem 0.75rem 0.3rem; display:flex; align-items:baseline; gap:0.3em; flex-shrink:0; border-bottom:1px solid var(--border-dim); }
+  .home-section-num { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:0.05em; color:var(--white); line-height:1; }
+  .home-section-text { font-family:'Bebas Neue',sans-serif; font-size:0.72rem; letter-spacing:0.12em; color:var(--white); line-height:1; }
+  .home-section-text .accent { color:var(--gold); }
+  #screen-home[data-state="generating"] .home-section-heading,
+  #screen-home[data-state="result"] .home-section-heading { display:none; }
+
   /* State transitions via data-state */
   #screen-home[data-state="generating"] .home-content { grid-template-columns:1fr; }
   #screen-home[data-state="generating"] .home-right { display:none; }
@@ -477,6 +485,12 @@
     <!-- LEFT: image zone -->
     <div class="home-left" id="home-left">
 
+      <!-- 1. CHOOSE AN IMAGE -->
+      <div class="home-section-heading">
+        <span class="home-section-num">1</span>
+        <span class="home-section-text">CHOOSE <span class="accent">AN IMAGE</span></span>
+      </div>
+
       <!-- Upload: two zones stacked -->
       <div class="upload-state-v" id="upload-state">
         <div class="photo-zone" onclick="document.getElementById('file-input').click()">
@@ -535,6 +549,11 @@
 
     <!-- RIGHT: style picker -->
     <div class="home-right" id="home-right">
+      <!-- 2. CHOOSE A STYLE -->
+      <div class="home-section-heading">
+        <span class="home-section-num">2</span>
+        <span class="home-section-text">CHOOSE <span class="accent">A STYLE</span></span>
+      </div>
       <div class="subtheme-scroll" id="subtheme-tabs"></div>
       <div class="style-grid-wrap">
         <div class="styles-grid" id="styles-grid"></div>
@@ -552,7 +571,10 @@
         <span class="selected-style-name" id="selected-style-name" style="opacity:0.3;">No style selected</span>
         <span class="version-tag" style="padding:0;opacity:0.25;font-size:0.48rem;">v0530</span>
       </div>
-      <button class="btn-primary" id="btn-generate" disabled onclick="startGeneration()">TRANSFORM IMAGE</button>
+      <button class="btn-primary" id="btn-generate" disabled onclick="startGeneration()" style="display:flex;align-items:center;justify-content:center;gap:0.4em;">
+        <span style="font-size:1.6rem;line-height:1;opacity:0.75;">3</span>
+        <span style="font-size:1.05rem;letter-spacing:0.15em;">TRANSFORM IMAGE</span>
+      </button>
     </div>
 
     <!-- Generating: logo animation -->
