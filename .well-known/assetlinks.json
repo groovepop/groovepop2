@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "ca.groovepop.app",
+    "sha256_cert_fingerprints": ["86:BB:F8:40:63:47:0C:68:68:90:79:81:54:F2:3D:9A:26:82:86:79:A7:A0:DE:C0:95:4E:A9:FC:2E:EC:44:A5"]
+  }
+}]
