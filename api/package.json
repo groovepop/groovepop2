@@ -2,7 +2,7 @@
   "name": "groovepop-api",
   "version": "1.0.0",
   "description": "GROOVE POP engine — Azure Functions (caption + image generation)",
-  "main": "src/functions/*.js",
+  "main": "src/index.js",
   "scripts": {
     "start": "func start",
     "build": "echo \"No build step\""

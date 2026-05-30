@@ -4,6 +4,7 @@ const { jsonResponse, handleOptions, getAzureConfig } = require('../lib/http');
 app.http('caption', {
   methods: ['POST', 'OPTIONS'],
   authLevel: 'anonymous',
+  route: 'caption',
   handler: async (request, context) => {
     const options = handleOptions(request);
     if (options) return options;
