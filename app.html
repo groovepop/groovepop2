@@ -296,7 +296,7 @@
   }
   .gen-logo-inner img {
     position:absolute; height:72px; width:auto; max-width:100%;
-    object-fit:contain; display:block; transition:opacity 0.5s ease;
+    object-fit:contain; display:block; transition:opacity 1.8s ease;
   }
   .gen-logo-inner .layer-a { opacity:1; z-index:2; }
   .gen-logo-inner .layer-b { opacity:0; z-index:1; }
@@ -1890,39 +1890,59 @@ function startLogoTransformation() {
   // Crossfade state — activeLayer is module-scoped, reset here each run
   activeLayer = 'a';
 
-  // Crossfade rhythm — locked to scan animation cycle (4s = logo-scan-pingpong duration)
-  // Fires exactly when scan returns to top, so each downward pass "reveals" a fresh logo
-  const SCAN_CYCLE = 4000; // must stay in sync with logo-scan-pingpong CSS duration
+  // Two-phase logo swap — separates preload from opacity swap to eliminate flash.
+  //
+  // Timing (SCAN_CYCLE = 4s, one logo per 2 cycles = 8s):
+  //   t=0        scan at top going DOWN  → preload logo#2 into hidden back layer
+  //   t=6000ms   scan at bottom going UP → opacity swap (logo#2 fades in over 1.8s)
+  //   t=8000ms   scan back at TOP        → logo#2 fully visible, preload logo#3
+  //   t=14000ms  scan at bottom going UP → swap to logo#3 …and so on
+  //
+  // Result: ~8 logos over 65s. Each downward pass the scan "reveals" a fresh logo.
 
-  function crossfadeToNext() {
+  const SCAN_CYCLE = 4000;           // must match logo-scan-pingpong CSS duration
+  const SWAP_MS    = SCAN_CYCLE * 2; // 8000ms — one logo every two full scan cycles
+  const FADE_LEAD  = SCAN_CYCLE / 2; // 2000ms — start fade when scan hits bottom
+
+  function getBack() { return activeLayer === 'a' ? layerB : layerA; }
+
+  function preloadNext() {
+    // Load next image into the invisible back layer — no opacity change yet
     const idx = pickRandomLogo(true);
     currentLogoIndex = idx;
+    getBack().src = GROOVE_POP_LOGOS[idx];
+  }
 
+  function swapNow() {
+    // Image already loaded — pure opacity swap, no src change, no flash
     if (activeLayer === 'a') {
-      // Load next logo into B, fade B in, fade A out
-      layerB.src = GROOVE_POP_LOGOS[idx];
-      layerB.style.zIndex  = '3'; // B comes on top
-      layerA.style.zIndex  = '2';
-      layerB.style.opacity = '1';
-      layerA.style.opacity = '0';
+      layerB.style.zIndex  = '3'; layerA.style.zIndex  = '2';
+      layerB.style.opacity = '1'; layerA.style.opacity = '0';
       activeLayer = 'b';
     } else {
-      // Load next logo into A, fade A in, fade B out
-      layerA.src = GROOVE_POP_LOGOS[idx];
-      layerA.style.zIndex  = '3'; // A comes on top
-      layerB.style.zIndex  = '2';
-      layerA.style.opacity = '1';
-      layerB.style.opacity = '0';
+      layerA.style.zIndex  = '3'; layerB.style.zIndex  = '2';
+      layerA.style.opacity = '1'; layerB.style.opacity = '0';
       activeLayer = 'a';
     }
   }
 
-  // Start crossfade loop — fire every scan cycle so each pass shows a new logo
-  const crossfadeInterval = setInterval(crossfadeToNext, SCAN_CYCLE);
-  logoIntervals.push(crossfadeInterval);
+  // Kick off: preload logo#2 into back layer right now
+  preloadNext();
+
+  // Preload every SWAP_MS (scan at top, going down — max time for image to load)
+  const preloadTimer = setInterval(preloadNext, SWAP_MS);
+  logoIntervals.push(preloadTimer);
+
+  // Swap fires FADE_LEAD ms before each SWAP_MS boundary (scan at bottom, going up)
+  // 1.8s CSS transition completes just as scan reaches the top
+  const firstSwap = setTimeout(() => {
+    swapNow();
+    const swapTimer = setInterval(swapNow, SWAP_MS);
+    logoIntervals.push(swapTimer);
+  }, SWAP_MS - FADE_LEAD);
+  logoIntervals.push(firstSwap);
 
   // 65s — stop cycling, hold final logo clean (no hue, no scan)
-  // Bar logo is restored by endLogoTransformation when generation completes
   const returnStart = setTimeout(() => {
     clearLogoIntervals();
     zone.classList.remove('logo-cycling', 'logo-static');
