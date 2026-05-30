@@ -296,7 +296,7 @@
   }
   .gen-logo-inner img {
     position:absolute; height:72px; width:auto; max-width:100%;
-    object-fit:contain; display:block; transition:opacity 2.8s ease;
+    object-fit:contain; display:block; transition:none;
   }
   .gen-logo-inner .layer-a { opacity:1; z-index:2; }
   .gen-logo-inner .layer-b { opacity:0; z-index:1; }
@@ -1832,6 +1832,7 @@ const GROOVE_POP_LOGOS = [
 // ── Logo colour sequence handled by CSS animation ──
 
 let logoIntervals = [];
+let activeFades    = []; // tracks rAF-based crossfades so they can be cancelled
 let currentLogoIndex = 0;
 let usedLogoIndices = new Set();
 let activeLayer = 'a'; // module-scoped so endLogoTransformation can read it
@@ -1863,6 +1864,8 @@ function setLogoImage(index) {
 function clearLogoIntervals() {
   logoIntervals.forEach(id => { clearInterval(id); clearTimeout(id); });
   logoIntervals = [];
+  activeFades.forEach(f => { f.cancelled = true; });
+  activeFades = [];
 }
 
 function startLogoTransformation() {
@@ -1914,16 +1917,27 @@ function startLogoTransformation() {
   }
 
   function swapNow() {
-    // Image already loaded — pure opacity swap, no src change, no flash
-    if (activeLayer === 'a') {
-      layerB.style.zIndex  = '3'; layerA.style.zIndex  = '2';
-      layerB.style.opacity = '1'; layerA.style.opacity = '0';
-      activeLayer = 'b';
-    } else {
-      layerA.style.zIndex  = '3'; layerB.style.zIndex  = '2';
-      layerA.style.opacity = '1'; layerB.style.opacity = '0';
-      activeLayer = 'a';
+    // rAF-driven crossfade — bypasses GPU compositing interference from parent filter animation
+    const fromLayer = activeLayer === 'a' ? layerA : layerB;
+    const toLayer   = activeLayer === 'a' ? layerB : layerA;
+    toLayer.style.zIndex   = '3';
+    fromLayer.style.zIndex = '2';
+    activeLayer = activeLayer === 'a' ? 'b' : 'a';
+
+    const FADE_MS  = 2800; // spans full upward scan journey (SCAN_CYCLE / 2)
+    const startNow = performance.now();
+    const fade = { cancelled: false };
+    activeFades.push(fade);
+
+    function step(now) {
+      if (fade.cancelled) return;
+      const t = Math.min((now - startNow) / FADE_MS, 1);
+      toLayer.style.opacity   = String(t);
+      fromLayer.style.opacity = String(1 - t);
+      if (t < 1) { requestAnimationFrame(step); }
+      else { toLayer.style.opacity = '1'; fromLayer.style.opacity = '0'; }
     }
+    requestAnimationFrame(step);
   }
 
   // Kick off: preload logo#2 into back layer right now
