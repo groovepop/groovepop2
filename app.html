@@ -64,40 +64,46 @@
   .section-heading-text .accent { color:var(--gold); }
 
   /* ══════════════════════════════════════════
-     SCREEN: HOME — single surface
+     SCREEN: HOME — three-state grid
   ══════════════════════════════════════════ */
-  #screen-home { flex-direction:column; min-height:100vh; overflow-y:auto; }
-  .home-body { display:flex; flex-direction:column; }
+  #screen-home { flex-direction:column; overflow:hidden; }
+  #screen-home.active { display:grid !important; grid-template-rows:auto 1fr auto; height:100dvh; }
 
-  /* ── IMAGE ZONE — three states ── */
-  .image-zone {
-    width:100%; position:relative; flex-shrink:0;
-    background:var(--surface); border-bottom:1px solid var(--border);
-  }
+  /* App bar generating overlay */
+  .app-bar-generating { display:none; width:100%; align-items:center; justify-content:space-between; }
+  .gen-bar-style-label { font-family:'Bebas Neue',sans-serif; font-size:0.85rem; letter-spacing:0.1em; color:var(--gold); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:65%; }
 
-  /* STATE: upload (two side-by-side zones) */
-  .upload-state { display:grid; grid-template-columns:1fr 1fr; gap:2px; background:var(--border); }
-  .upload-state.hidden { display:none; }
-  .photo-zone { aspect-ratio:3/4; background:var(--surface); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.75rem; cursor:pointer; transition:background 0.2s; }
-  .photo-zone:hover { background:var(--surface2); }
-  .upload-icon { width:44px; height:44px; border:1px solid var(--border); border-radius:50%; display:flex; align-items:center; justify-content:center; }
-  .upload-icon svg { width:20px; height:20px; stroke:var(--gold); fill:none; stroke-width:1.5; }
-  .upload-hint { font-size:0.68rem; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; text-align:center; }
+  /* Content split */
+  .home-content { display:grid; grid-template-columns:1fr 1fr; min-height:0; overflow:hidden; }
+  .home-left { display:flex; flex-direction:column; overflow:hidden; border-right:1px solid var(--border); min-height:0; position:relative; }
+  .home-right { display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; min-height:0; }
+
+  /* Upload zones — stacked vertically in left panel */
+  .upload-state-v { display:flex; flex-direction:column; flex:1; background:var(--border); gap:1px; }
+  .upload-state-v .photo-zone { flex:1; background:var(--surface); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.6rem; cursor:pointer; transition:background 0.2s; }
+  .upload-state-v .photo-zone:hover { background:var(--surface2); }
+  .upload-icon { width:40px; height:40px; border:1px solid var(--border); border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .upload-icon svg { width:18px; height:18px; stroke:var(--gold); fill:none; stroke-width:1.5; }
+  .upload-hint { font-size:0.6rem; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; }
   #file-input, #selfie-input { display:none; }
 
-  /* STATE: generating — filter animation on image */
-  .generating-state { display:none; position:relative; overflow:hidden; }
-  .generating-state.active { display:block; }
-  .gen-zone-img { width:100%; height:auto; display:block; }
+  /* Photo preview fills left column */
+  #upload-preview-zone { display:none; flex:1; overflow:hidden; position:relative; }
+  #upload-preview-zone .preview-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .photo-change-btn { position:absolute; bottom:0.6rem; right:0.6rem; padding:0.3rem 0.6rem; background:rgba(10,10,10,0.8); border:1px solid rgba(200,168,75,0.5); border-radius:2px; color:var(--gold); font-family:'Bebas Neue',sans-serif; font-size:0.68rem; letter-spacing:0.12em; cursor:pointer; display:flex; align-items:center; gap:0.3rem; backdrop-filter:blur(4px); }
+
+  /* Generating state — image fills left column */
+  .generating-state { display:none; flex:1; overflow:hidden; position:relative; flex-direction:column; }
+  .generating-state.active { display:flex; }
+  .gen-zone-img { width:100%; height:100%; object-fit:cover; display:block; flex:1; min-height:0; }
   .gen-zone-overlay { position:absolute; inset:0; }
   .gen-grid-lines { position:absolute; inset:0; background-image:linear-gradient(rgba(200,168,75,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(200,168,75,0.05) 1px,transparent 1px); background-size:40px 40px; opacity:1; transition:opacity 2s ease; pointer-events:none; }
   .gen-grid-lines.fade-out { opacity:0; }
-  .gen-scan { position:absolute; top:0; bottom:0; width:2px; background:linear-gradient(to bottom,transparent,var(--gold),transparent); box-shadow:0 0 10px var(--gold), 0 0 20px rgba(200,168,75,0.4); animation:scan-line-horizontal 4s linear infinite; opacity:0.85; }
+  .gen-scan { position:absolute; top:0; bottom:0; width:2px; background:linear-gradient(to bottom,transparent,var(--gold),transparent); box-shadow:0 0 10px var(--gold),0 0 20px rgba(200,168,75,0.4); animation:scan-line-horizontal 4s linear infinite; opacity:0.85; }
   @keyframes scan-line-horizontal { 0%{left:0%} 100%{left:100%} }
   .gen-static { position:absolute; inset:0; opacity:0; pointer-events:none; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E"); background-size:cover; mix-blend-mode:screen; }
   .generating-state.phase-whiteout .gen-static { animation:static-flicker 0.08s steps(1) infinite; }
   @keyframes static-flicker { 0%{opacity:.4;transform:translate(0,0)} 25%{opacity:.7;transform:translate(-2px,1px)} 50%{opacity:.5;transform:translate(1px,-1px)} 75%{opacity:.8;transform:translate(-1px,2px)} 100%{opacity:.4;transform:translate(2px,0)} }
-  /* Brackets on generating state */
   .gen-brackets { position:absolute; inset:0; pointer-events:none; }
   .gen-bracket { position:absolute; width:20px; height:20px; border-color:var(--gold); border-style:solid; opacity:0.5; transition:all 0.8s ease; }
   .gen-bracket.tl{top:8px;left:8px;border-width:1px 0 0 1px} .gen-bracket.tr{top:8px;right:8px;border-width:1px 1px 0 0} .gen-bracket.bl{bottom:8px;left:8px;border-width:0 0 1px 1px} .gen-bracket.br{bottom:8px;right:8px;border-width:0 1px 1px 0}
@@ -106,61 +112,76 @@
   .generating-state.phase-vivid .gen-bracket{opacity:1;width:32px;height:32px;border-color:white}
   .generating-state.phase-whiteout .gen-bracket{opacity:0}
 
-  /* STATUS BAR — shown during generation */
-  .gen-status-bar { display:none; flex-direction:column; gap:0.6rem; padding:0.875rem 1.25rem; background:var(--surface); border-bottom:1px solid var(--border); }
+  /* Status bar — below image inside left panel */
+  .gen-status-bar { display:none; flex-direction:column; gap:0.4rem; padding:0.5rem 0.75rem; background:var(--surface); border-top:1px solid var(--border); flex-shrink:0; }
   .gen-status-bar.active { display:flex; }
   .gen-status-top { display:flex; align-items:center; justify-content:space-between; }
-  .gen-phase-label { font-size:0.55rem; letter-spacing:0.3em; color:var(--muted); text-transform:uppercase; transition:color 1s; }
+  .gen-phase-label { font-size:0.5rem; letter-spacing:0.3em; color:var(--muted); text-transform:uppercase; transition:color 1s; }
   .gen-phase-label.phase-sepia{color:rgba(200,168,75,0.6)} .gen-phase-label.phase-colour{color:var(--gold)} .gen-phase-label.phase-vivid,.gen-phase-label.phase-whiteout{color:white}
   .gen-dots span { display:inline-block; width:4px; height:4px; border-radius:50%; background:var(--muted); margin:0 2px; animation:pulse-dot 1.4s ease-in-out infinite; transition:background 1s; }
   .gen-dots.phase-sepia span{background:rgba(200,168,75,0.5)} .gen-dots.phase-colour span{background:var(--gold)} .gen-dots.phase-vivid span,.gen-dots.phase-whiteout span{background:white;animation-duration:0.5s}
   .gen-dots span:nth-child(2){animation-delay:0.2s} .gen-dots span:nth-child(3){animation-delay:0.4s}
-  .gen-main-text { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:0.15em; color:var(--gold); transition:opacity 0.4s,color 0.6s; }
-  .gen-main-text.is-snippet { font-family:'Caveat',cursive; font-size:1rem; letter-spacing:0.02em; color:var(--white); font-style:italic; }
+  .gen-main-text { font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:0.12em; color:var(--gold); transition:opacity 0.4s,color 0.6s; }
+  .gen-main-text.is-snippet { font-family:'Caveat',cursive; font-size:0.85rem; letter-spacing:0.02em; color:var(--white); font-style:italic; }
   .gen-progress-wrap { height:1px; background:rgba(200,168,75,0.15); position:relative; }
   .gen-progress-bar { position:absolute; left:0; top:0; bottom:0; background:var(--gold); width:0%; transition:width 0.5s ease; box-shadow:0 0 6px var(--gold); }
 
-  /* STATE: result — generated image */
-  .result-state { display:none; }
-  .result-state.active { display:block; }
-  .result-zone-img { width:100%; height:auto; display:block; }
+  /* Result state — generated image fills left column */
+  .result-state { display:none; flex:1; overflow:hidden; position:relative; }
+  .result-state.active { display:flex; flex-direction:column; }
+  .result-zone-img { width:100%; height:100%; object-fit:contain; display:block; flex:1; min-height:0; background:var(--surface); }
+  .result-thumb { position:absolute; bottom:0.6rem; left:0.6rem; width:64px; height:64px; object-fit:cover; border:2px solid var(--gold); border-radius:2px; box-shadow:0 2px 12px rgba(0,0,0,0.7); }
 
-  /* CHANGE PHOTO btn — shown over preview and result */
-  .photo-change-btn { position:absolute; bottom:0.75rem; right:0.75rem; padding:0.35rem 0.75rem; background:rgba(10,10,10,0.75); border:1px solid rgba(200,168,75,0.5); border-radius:2px; color:var(--gold); font-family:'Bebas Neue',sans-serif; font-size:0.75rem; letter-spacing:0.12em; cursor:pointer; display:flex; align-items:center; gap:0.35rem; backdrop-filter:blur(4px); transition:all 0.2s; }
-  .photo-change-btn:hover { border-color:var(--gold); background:rgba(10,10,10,0.9); }
-
-  /* RESULT ACTIONS */
-  .result-actions { display:none; flex-direction:column; gap:0.75rem; padding:1rem 1.25rem; border-bottom:1px solid var(--border); }
-  .result-actions.active { display:flex; }
-  .result-action-row { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
-
-  /* ERROR CARD */
-  .error-card { display:none; flex-direction:column; align-items:center; gap:0.75rem; padding:1.25rem; margin:0; background:rgba(196,82,42,0.1); border-bottom:1px solid rgba(196,82,42,0.3); text-align:center; }
+  /* Error card — inside left panel */
+  .error-card { display:none; flex-direction:column; align-items:center; gap:0.5rem; padding:0.875rem; background:rgba(196,82,42,0.1); border-top:1px solid rgba(196,82,42,0.3); text-align:center; flex-shrink:0; }
   .error-card.visible { display:flex; }
-  .error-card-icon { width:40px; height:40px; border:1px solid rgba(196,82,42,0.4); border-radius:50%; display:flex; align-items:center; justify-content:center; }
-  .error-card-icon svg { width:18px; height:18px; stroke:#e8896a; fill:none; stroke-width:1.5; }
-  .error-card-msg { font-size:0.78rem; color:#e8896a; line-height:1.6; }
-  .error-card-retry { padding:0.625rem 1.5rem; background:transparent; border:1px solid rgba(196,82,42,0.4); border-radius:2px; color:#e8896a; font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:0.12em; cursor:pointer; }
+  .error-card-icon { width:36px; height:36px; border:1px solid rgba(196,82,42,0.4); border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .error-card-icon svg { width:16px; height:16px; stroke:#e8896a; fill:none; stroke-width:1.5; }
+  .error-card-msg { font-size:0.7rem; color:#e8896a; line-height:1.5; }
+  .error-card-retry { padding:0.4rem 1rem; background:transparent; border:1px solid rgba(196,82,42,0.4); border-radius:2px; color:#e8896a; font-family:'Bebas Neue',sans-serif; font-size:0.85rem; letter-spacing:0.12em; cursor:pointer; }
 
-  /* STYLE PICKER */
-  .subtheme-scroll { display:flex; flex-wrap:wrap; gap:0.4rem; padding:0.5rem 1.25rem 0.75rem; background:var(--black); }
-  .sub-tab { padding:0.3rem 0.75rem; border:1px solid var(--border); border-radius:100px; background:transparent; color:var(--muted); font-family:'DM Sans',sans-serif; font-size:0.68rem; letter-spacing:0.08em; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  /* Right panel style picker */
+  .subtheme-scroll { display:flex; flex-wrap:wrap; gap:0.3rem; padding:0.5rem 0.625rem; background:var(--black); flex-shrink:0; }
+  .sub-tab { padding:0.22rem 0.55rem; border:1px solid var(--border); border-radius:100px; background:transparent; color:var(--muted); font-family:'DM Sans',sans-serif; font-size:0.6rem; letter-spacing:0.08em; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
   .sub-tab:hover { border-color:var(--gold); color:var(--white); }
   .sub-tab.active { background:var(--gold); border-color:var(--gold); color:var(--black); font-weight:500; }
-  .style-grid-wrap { flex:1; position:relative; }
-  .styles-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); padding:1px; }
+  .style-grid-wrap { flex:1; position:relative; overflow-y:auto; }
+  .styles-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--border); padding:1px; }
   .style-card { background:var(--surface); cursor:pointer; display:flex; flex-direction:column; transition:background 0.15s; position:relative; overflow:hidden; }
   .style-card:hover { background:var(--surface2); }
   .style-card.selected { background:var(--surface2); outline:2px solid var(--gold); outline-offset:-2px; z-index:1; }
-  .style-card-info { padding:0.5rem 0.5rem 0.55rem; }
-  .style-card-label { font-family:'Bebas Neue',sans-serif; font-size:0.9rem; letter-spacing:0.05em; color:var(--white); line-height:1; }
-  .style-card-check { position:absolute; top:0.35rem; right:0.35rem; width:16px; height:16px; background:var(--gold); border-radius:50%; display:none; align-items:center; justify-content:center; z-index:2; }
+  .style-card-info { padding:0.4rem 0.4rem 0.45rem; }
+  .style-card-label { font-family:'Bebas Neue',sans-serif; font-size:0.82rem; letter-spacing:0.05em; color:var(--white); line-height:1; }
+  .style-card-check { position:absolute; top:0.3rem; right:0.3rem; width:14px; height:14px; background:var(--gold); border-radius:50%; display:none; align-items:center; justify-content:center; z-index:2; }
   .style-card.selected .style-card-check { display:flex; }
-  .style-card-check svg { width:8px; height:8px; stroke:var(--black); fill:none; stroke-width:2.5; }
+  .style-card-check svg { width:7px; height:7px; stroke:var(--black); fill:none; stroke-width:2.5; }
 
-  /* TRANSFORM SECTION */
-  .transform-section { padding:1rem 1.25rem 1.5rem; display:flex; flex-direction:column; gap:0.6rem; flex-shrink:0; }
-  .selected-style-name { font-family:'Bebas Neue',sans-serif; font-size:0.85rem; letter-spacing:0.08em; color:var(--gold); min-height:1.2rem; }
+  /* Bottom bar */
+  .home-bottom { border-top:1px solid var(--border); background:var(--black); flex-shrink:0; }
+  .bottom-home { display:flex; flex-direction:column; gap:0.45rem; padding:0.65rem 1rem 0.875rem; }
+  .selected-style-name { font-family:'Bebas Neue',sans-serif; font-size:0.8rem; letter-spacing:0.08em; color:var(--gold); min-height:1rem; }
+  .bottom-generating { display:none; height:80px; overflow:hidden; }
+  .bottom-result { display:none; grid-template-columns:repeat(5,1fr); gap:1px; background:var(--border); }
+  .btn-result-action { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.25rem; padding:0.6rem 0.2rem; background:var(--surface); border:none; cursor:pointer; font-family:'Bebas Neue',sans-serif; font-size:0.58rem; letter-spacing:0.06em; color:var(--white); transition:background 0.15s,color 0.15s; }
+  .btn-result-action svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:1.8; }
+  .btn-result-action:hover { background:var(--surface2); color:var(--gold); }
+  .btn-result-action.primary { background:var(--gold); color:var(--black); }
+  .btn-result-action.primary:hover { background:var(--gold-light); }
+
+  /* State transitions via data-state */
+  #screen-home[data-state="generating"] .home-content { grid-template-columns:1fr; }
+  #screen-home[data-state="generating"] .home-right { display:none; }
+  #screen-home[data-state="generating"] .home-left { border-right:none; }
+  #screen-home[data-state="generating"] #app-bar-right { display:none; }
+  #screen-home[data-state="generating"] .app-bar-logo { display:none; }
+  #screen-home[data-state="generating"] .app-bar-generating { display:flex !important; }
+  #screen-home[data-state="generating"] .bottom-home { display:none; }
+  #screen-home[data-state="generating"] .bottom-generating { display:flex; }
+  #screen-home[data-state="result"] .home-content { grid-template-columns:1fr; }
+  #screen-home[data-state="result"] .home-right { display:none; }
+  #screen-home[data-state="result"] .home-left { border-right:none; }
+  #screen-home[data-state="result"] .bottom-home { display:none; }
+  #screen-home[data-state="result"] .bottom-result { display:grid; }
 
   /* ── SCREEN: PRINT ── */
   #screen-print { flex-direction:column; min-height:100vh; }
@@ -244,154 +265,60 @@
   .pill-btn:disabled { opacity:0.3; cursor:not-allowed; }
   .pill-btn.lit { background:var(--gold); color:var(--black); border-color:var(--gold); }
 
-  /* ── APP BAR LOGO — hidden during generation ── */
+  /* ── APP BAR LOGO ── */
   .app-bar-logo { flex-shrink:0; transition:opacity 0.3s ease; }
   .app-bar-logo.hidden { opacity:0; pointer-events:none; }
 
-  /* ── GENERATION LOGO ZONE ── */
-  /* ── GENERATION LOGO ZONE ── */
+  /* ── GENERATION LOGO ZONE — lives in .bottom-generating ── */
   .gen-logo-zone {
-    display:none;
     position:relative;
-    width:100%;
-    height:80px;
+    width:100%; height:100%;
     background:var(--black);
-    border-bottom:1px solid var(--border);
-    flex-shrink:0;
-    align-items:center;
-    justify-content:center;
+    display:flex; align-items:center; justify-content:center;
     overflow:hidden;
   }
-  .gen-logo-zone.active { display:flex; }
-
-  /* Outer inner — full width, centers the image-wrap */
   .gen-logo-inner {
-    position:relative;
-    height:72px;
-    width:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    position:relative; height:72px; width:100%;
+    display:flex; align-items:center; justify-content:center;
   }
-
-  /* Image wrap — explicit width so absolutely-positioned children aren't clipped to zero */
   .gen-logo-image-wrap {
-    position:relative;
-    height:72px;
-    width:90%;
-    max-width:360px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
+    position:relative; height:72px; width:90%; max-width:360px;
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
   }
-
-  /* Both layers stacked — opacity transition only, no animation here */
   .gen-logo-inner img {
-    position:absolute;
-    height:72px;
-    width:auto;
-    max-width:100%;
-    object-fit:contain;
-    display:block;
-    transition:opacity 4s ease;
+    position:absolute; height:72px; width:auto; max-width:100%;
+    object-fit:contain; display:block; transition:opacity 4s ease;
   }
   .gen-logo-inner .layer-a { opacity:1; z-index:2; }
   .gen-logo-inner .layer-b { opacity:0; z-index:1; }
-
-  /* Hue cycle on the wrap div, not the imgs — keeps opacity transition uncontested */
-  .gen-logo-zone.active .gen-logo-image-wrap {
-    animation:logo-hue-cycle 3s linear infinite;
-  }
-
+  .gen-logo-zone.active .gen-logo-image-wrap { animation:logo-hue-cycle 3s linear infinite; }
   @keyframes logo-hue-cycle {
-    0%   { filter: sepia(1) saturate(8) hue-rotate(0deg)   brightness(1.4); }
-    14%  { filter: sepia(1) saturate(8) hue-rotate(51deg)  brightness(1.4); }
-    28%  { filter: sepia(1) saturate(8) hue-rotate(102deg) brightness(1.4); }
-    42%  { filter: sepia(1) saturate(8) hue-rotate(153deg) brightness(1.4); }
-    57%  { filter: sepia(1) saturate(8) hue-rotate(210deg) brightness(1.4); }
-    71%  { filter: sepia(1) saturate(8) hue-rotate(261deg) brightness(1.4); }
-    85%  { filter: sepia(1) saturate(8) hue-rotate(312deg) brightness(1.4); }
-    100% { filter: sepia(1) saturate(8) hue-rotate(360deg) brightness(1.4); }
+    0%  {filter:sepia(1) saturate(8) hue-rotate(0deg)   brightness(1.4);}
+    14% {filter:sepia(1) saturate(8) hue-rotate(51deg)  brightness(1.4);}
+    28% {filter:sepia(1) saturate(8) hue-rotate(102deg) brightness(1.4);}
+    42% {filter:sepia(1) saturate(8) hue-rotate(153deg) brightness(1.4);}
+    57% {filter:sepia(1) saturate(8) hue-rotate(210deg) brightness(1.4);}
+    71% {filter:sepia(1) saturate(8) hue-rotate(261deg) brightness(1.4);}
+    85% {filter:sepia(1) saturate(8) hue-rotate(312deg) brightness(1.4);}
+    100%{filter:sepia(1) saturate(8) hue-rotate(360deg) brightness(1.4);}
   }
-
-  /* Scan — constrained to logo image bounds, ping-pong 15%→85% */
   .gen-logo-scan {
-    position:absolute;
-    /* Match logo image width: logos are 400x160px displayed at 72px height = ~180px wide */
-    /* Centre the scan bar over the logo, not the full wrap */
-    left:50%; transform:translateX(-50%);
-    width:180px;
-    height:2px; z-index:5;
-    background:linear-gradient(90deg, transparent, rgba(255,255,255,0.95), transparent);
+    position:absolute; left:50%; transform:translateX(-50%);
+    width:180px; height:2px; z-index:5;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.95),transparent);
     box-shadow:0 0 8px rgba(255,255,255,0.9);
     top:15%; opacity:0; pointer-events:none;
   }
-  .gen-logo-zone.active:not(.logo-cycling):not(.logo-static) .gen-logo-scan {
-    opacity:1;
-    animation:logo-scan-pingpong 4s ease-in-out infinite;
-  }
-  @keyframes logo-scan-pingpong {
-    0%   { top:15%; }
-    50%  { top:85%; }
-    100% { top:15%; }
-  }
-
-  /* Final logo — clean hold, no animation, no scan */
-  .gen-logo-zone.logo-final .gen-logo-image-wrap {
-    animation:none !important;
-  }
-  .gen-logo-zone.logo-final .gen-logo-scan {
-    opacity:0 !important;
-    animation:none !important;
-  }
-
-  /* Static — whiteout state */
+  .gen-logo-zone.active:not(.logo-final) .gen-logo-scan { opacity:1; animation:logo-scan-pingpong 4s ease-in-out infinite; }
+  @keyframes logo-scan-pingpong { 0%{top:15%} 50%{top:85%} 100%{top:15%} }
+  .gen-logo-zone.logo-final .gen-logo-image-wrap { animation:none !important; filter:none !important; }
+  .gen-logo-zone.logo-final .gen-logo-scan { opacity:0 !important; animation:none !important; }
   .gen-logo-static {
     position:absolute; inset:0; opacity:0; pointer-events:none; z-index:6;
     background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
     background-size:cover; mix-blend-mode:screen;
   }
-  .gen-logo-zone.logo-static .gen-logo-static {
-    animation:static-flicker 0.08s steps(1) infinite;
-    opacity:0.85;
-  }
-  .gen-logo-zone.logo-static .gen-logo-inner img {
-    filter: brightness(20) saturate(0) !important;
-    animation:none !important;
-  }
-
-  /* ── RESULT FRAME ── */
-  .result-state {
-    display:none;
-    position:relative;
-    border:1px solid rgba(200,168,75,0.35);
-    margin:0.5rem;
-    border-radius:2px;
-    overflow:hidden;
-  }
-  .result-state.active { display:block; }
-
-  /* Buttons inside frame at bottom */
-  .result-actions-inline {
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr 1fr;
-    gap:1px;
-    background:var(--border);
-    border-top:1px solid rgba(200,168,75,0.35);
-  }
-  .result-actions-inline .btn-action {
-    border:none;
-    border-radius:0;
-    padding:0.75rem;
-    background:var(--surface);
-  }
-  .result-actions-inline .btn-action.primary {
-    background:var(--gold);
-    color:var(--black);
-  }
-  .result-actions-inline .btn-action.primary:hover { background:var(--gold-light); }
-  .result-actions-inline .btn-action:not(.primary):hover { background:var(--surface2); }  .version-tag { text-align:center; padding:0.75rem; font-size:0.55rem; color:var(--muted); letter-spacing:0.15em; opacity:0.3; }
+  .version-tag { text-align:center; padding:0.5rem; font-size:0.5rem; color:var(--muted); letter-spacing:0.15em; opacity:0.25; }
 
   /* ── GALLERY ── */
   #screen-gallery { flex-direction:column; }
@@ -523,62 +450,49 @@
   <div class="authgate-dots"><span></span><span></span><span></span></div>
 </section>
 
-<!-- ══ SCREEN: HOME — single surface ══ -->
-<section class="screen" id="screen-home">
+<!-- ══ SCREEN: HOME — three-state grid ══ -->
+<section class="screen" id="screen-home" data-state="upload">
+
+  <!-- APP BAR -->
   <div class="app-bar">
     <div class="app-bar-logo" id="app-bar-logo-wrap">
-      <img id="app-bar-logo-img" src="/logos/gp-logo-001.jpg" alt="GROOVE POP"
-        style="height:32px;width:auto;max-width:180px;object-fit:contain;display:block;">
+      <img id="app-bar-logo-img" src="/logos/gp-logo-001.jpg" alt="GROOVE POP" style="height:32px;width:auto;max-width:180px;object-fit:contain;display:block;">
     </div>
-    <div class="app-bar-right" style="flex-shrink:0;margin-left:auto;gap:0.5rem;">
+    <div class="app-bar-right" id="app-bar-right" style="flex-shrink:0;margin-left:auto;gap:0.5rem;">
       <button class="pill-btn" id="btn-randomize" disabled onclick="randomizeGeneration()">⚡ SURPRISE ME</button>
       <button class="pill-btn" id="btn-install" onclick="showInstallBanner()" style="display:none;" title="Add to home screen">⊕ INSTALL</button>
       <button class="pill-btn" onclick="drawerGoGallery()">GALLERY</button>
       <button class="pill-btn" onclick="handleSignOut()" title="Sign out" style="opacity:0.45;font-size:0.7rem;padding:0.35rem 0.6rem;">EXIT</button>
     </div>
+    <!-- Generating mode: style label + cancel -->
+    <div class="app-bar-generating" id="app-bar-generating">
+      <span class="gen-bar-style-label" id="gen-bar-style-label"></span>
+      <button class="pill-btn" onclick="cancelGeneration()">CANCEL</button>
+    </div>
   </div>
 
-  <div class="home-body">
+  <!-- CONTENT — left: image zone | right: style picker -->
+  <div class="home-content">
 
-    <!-- 1. CHOOSE AN IMAGE -->
-    <div class="section-heading">
-      <span class="section-heading-num">1</span>
-      <span class="section-heading-text">CHOOSE <span class="accent">AN IMAGE</span></span>
-    </div>
+    <!-- LEFT: image zone -->
+    <div class="home-left" id="home-left">
 
-    <!-- GENERATION LOGO ZONE — appears above image during transformation -->
-    <div class="gen-logo-zone" id="gen-logo-zone">
-      <div class="gen-logo-inner" id="gen-logo-inner">
-        <div class="gen-logo-image-wrap">
-          <img id="gen-logo-a" class="layer-a" src="/logos/gp-logo-001.jpg" alt="GROOVE POP">
-          <img id="gen-logo-b" class="layer-b" src="/logos/gp-logo-001.jpg" alt="GROOVE POP">
-          <div class="gen-logo-scan"></div>
-          <div class="gen-logo-static" id="gen-logo-static"></div>
+      <!-- Upload: two zones stacked -->
+      <div class="upload-state-v" id="upload-state">
+        <div class="photo-zone" onclick="document.getElementById('file-input').click()">
+          <div class="upload-icon"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>
+          <span class="upload-hint">UPLOAD</span>
+        </div>
+        <div class="photo-zone" onclick="document.getElementById('selfie-input').click()">
+          <div class="upload-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M6.343 6.343a8 8 0 1011.314 0M12 2v4"/></svg></div>
+          <span class="upload-hint">SELFIE</span>
         </div>
       </div>
-    </div>
 
-    <!-- IMAGE ZONE — three states -->
-    <div class="image-zone" id="image-zone">
+      <!-- Photo preview (after upload, before generating) -->
+      <div id="upload-preview-zone"></div>
 
-      <!-- Upload preview — hidden during generation, shown before and after -->
-      <div class="upload-preview-zone" id="upload-preview-zone">
-        <!-- Two upload zones — shown before any photo selected -->
-        <div class="upload-state" id="upload-state">
-          <div class="photo-zone" onclick="document.getElementById('file-input').click()">
-            <div class="upload-icon"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>
-            <span class="upload-hint">Upload</span>
-          </div>
-          <div class="photo-zone" onclick="document.getElementById('selfie-input').click()">
-            <div class="upload-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M6.343 6.343a8 8 0 1011.314 0M12 2v4"/></svg></div>
-            <span class="upload-hint">Take a Selfie</span>
-          </div>
-        </div>
-      </div>
-      <input type="file" id="file-input" accept="image/*">
-      <input type="file" id="selfie-input" accept="image/*" capture="user">
-
-      <!-- Generating state — full width filter animation, no upload preview -->
+      <!-- Generating state -->
       <div class="generating-state" id="generating-state">
         <img class="gen-zone-img" id="gen-zone-img" src="" alt="">
         <div class="gen-zone-overlay">
@@ -592,67 +506,95 @@
         </div>
       </div>
 
-      <!-- Result state — generated image + actions inside frame -->
+      <!-- Result state — generated image + inset thumbnail -->
       <div class="result-state" id="result-state">
         <img class="result-zone-img" id="result-img" src="" alt="Generated image">
-        <div class="result-actions-inline">
-          <button class="btn-action primary" onclick="downloadImage()" title="Download">
-            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-          </button>
-          <button class="btn-action" onclick="openShareSheet()" title="Share">
-            <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
-          </button>
-          <button class="btn-action" onclick="goToPrint()" title="Print Poster" style="border-color:rgba(200,168,75,0.5);color:var(--gold);">
-            <svg viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
-          </button>
-          <button class="btn-action" onclick="startGeneration()" title="Try That Again">
-            <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg>
-          </button>
+        <img class="result-thumb" id="result-thumb" src="" alt="">
+      </div>
 
+      <!-- Status bar -->
+      <div class="gen-status-bar" id="gen-status-bar">
+        <div class="gen-status-top">
+          <div class="gen-phase-label" id="gen-phase-label">PROCESSING</div>
+          <div class="gen-dots" id="gen-dots"><span></span><span></span><span></span></div>
+        </div>
+        <div class="gen-main-text" id="gen-main-text">READING IMAGE</div>
+        <div class="gen-progress-wrap"><div class="gen-progress-bar" id="gen-progress-bar"></div></div>
+      </div>
+
+      <!-- Error card -->
+      <div class="error-card" id="error-card">
+        <div class="error-card-icon"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>
+        <div class="error-card-msg" id="error-card-msg"></div>
+        <button class="error-card-retry" onclick="startGeneration()">TRY THAT AGAIN</button>
+      </div>
+
+      <input type="file" id="file-input" accept="image/*">
+      <input type="file" id="selfie-input" accept="image/*" capture="user">
+    </div><!-- /.home-left -->
+
+    <!-- RIGHT: style picker -->
+    <div class="home-right" id="home-right">
+      <div class="subtheme-scroll" id="subtheme-tabs"></div>
+      <div class="style-grid-wrap">
+        <div class="styles-grid" id="styles-grid"></div>
+      </div>
+    </div>
+
+  </div><!-- /.home-content -->
+
+  <!-- BOTTOM BAR — state-aware -->
+  <div class="home-bottom">
+
+    <!-- Home: style label + transform button -->
+    <div class="bottom-home" id="bottom-home">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;">
+        <span class="selected-style-name" id="selected-style-name" style="opacity:0.3;">No style selected</span>
+        <span class="version-tag" style="padding:0;opacity:0.25;font-size:0.48rem;">v0530</span>
+      </div>
+      <button class="btn-primary" id="btn-generate" disabled onclick="startGeneration()">TRANSFORM IMAGE</button>
+    </div>
+
+    <!-- Generating: logo animation -->
+    <div class="bottom-generating" id="bottom-generating">
+      <div class="gen-logo-zone" id="gen-logo-zone">
+        <div class="gen-logo-inner" id="gen-logo-inner">
+          <div class="gen-logo-image-wrap">
+            <img id="gen-logo-a" class="layer-a" src="/logos/gp-logo-001.jpg" alt="GROOVE POP">
+            <img id="gen-logo-b" class="layer-b" src="/logos/gp-logo-001.jpg" alt="GROOVE POP">
+            <div class="gen-logo-scan"></div>
+            <div class="gen-logo-static" id="gen-logo-static"></div>
+          </div>
         </div>
       </div>
-
-    </div><!-- /#image-zone -->
-
-    <!-- Status bar — shown during generation -->
-    <div class="gen-status-bar" id="gen-status-bar">
-      <div class="gen-status-top">
-        <div class="gen-phase-label" id="gen-phase-label">PROCESSING</div>
-        <div class="gen-dots" id="gen-dots"><span></span><span></span><span></span></div>
-      </div>
-      <div class="gen-main-text" id="gen-main-text">READING IMAGE</div>
-      <div class="gen-progress-wrap"><div class="gen-progress-bar" id="gen-progress-bar"></div></div>
     </div>
 
-    <!-- Error card -->
-    <div class="error-card" id="error-card">
-      <div class="error-card-icon"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>
-      <div class="error-card-msg" id="error-card-msg"></div>
-      <button class="error-card-retry" onclick="startGeneration()">TRY THAT AGAIN</button>
-    </div>
-
-    <!-- 2. CHOOSE A STYLE -->
-    <div class="section-heading" style="margin-top:0.5rem;">
-      <span class="section-heading-num">2</span>
-      <span class="section-heading-text">CHOOSE <span class="accent">A STYLE</span></span>
-    </div>
-    <div class="subtheme-scroll" id="subtheme-tabs"></div>
-    <div class="style-grid-wrap">
-      <div class="styles-grid" id="styles-grid"></div>
-    </div>
-
-    <!-- 3. TRANSFORM -->
-    <div class="transform-section">
-      <span class="selected-style-name" id="selected-style-name" style="opacity:0.3;">No style selected</span>
-      <button class="btn-primary" id="btn-generate" disabled onclick="startGeneration()" style="display:flex;align-items:center;justify-content:center;gap:0.5em;">
-        <span style="font-size:1.8rem;line-height:1;letter-spacing:0.05em;">3</span>
-        <span style="font-size:1.1rem;letter-spacing:0.15em;">TRANSFORM IMAGE</span>
+    <!-- Result: 5 action buttons -->
+    <div class="bottom-result" id="bottom-result">
+      <button class="btn-result-action primary" onclick="downloadImage()">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        DOWNLOAD
+      </button>
+      <button class="btn-result-action" onclick="openShareSheet()">
+        <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+        SHARE
+      </button>
+      <button class="btn-result-action" onclick="goToPrint()">
+        <svg viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
+        PRINT
+      </button>
+      <button class="btn-result-action" onclick="startGeneration()">
+        <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg>
+        TRY AGAIN
+      </button>
+      <button class="btn-result-action" onclick="startOver()">
+        <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 109-9M3 3v6h6"/></svg>
+        START OVER
       </button>
     </div>
 
-    <div class="version-tag">GROOVE POP v0529</div>
+  </div><!-- /.home-bottom -->
 
-  </div><!-- /.home-body -->
 </section>
 
 <!-- ══ SCREEN: PRINT ══ -->
@@ -887,9 +829,19 @@ function goTo(id) {
 // ══════════════════════════════════════════
 function setImageZoneState(state) {
   imageZoneState = state;
+  const screenHome = document.getElementById('screen-home');
+  if (screenHome) screenHome.dataset.state = state;
+
+  const uploadState = document.getElementById('upload-state');
   const previewZone = document.getElementById('upload-preview-zone');
-  if (previewZone) previewZone.style.display = state === 'generating' ? 'none' : '';
-  document.getElementById('upload-state').classList.toggle('hidden', state !== 'upload');
+  if (state === 'upload') {
+    uploadState.style.display = uploadedDataUrl ? 'none' : '';
+    if (previewZone) previewZone.style.display = uploadedDataUrl ? 'flex' : 'none';
+  } else {
+    uploadState.style.display = 'none';
+    if (previewZone) previewZone.style.display = 'none';
+  }
+
   document.getElementById('generating-state').classList.toggle('active', state === 'generating');
   document.getElementById('result-state').classList.toggle('active', state === 'result');
   document.getElementById('gen-status-bar').classList.toggle('active', state === 'generating');
@@ -904,13 +856,7 @@ function handleFileInput(file) {
   const reader = new FileReader();
   reader.onload = function(ev) {
     uploadedDataUrl = ev.target.result;
-    // If currently showing a result, go back to upload state momentarily
-    // then user can pick new style and transform
     setImageZoneState('upload');
-    // Show the uploaded image in the upload zones briefly then switch to a preview
-    // We keep upload-state hidden and show the generating zone with the photo
-    // Actually — just store the data, user picks style and hits transform
-    // The upload zones remain. We show a mini preview badge.
     showUploadedPreview();
     const randomBtn = document.getElementById('btn-randomize');
     randomBtn.disabled = false;
@@ -922,22 +868,15 @@ function handleFileInput(file) {
 
 function showUploadedPreview() {
   const previewZone = document.getElementById('upload-preview-zone');
-  // Remove any existing preview
-  const existing = document.getElementById('upload-preview');
-  if (existing) existing.remove();
-  // Hide the two upload zones
-  document.getElementById('upload-state').classList.add('hidden');
-  // Insert preview into the preview zone
-  const preview = document.createElement('div');
-  preview.id = 'upload-preview';
-  preview.style.cssText = 'position:relative;';
-  preview.innerHTML = `
-    <img src="${uploadedDataUrl}" style="width:100%;max-height:220px;object-fit:cover;display:block;">
+  document.getElementById('upload-state').style.display = 'none';
+  previewZone.innerHTML = `
+    <img class="preview-img" src="${uploadedDataUrl}" alt="">
     <button class="photo-change-btn" onclick="resetPhoto()">
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
       CHANGE
     </button>`;
-  previewZone.appendChild(preview);
+  previewZone.style.display = 'flex';
+  previewZone.style.flexDirection = 'column';
 }
 
 function resetPhoto() {
@@ -945,26 +884,16 @@ function resetPhoto() {
   currentCloudinaryUrl = null;
   chosenVariant = null;
   selectedStyle = null;
-  // Remove preview img
-  const preview = document.getElementById('upload-preview');
-  if (preview) preview.remove();
-  // Ensure preview zone is visible
   const previewZone = document.getElementById('upload-preview-zone');
-  if (previewZone) previewZone.style.display = '';
-  // Show upload zones
-  document.getElementById('upload-state').classList.remove('hidden');
-  // Reset to upload state
-  setImageZoneState('upload');
-  // Reset inputs
+  if (previewZone) { previewZone.innerHTML = ''; previewZone.style.display = 'none'; }
   document.getElementById('file-input').value = '';
   document.getElementById('selfie-input').value = '';
-  // Reset buttons
   const randomBtn = document.getElementById('btn-randomize');
   randomBtn.disabled = true;
   randomBtn.classList.remove('lit');
-  // Reset selected style label
   document.getElementById('selected-style-name').textContent = 'No style selected';
   document.getElementById('selected-style-name').style.opacity = '0.3';
+  setImageZoneState('upload');
   renderGrid();
   updateGenerateButton();
 }
@@ -1064,18 +993,22 @@ async function surpriseFromResult() {
 // ══════════════════════════════════════════
 // GENERATION
 // ══════════════════════════════════════════
+let generationCancelled = false;
+
 async function startGeneration() {
   if (!selectedStyle || !uploadedDataUrl) return;
+  generationCancelled = false;
 
-  // Switch image zone to generating state
   document.getElementById('gen-zone-img').src = uploadedDataUrl;
+  document.getElementById('gen-bar-style-label').textContent = `${selectedStyle.family_label} · ${selectedStyle.subtheme}`;
   setImageZoneState('generating');
   document.getElementById('error-card').classList.remove('visible');
   startWaitScreen();
-  startLogoTransformation(); // logo goes wild in sync
+  startLogoTransformation();
 
   try {
     const captionData = await generateCaption(uploadedDataUrl);
+    if (generationCancelled) return;
     generatedCaption = captionData.caption;
     subjectCount = captionData.subjectCount || 'single';
     storeCaptionSnippets(generatedCaption);
@@ -1084,30 +1017,33 @@ async function startGeneration() {
     try {
       imageUrl = await generateImage(generatedCaption, selectedStyle);
     } catch(firstErr) {
+      if (generationCancelled) return;
       const is429 = (firstErr.message||'').includes('429') || (firstErr.message||'').includes('EngineOverloaded');
       if (!is429) throw firstErr;
       clearWaitIntervals();
       startRetryWaitScreen();
       await new Promise(r => setTimeout(r, 8000));
+      if (generationCancelled) return;
       imageUrl = await generateImage(generatedCaption, selectedStyle);
     }
 
+    if (generationCancelled) return;
     clearWaitIntervals();
     document.getElementById('result-img').src = imageUrl;
+    document.getElementById('result-thumb').src = uploadedDataUrl;
     currentCloudinaryUrl = null;
     setImageZoneState('result');
     renderGrid();
-    // End with whatever logo is currently showing — no new pick
     endLogoTransformation(currentLogoIndex);
-    document.getElementById('image-zone').scrollIntoView({ behavior: 'smooth', block: 'start' });
     autoUploadToCloudinary(imageUrl, selectedStyle);
 
   } catch(err) {
+    if (generationCancelled) return;
     console.error('[GP] generation failed:', err);
     clearWaitIntervals();
     clearLogoIntervals();
     const zone = document.getElementById('gen-logo-zone');
-    if (zone) zone.classList.remove('active','logo-cycling','logo-static');
+    if (zone) zone.classList.remove('active','logo-cycling','logo-static','logo-final');
     const barLogo = document.getElementById('app-bar-logo-wrap');
     if (barLogo) barLogo.classList.remove('hidden');
     const raw = err.message || '';
@@ -1123,6 +1059,21 @@ async function startGeneration() {
     document.getElementById('error-card').classList.add('visible');
   }
 }
+
+function cancelGeneration() {
+  generationCancelled = true;
+  clearWaitIntervals();
+  clearLogoIntervals();
+  const zone = document.getElementById('gen-logo-zone');
+  if (zone) zone.classList.remove('active', 'logo-final');
+  const barLogo = document.getElementById('app-bar-logo-wrap');
+  if (barLogo) barLogo.classList.remove('hidden');
+  setImageZoneState('upload');
+  if (uploadedDataUrl) showUploadedPreview();
+  updateGenerateButton();
+}
+
+function startOver() { resetPhoto(); }
 
 // ══════════════════════════════════════════
 // CAPTION
@@ -1948,20 +1899,13 @@ function startLogoTransformation() {
   const crossfadeInterval = setInterval(crossfadeToNext, HOLD + FADE);
   logoIntervals.push(crossfadeInterval);
 
-  // 60s — stop, return whatever is currently showing to app bar
+  // 65s — stop cycling, hold final logo clean (no hue, no scan)
+  // Bar logo is restored by endLogoTransformation when generation completes
   const returnStart = setTimeout(() => {
     clearLogoIntervals();
-    const finalIdx = currentLogoIndex;
-    zone.classList.remove('active', 'logo-cycling', 'logo-static');
-
-    const barImg = document.getElementById('app-bar-logo-img');
-    if (barImg) {
-      barImg.style.opacity = '0';
-      barImg.src = GROOVE_POP_LOGOS[finalIdx];
-      barImg.onload = () => { barImg.style.opacity = '1'; };
-    }
-    if (barLogo) barLogo.classList.remove('hidden');
-  }, 63000);
+    zone.classList.remove('logo-cycling', 'logo-static');
+    zone.classList.add('logo-final');
+  }, 65000);
   logoIntervals.push(returnStart);
 }
 
