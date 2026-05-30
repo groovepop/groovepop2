@@ -38,10 +38,10 @@ self.addEventListener('fetch', (event) => {
 
   if (request.method !== 'GET') return;
 
-  // Network-only: API calls
+  // Network-only: API calls + well-known paths (e.g. assetlinks.json for TWA verification)
   const networkOnly = [
     'openai.azure.com', 'azurewebsites.net', 'res.cloudinary.com', 'api.cloudinary.com',
-    'stripe.com', 'netlify.com', '/.netlify/',
+    'stripe.com', 'netlify.com', '/.netlify/', '/.well-known/',
   ];
   if (networkOnly.some((p) => url.href.includes(p))) return;
 
