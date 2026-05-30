@@ -650,6 +650,30 @@
   .install-ios-step { display:flex; align-items:center; gap:0.6rem; font-size:0.7rem; color:var(--muted); line-height:1.4; }
   .install-ios-step svg { width:16px; height:16px; stroke:var(--gold); fill:none; stroke-width:1.5; flex-shrink:0; }
   .install-ios-step span { color:var(--white); }
+
+  /* ── DEMO STYLE CHIPS ── */
+  .demo-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+
+  .demo-style-chip {
+    padding: 0.4rem 0.85rem;
+    background: var(--surface);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .demo-style-chip:hover { border-color: var(--gold); color: var(--gold); }
+  .demo-style-chip.selected { background: var(--gold); color: var(--black); border-color: var(--gold); }
 </style>
 </head>
 <body>
@@ -687,6 +711,62 @@
   </div>
 
 
+
+  <!-- Demo Zone -->
+  <div class="demo-zone" id="demo-zone">
+    <div class="demo-label">TRY IT FREE — NO SIGN-UP NEEDED</div>
+
+    <label for="demo-file-input" style="width:100%;max-width:360px;display:block;cursor:pointer;">
+      <div class="upload-zone" id="demo-upload-zone">
+        <div class="upload-overlay">
+          <span style="font-size:0.72rem;color:var(--white);letter-spacing:0.12em;text-transform:uppercase;">CHANGE PHOTO</span>
+        </div>
+        <div class="upload-icon">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        </div>
+        <div class="upload-hint">TAP TO UPLOAD<br>A PHOTO</div>
+        <div class="upload-hint-small">Portrait · pet · street scene</div>
+      </div>
+    </label>
+    <input type="file" id="demo-file-input" accept="image/*" style="display:none;">
+
+    <div id="demo-style-pick" style="display:none;width:100%;max-width:360px;">
+      <div class="demo-label" style="margin-bottom:0.5rem;">PICK A STYLE</div>
+      <div id="demo-style-chips" class="demo-chips"></div>
+    </div>
+
+    <div style="width:100%;max-width:360px;">
+      <button class="btn-primary" id="demo-generate-btn" disabled onclick="runDemo()">GENERATE FREE PREVIEW</button>
+    </div>
+
+    <p class="demo-cta-note" id="demo-status" style="display:none;min-height:2em;"></p>
+  </div>
+
+  <!-- Demo result -->
+  <div id="demo-result-wrap" style="display:none;width:100%;padding:0 1.5rem 1rem;">
+    <div style="width:100%;max-width:360px;margin:0 auto;position:relative;overflow:hidden;">
+      <img id="demo-result-img" alt="Your Groove Pop" style="width:100%;display:block;">
+      <div class="watermark">
+        <div class="watermark-inner">
+          <div class="watermark-logo">GROOVE<span style="color:var(--gold);">POP</span></div>
+          <div class="watermark-sub">GROOVEPOP.CA</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Unlock banner -->
+  <div class="unlock-banner" id="demo-unlock-banner" style="display:none;">
+    <div class="unlock-icon">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+    </div>
+    <div class="unlock-title">UNLOCK YOUR IMAGE</div>
+    <p class="unlock-body">Sign up free to download without the watermark, try all 300+ styles, and access the full app.</p>
+    <div class="unlock-actions">
+      <button class="btn-primary" onclick="showAuth('signup')">CREATE FREE ACCOUNT</button>
+      <button class="btn-ghost" style="padding:0.75rem;width:100%;" onclick="showAuth('signin')">ALREADY HAVE AN ACCOUNT</button>
+    </div>
+  </div>
 
   <!-- What it is -->
   <div class="landing-pitch">
@@ -931,6 +1011,126 @@ function dismissInstallBanner() {
 if (isIOS() && !isInStandaloneMode()) {
   setTimeout(() => showInstallBanner(), 3000);
 }
+
+// ══════════════════════════════════════════
+// DEMO
+// ══════════════════════════════════════════
+const DEMO_API = 'https://groovepop-engine-f7ged0hndrbucafm.eastus2-01.azurewebsites.net/api';
+let demoStyles = [];
+let demoUploadedUrl = null;
+let demoSelectedStyle = null;
+let demoRunning = false;
+
+async function initDemo() {
+  try {
+    const all = await fetch('/styles.json').then(r => r.json());
+    const seen = new Set();
+    demoStyles = all.filter(s => { if (seen.has(s.subtheme)) return false; seen.add(s.subtheme); return true; }).slice(0, 8);
+    const container = document.getElementById('demo-style-chips');
+    demoStyles.forEach(style => {
+      const chip = document.createElement('button');
+      chip.className = 'demo-style-chip';
+      chip.textContent = style.family_label;
+      chip.onclick = () => {
+        demoSelectedStyle = style;
+        document.querySelectorAll('.demo-style-chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+        document.getElementById('demo-generate-btn').disabled = !demoUploadedUrl;
+      };
+      container.appendChild(chip);
+    });
+  } catch(e) { console.warn('Demo styles failed to load', e); }
+}
+
+document.getElementById('demo-file-input').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    demoUploadedUrl = ev.target.result;
+    const zone = document.getElementById('demo-upload-zone');
+    zone.classList.add('has-image');
+    let img = zone.querySelector('img');
+    if (!img) { img = document.createElement('img'); zone.insertBefore(img, zone.firstChild); }
+    img.src = demoUploadedUrl;
+    document.getElementById('demo-style-pick').style.display = '';
+    document.getElementById('demo-generate-btn').disabled = !demoSelectedStyle;
+  };
+  reader.readAsDataURL(file);
+});
+
+async function runDemo() {
+  if (!demoUploadedUrl || !demoSelectedStyle || demoRunning) return;
+  demoRunning = true;
+  const btn = document.getElementById('demo-generate-btn');
+  const status = document.getElementById('demo-status');
+  btn.disabled = true;
+  btn.textContent = 'GENERATING...';
+  status.style.display = '';
+  status.textContent = 'Reading your photo…';
+  document.getElementById('demo-result-wrap').style.display = 'none';
+  document.getElementById('demo-unlock-banner').style.display = 'none';
+
+  try {
+    const compressed = await demoResizeImage(demoUploadedUrl, 512);
+    const base64 = compressed.split(',')[1];
+    const mimeType = compressed.split(';')[0].split(':')[1];
+    const captionRes = await fetch(`${DEMO_API}/caption`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ base64, mimeType })
+    });
+    if (!captionRes.ok) { const e = await captionRes.json(); throw new Error(e.error || 'Caption failed'); }
+    const { caption } = await captionRes.json();
+
+    status.textContent = 'Generating your image… this takes about 90 seconds.';
+    const pool = demoSelectedStyle.variants || [];
+    if (!pool.length) throw new Error('No variants for this style');
+    const chosen = pool[Math.floor(Math.random() * pool.length)];
+    const prompt = `${caption}\n\n---\n\n${chosen.prompt.map(l => `"${l}",`).join('\n')}`;
+    const imgBase64 = demoUploadedUrl.split(',')[1];
+    const imgMime = demoUploadedUrl.split(';')[0].split(':')[1] || 'image/jpeg';
+
+    const genRes = await fetch(`${DEMO_API}/generate`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, base64Image: imgBase64, mimeType: imgMime, size: chosen.size || '1024x1536', quality: 'medium' })
+    });
+    if (!genRes.ok) { const e = await genRes.json(); throw new Error(e.error || 'Generation failed'); }
+    const { imageUrl } = await genRes.json();
+
+    document.getElementById('demo-result-img').src = imageUrl;
+    document.getElementById('demo-result-wrap').style.display = '';
+    document.getElementById('demo-unlock-banner').style.display = 'flex';
+    status.style.display = 'none';
+    document.getElementById('demo-result-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    btn.textContent = 'TRY A DIFFERENT STYLE';
+    btn.disabled = false;
+    demoRunning = false;
+  } catch(err) {
+    console.error('[GP demo]', err);
+    status.textContent = 'Something went wrong — please try again.';
+    btn.textContent = 'GENERATE FREE PREVIEW';
+    btn.disabled = false;
+    demoRunning = false;
+  }
+}
+
+function demoResizeImage(dataUrl, maxSize) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let w = img.width, h = img.height;
+      if (w > h) { if (w > maxSize) { h = h*maxSize/w; w = maxSize; } }
+      else { if (h > maxSize) { w = w*maxSize/h; h = maxSize; } }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.8));
+    };
+    img.src = dataUrl;
+  });
+}
+
+initDemo();
 
 // ══════════════════════════════════════════
 // KICK OFF
