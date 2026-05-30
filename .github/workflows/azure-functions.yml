@@ -28,10 +28,12 @@ jobs:
         working-directory: api
         run: npm install --omit=dev
 
-      - name: Deploy to Azure Functions
+      - name: Deploy to Azure Functions (Flex Consumption)
         uses: Azure/functions-action@v1
         id: fa
         with:
           app-name: ${{ secrets.AZURE_FUNCTIONAPP_NAME }}
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+          sku: flexconsumption
+          remote-build: false
