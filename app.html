@@ -79,11 +79,11 @@
   .home-left { display:flex; flex-direction:column; overflow:hidden; border-right:1px solid var(--border); min-height:0; position:relative; }
   .home-right { display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; min-height:0; overscroll-behavior:contain; }
 
-  /* Upload zone — single unified field with upload + selfie side by side */
-  .upload-unified { display:flex; flex:1; background:var(--surface); }
-  .upload-opt { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.7rem; cursor:pointer; transition:background 0.2s; }
+  /* Upload zone — single unified field, upload on top / selfie on bottom */
+  .upload-unified { display:flex; flex-direction:column; flex-shrink:0; height:180px; background:var(--surface); }
+  .upload-opt { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.6rem; cursor:pointer; transition:background 0.2s; }
   .upload-opt:hover { background:var(--surface2); }
-  .upload-opt-divider { width:1px; background:var(--border); flex-shrink:0; align-self:stretch; margin:1.5rem 0; }
+  .upload-opt-divider { height:1px; background:var(--border); flex-shrink:0; margin:0 1.25rem; }
   .upload-icon { width:40px; height:40px; border:1px solid var(--border); border-radius:50%; display:flex; align-items:center; justify-content:center; }
   .upload-icon svg { width:18px; height:18px; stroke:var(--gold); fill:none; stroke-width:1.5; }
   .upload-hint { font-size:0.6rem; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; }
