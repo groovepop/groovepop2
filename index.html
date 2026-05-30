@@ -1099,7 +1099,7 @@ async function runDemo() {
 
     document.getElementById('demo-result-img').src = imageUrl;
     document.getElementById('demo-result-wrap').style.display = '';
-    document.getElementById('demo-unlock-banner').style.display = 'flex';
+    showUnlockBanner();
     status.style.display = 'none';
     document.getElementById('demo-result-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
     btn.textContent = 'TRY A DIFFERENT STYLE';
@@ -1112,6 +1112,19 @@ async function runDemo() {
     btn.disabled = false;
     demoRunning = false;
   }
+}
+
+function showUnlockBanner() {
+  const banner = document.getElementById('demo-unlock-banner');
+  const actions = banner.querySelector('.unlock-actions');
+  if (currentUser) {
+    actions.innerHTML = `<button class="btn-primary" onclick="goToApp()">OPEN GROOVE POP</button>`;
+  } else {
+    actions.innerHTML = `
+      <button class="btn-primary" onclick="showAuth('signup')">CREATE FREE ACCOUNT</button>
+      <button class="btn-ghost" style="padding:0.75rem;width:100%;" onclick="showAuth('signin')">ALREADY HAVE AN ACCOUNT</button>`;
+  }
+  banner.style.display = 'flex';
 }
 
 function demoResizeImage(dataUrl, maxSize) {
