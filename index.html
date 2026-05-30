@@ -1139,7 +1139,7 @@ async function bakeWatermark(dataUrl) {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0);
 
-      const logoW = Math.round(canvas.width * 0.5);
+      const logoW = Math.round(canvas.width * 0.9);
       const logoH = Math.round(logoW * (logo.naturalHeight / logo.naturalWidth));
 
       ctx.save();
