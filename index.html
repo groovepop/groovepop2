@@ -929,7 +929,7 @@ function updateAuthUI(user) {
     // Signed in state
     const name = user.user_metadata?.full_name || user.email.split('@')[0];
     navActions.innerHTML = `
-      <span class="nav-user">${user.email}</span>
+      <button class="nav-btn signin" onclick="handleSignOut()">SIGN OUT</button>
       <button class="nav-btn go-app" onclick="goToApp()">OPEN APP</button>
     `;
     document.getElementById('signed-in-greeting').textContent = `WELCOME BACK, ${name.toUpperCase()}`;
