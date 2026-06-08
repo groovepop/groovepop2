@@ -133,7 +133,7 @@
   .result-state { display:none; flex:1; overflow:hidden; position:relative; }
   .result-state.active { display:flex; flex-direction:column; }
   .result-zone-img { width:100%; height:100%; object-fit:contain; display:block; flex:1; min-height:0; background:var(--surface); }
-  .result-thumb { position:absolute; bottom:0.6rem; left:0.6rem; width:64px; height:64px; object-fit:cover; border:2px solid var(--gold); border-radius:2px; box-shadow:0 2px 12px rgba(0,0,0,0.7); }
+  .result-thumb { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.3; pointer-events:none; }
 
   /* Error card — inside left panel */
   .error-card { display:none; flex-direction:column; align-items:center; gap:0.5rem; padding:0.875rem; background:rgba(196,82,42,0.1); border-top:1px solid rgba(196,82,42,0.3); text-align:center; flex-shrink:0; }
@@ -525,7 +525,6 @@
       <!-- Result state — generated image + inset thumbnail -->
       <div class="result-state" id="result-state">
         <img class="result-zone-img" id="result-img" src="" alt="Generated image">
-        <img class="result-thumb" id="result-thumb" src="" alt="">
       </div>
 
       <!-- Status bar -->
@@ -607,9 +606,10 @@
         <svg viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
         PRINT
       </button>
-      <button class="btn-result-action" onclick="startGeneration()">
-        <svg viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg>
-        TRY AGAIN
+      <button class="btn-result-action" onclick="startGeneration()" style="position:relative; overflow:hidden;">
+        <img class="result-thumb" id="result-thumb" src="" alt="">
+        <svg viewBox="0 0 24 24" style="position:relative; z-index:1;"><path d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg>
+        <span style="position:relative; z-index:1;">TRY AGAIN</span>
       </button>
       <button class="btn-result-action" onclick="startOver()">
         <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 109-9M3 3v6h6"/></svg>
