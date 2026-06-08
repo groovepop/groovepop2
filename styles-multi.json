@@ -26,12 +26,12 @@
         "prompt": [
           "photorealistic image of subjects standing at easel",
           "paint-covered studio inspired by setting",
-          "wearing a white messy artist smock and loading a palette knife with thick oil paint from a heavily loaded palette",
-          "canvas on easel shows their own portrait built up in thick sculptural impasto",
+          "wearing white messy artist smocks and using a palette knife with thick oil paint from a heavily loaded palette",
+          "canvas on easel shows the start image built up in thick sculptural impasto",
           "paint ridges and peaks on the canvas catching directional studio light",
           "brushstroke texture visible and dominant across the painted portrait",
           "excess paint and palette knife marks accumulating at canvas edges",
-          "studio floor and smock streaked with raw pigment in colors pulled from the setting",
+          "studio floor and smocks streaked with raw pigment in colors pulled from the setting",
           "ASPECT RATIO 4:3"
         ],
         "size": "1536x1024"
@@ -43,7 +43,7 @@
           "photo of subjects creating large scale mural on concrete underpass wall",
           "mural inspired by setting",
           "subjects wearing black hoodie pulled up and mid-action spraying tag in corner",
-          "glancing back over shoulder with cautious suspicious expression",
+          "glancing back over shoulders with cautious suspicious expressions",
           "aerosol paint with soft overspray edges and hard stencil boundaries",
           "damp concrete surface with efflorescence and older tag layers beneath",
           "paint drips running down the wall from heavy aerosol application",
@@ -60,7 +60,7 @@
         "prompt": [
           "photorealistic image of subjects standing at tilted drawing board",
           "artist studio inspired by start image",
-          "wet brush in hand applying transparent watercolor wash to large sheet of paper",
+          "wet brushes in hand applying transparent watercolor wash to large sheet of paper",
           "the painting on the board shows the start image emerging in loose washes",
           "wet-on-wet blooming edges where colors bleed together on the painted portrait",
           "white paper reserved for highlights throughout the emerging painting",
@@ -77,9 +77,9 @@
         "prompt": [
           "photographic image of subjects seated in artist studio",
           "surrounded by purposefully placed angled mirrors",
-          "mirrors positioned to capture face and figure from multiple simultaneous viewpoints",
+          "mirrors positioned to capture faces and figures from multiple simultaneous viewpoints",
           "canvas on easel shows their half finished charcoal self portrait fractured into overlapping geometric planes",
-          "multiple perspectives of the same face visible simultaneously on the painted canvas",
+          "multiple perspectives of the same faces visible simultaneously on the painted canvas",
           "flat angular color planes with no shadow or volumetric rendering on the portrait",
           "subjects drawing with charcoal on the fragmented canvas with quiet concentration",
           "quirky artist studio inspired by start image",
@@ -92,8 +92,8 @@
         "label": "Fauvism",
         "prompt": [
           "Fauvist painted world with savage non-naturalistic color throughout",
-          "subject, walls, floor, furniture and light in arbitrary violent color relationships - green shadows, orange skin, red sky through window",
-          "subjects holding a brush, painting a canvas on an easel",
+          "subjects, walls, floor, furniture and light in arbitrary violent color relationships - green shadows, orange skin, red sky through window",
+          "subjects holding brushes, painting a canvas on an easel",
           "the canvas on the easel shows a strikingly realistic naturalistic self-portrait",
           "the painted portrait rendered in accurate lifelike color against the surrounding chaos",
           "artist studio environment inspired by start image but color-violated throughout",
@@ -105,7 +105,7 @@
         "key": "vector",
         "label": "Vector",
         "prompt": [
-          "photorealistic image of subjects with back to viewer",
+          "photorealistic image of subjects with backs to viewer",
           "seated at a designer's desk staring intently at a large monitor",
           "screen shows the start image being built as a vector illustration in graphic design software",
           "flat geometric shapes and clean bezier curves defining the vector image on screen",
@@ -193,7 +193,7 @@
         "label": "Folk Art",
         "prompt": [
           "naive folk art painting style",
-          "figure painted in self-taught hand with no academic training",
+          "figures painted in self-taught hand with no academic training",
           "flattened space with multiple ground planes coexisting",
           "proportions confidently wrong throughout",
           "bold unmodulated color applied to figure and ground equally",
@@ -270,7 +270,7 @@
           "fan held open at full extension revealing complete woodblock composition",
           "flat woodblock color with visible grain and keyblock outline",
           "fold creases physically interrupting and texturing the printed surface",
-          "figure and setting adapted to the tapered fan arc",
+          "subjects and setting adapted to the tapered fan arc",
           "artist seal and cartouche in upper corner margin",
           "displayed against softly lit tokonoma alcove with warm bokeh background",
           "ASPECT RATIO 4:3"
@@ -280,10 +280,10 @@
     ]
   },
   {
-    "family_key": "action",
+    "family_key": "action_movies",
     "family_label": "Action Movies",
     "subtheme": "Cinema",
-    "file": "action.jpg",
+    "file": "action_movies.jpg",
     "variants": [
       {
         "key": "action_hero",
@@ -363,7 +363,7 @@
         "prompt": [
           "Bollywood dance number movie poster aesthetic",
           "subjects re-rendered as legendary film stars in the middle of the greatest performance of their life",
-          "arms raised hips mid-turn  -  pure euphoric abandon as facial expression",
+          "arms raised hips mid-turn  -  pure euphoric abandon as facial expressions",
           "spectacular Bollywood costume and jeweled accessories inspired by subjects  -  excess is the minimum",
           "dreamlike paradise inspired by setting transformed into the ultimate stage",
           "bold decorative Bollywood movie title inspired by subjects in Hindi and English",
@@ -398,7 +398,7 @@
           "Bollywood devotional movie poster aesthetic",
           "subjects re-rendered as figures of almost divine radiance and spiritual power",
           "arms open palms raised eyes toward heaven  -  transcendent grace as facial expression",
-          "sacred costume and divine accessories inspired by subjects  -  gold and silk and light",
+          "sacred costumes and divine accessories inspired by subjects  -  gold and silk and light",
           "celestial landscape inspired by setting  -  flowers falling gods watching",
           "ornate devotional movie title inspired by subjects in Hindi and English",
           "reverent tagline inspired by subjects",
@@ -454,7 +454,7 @@
         "key": "documentary_conspiracy",
         "label": "Conspiracy Doc",
         "prompt": [
-          "documentary expos\u00e9 movie one-sheet poster aesthetic",
+          "documentary exposé movie one-sheet poster aesthetic",
           "subjects presented as the center of a vast and dangerous conspiracy",
           "partially obscured by shadow or redaction  -  knowing and hunted as facial expression",
           "every detail of subjects' appearance carrying the weight of hidden truth",
@@ -490,7 +490,7 @@
     "family_key": "film_noir",
     "family_label": "Film Noir",
     "subtheme": "Cinema",
-    "file": "brutal_noir.jpg",
+    "file": "film_noir.jpg",
     "variants": [
       {
         "key": "film_noir_street",
@@ -502,10 +502,8 @@
           "stark bleached highlights and ink-black shadows sculpting subjects into pure dramatic form",
           "single vivid color accent drawn from subjects bleeding into the monochrome world",
           "rain-slicked city streets at midnight neon bleeding into wet pavement",
-          "cigarette smoke dissolving the darkness into threat and beauty",
-          "noir movie title inspired by subjects",
-          "tagline inspired by subjects",
-          "billing block inspired by subjects",
+          "noir movie title and tagline inspired by subjects",
+          "dense cinematic billing block",
           "ASPECT RATIO 3:4"
         ],
         "size": "1024x1536"
@@ -516,17 +514,33 @@
         "prompt": [
           "cinematic noir movie poster aesthetic",
           "subjects re-rendered in high contrast noir cinematography as legendary figures of shadow and consequence",
-          "subjects leaning weight shifted looking back  -  guarded knowing and dangerous as facial expression",
+          "subjects seated and still  -  cool dangerous composure as facial expression",
+          "mysterious stranger visible in the background",
           "stark bleached highlights and ink-black shadows sculpting subjects into pure dramatic form",
           "single vivid color accent drawn from subjects bleeding into the monochrome world",
-          "smoky jazz bar at closing time low light bourbon the last song fading",
-          "cigarette smoke dissolving the darkness into threat and beauty",
-          "noir movie title inspired by subjects",
-          "tagline inspired by subjects",
-          "billing block inspired by subjects",
+          "smoky late-night jazz lounge  -  warm bar light fighting the surrounding darkness",
+          "noir movie title and tagline inspired by subjects",
+          "dense cinematic billing block",
           "ASPECT RATIO 3:4"
         ],
         "size": "1024x1536"
+      },
+      {
+        "key": "cyber_noir",
+        "label": "Cyber Noir",
+        "size": "1024x1536",
+        "prompt": [
+          "cyber noir movie poster aesthetic",
+          "subjects re-rendered as hard-boiled cybernetic investigators in a near-future city rotting at the edges",
+          "subjects in classic gumshoe stance  -  hat low, collar up, one hand in pocket  -  seen-it-all exhaustion as facial expression",
+          "glowing cybernetic implants — eyes, ports, exposed wiring — as the only colour in an otherwise monochrome world",
+          "implant glow casting the only coloured light source — bleeding onto collar, hands, wet pavement beneath",
+          "stark bleached highlights and ink-black shadows sculpting subjects into pure dramatic form",
+          "rain-slicked near-future streets — neon signs dark, infrastructure failing, fog settling low",
+          "noir movie title and tagline inspired by subjects",
+          "dense cinematic billing block",
+          "ASPECT RATIO 3:4"
+        ]
       }
     ]
   },
@@ -542,7 +556,7 @@
         "prompt": [
           "horror movie one-sheet poster aesthetic",
           "subjects transformed into the source of the horror  -  massive and terrifying",
-          "bodies commanding the frame  -  arms wide eyes cold and inhuman as facial expression",
+          "bodies commanding the frame  -  arms wide eyes cold and inhuman as facial expressions",
           "setting cowering and broken in the wake of subjects' power",
           "distressed horror movie title inspired by subjects",
           "tagline inspired by subjects",
@@ -558,7 +572,7 @@
         "prompt": [
           "horror movie one-sheet poster aesthetic",
           "subjects present but something ancient and wrong looking out through their eyes",
-          "body familiar but held at an angle that is not quite human  -  wrongness as facial expression",
+          "bodies familiar but held at an angle that is not quite human  -  wrongness as facial expression",
           "setting warping and deteriorating at the edges around subjects",
           "distressed horror movie title inspired by subjects",
           "tagline inspired by subjects",
@@ -607,7 +621,7 @@
     "family_key": "superhero",
     "family_label": "Superhero",
     "subtheme": "Cinema",
-    "file": "multiverse.jpg",
+    "file": "superhero.jpg",
     "variants": [
       {
         "key": "superhero_hero",
@@ -615,7 +629,7 @@
         "prompt": [
           "cinematic superhero movie poster aesthetic",
           "subjects fully transformed into legendary superheros of their own origin story",
-          "heroic stance with capes flowing dramatic in wind  -  intense resolve as facial expression",
+          "heroic stances with capes flowing dramatic in wind  -  intense resolve as facial expressions",
           "costumes and power design inspired by subjects",
           "epic landscape inspired by setting",
           "bold blockbuster movie title inspired by subjects",
@@ -632,7 +646,7 @@
         "prompt": [
           "cinematic supervillain movie poster aesthetic",
           "subjects fully transformed into the most dangerous villains of their own origin story",
-          "commanding stance with dark costume dramatic in shadow  -  cold ruthless menace as facial expression",
+          "commanding stances with dark costumes dramatic in shadow  -  cold ruthless menace as facial expressions",
           "costumes and power design inspired by subjects turned dark",
           "conquered landscape inspired by setting",
           "bold sinister movie title inspired by subjects",
@@ -649,7 +663,7 @@
         "prompt": [
           "graphic superhero animation movie poster aesthetic",
           "subjects fully transformed into legendary superheros in crisp digital animation style",
-          "dynamic action pose with sharp motion blur trails  -  fierce unstoppable focus as facial expression",
+          "dynamic action poses with sharp motion blur trails  -  fierce unstoppable focus as facial expressions",
           "costumes and power design inspired by subjects with bold flat color and precise cel shading",
           "vivid saturated cityscape inspired by setting rendered in clean graphic depth planes",
           "bold geometric movie title inspired by subjects",
@@ -666,7 +680,7 @@
         "prompt": [
           "indie superhero movie poster aesthetic",
           "subjects transformed into unlikely reluctant heros of their own origin story",
-          "awkward but determined stance in ill-fitting costumes  -  bewildered sincerity as facial expression",
+          "awkward but determined stances in ill-fitting costumes  -  bewildered sincerity as facial expressions",
           "costumes and power design inspired by subjects  -  clearly homemade",
           "ordinary neighborhood inspired by setting rendered at absurdly human scale",
           "bold yet self-deprecating movie title inspired by subjects",
@@ -683,7 +697,7 @@
         "prompt": [
           "cinematic anti-hero movie poster aesthetic",
           "subjects transformed into dangerous anti-heros who operates outside every rule",
-          "relaxed irreverent stance  -  dark amusement and total self-awareness as facial expression",
+          "relaxed irreverent stances  -  dark amusement and total self-awareness as facial expressions",
           "costumes and power design inspired by subjects  -  deliberately wrong in exactly the right way",
           "morally compromised landscape inspired by setting  -  neither saved nor conquered",
           "bold sardonic movie title inspired by subjects",
@@ -708,7 +722,7 @@
         "prompt": [
           "classic romance movie one-sheet poster aesthetic",
           "subjects re-rendered as the embodiment of impossible longing",
-          "face turned toward the horizon arms at sides  -  bittersweet yearning as facial expression",
+          "faces turned toward the horizon arms at sides  -  bittersweet yearning as facial expressions",
           "timeless costume and elegant details inspired by subjects",
           "sweeping golden landscape inspired by setting  -  vast and indifferent to the heart's condition",
           "bold romantic movie title inspired by subjects in elegant serif typography",
@@ -725,8 +739,8 @@
         "prompt": [
           "romantic comedy movie one-sheet poster aesthetic",
           "subjects re-rendered mid-romantic catastrophe  -  something has gone completely wrong",
-          "frozen mid-disaster  -  mortified delight as facial expression",
-          "rumpled charming costume and comic prop details inspired by subjects",
+          "frozen mid-disaster  -  mortified delight as facial expressions",
+          "rumpled charming costumes and comic prop details inspired by subjects",
           "bright chaotic setting inspired by subjects  -  the world conspiring against and for them simultaneously",
           "bold playful movie title inspired by subjects",
           "witty tagline inspired by subjects",
@@ -741,14 +755,13 @@
         "label": "Dangerous Romance",
         "prompt": [
           "dangerous romance movie one-sheet poster aesthetic",
-          "subjects re-rendered as someone beautiful and completely untrustworthy",
-          "composed and still  -  cool glamour concealing something devastating as facial expression",
-          "immaculate costume and charged details inspired by subjects",
+          "subjects as beautiful people and completely untrustworthy",
+          "composed and still  -  cool glamour concealing something devastating as facial expressions",
+          "immaculate costumes and charged details inspired by subjects",
           "elegant setting inspired by subjects  -  everything surface, nothing safe",
-          "bold elegant movie title inspired by subjects",
-          "unsettling tagline inspired by subjects",
+          "bold elegant movie title and unsettling tagline inspired by subjects",
           "cool desaturated palette with single dangerous color accent",
-          "ominous billing block inspired by subjects",
+          "ominous billing block",
           "ASPECT RATIO 3:4"
         ],
         "size": "1024x1536"
@@ -759,8 +772,8 @@
         "prompt": [
           "forbidden romance movie one-sheet poster aesthetic",
           "subjects re-rendered as figures of dangerous allure and absolute composure",
-          "close crop  -  desire and control in perfect tension as facial expression",
-          "immaculate costume and charged details inspired by subjects  -  nothing out of place",
+          "close crop  -  desire and control in perfect tension as facial expressions",
+          "immaculate costumes and charged details inspired by subjects  -  nothing out of place",
           "spare interior setting inspired by subjects  -  beautiful controlled and completely private",
           "cool restrained movie title inspired by subjects in minimal typography",
           "charged tagline inspired by subjects",
@@ -783,7 +796,7 @@
         "label": "Sci-fi Invasion",
         "prompt": [
           "sci-fi invasion movie one-sheet poster aesthetic",
-          "subjects fully transformed into menacing alien creatures",
+          "subjects transformed into menacing alien creatures — faces and eyes retained, expressions overridden to cold inhuman menace",
           "creature design and form encoded from subjects' world",
           "creatures dominant and looming on the deck of alien craft",
           "alien craft architecture and design inspired by setting",
@@ -807,7 +820,7 @@
           "humans visible at distance  -  frozen watching uncertain",
           "single beam of vibrant colorful light descending onto creatures from above",
           "ominous single word cosmic sci-fi movie title inspired by subjects",
-          "tagline drawn from the creatures world and story  -  never a genre clich\u00e9",
+          "tagline drawn from the creatures world and story  -  never a genre cliché",
           "cold desaturated palette with eerie otherworldly light source",
           "billing block inspired by subjects",
           "ASPECT RATIO 3:4"
@@ -826,7 +839,7 @@
           "laboratory environment inspired by setting surrounding the chambers",
           "scientists and military figures visible at distance studying the specimens",
           "ominous single word cosmic sci-fi movie title inspired by subjects",
-          "tagline drawn from the creatures captivity and story  -  never a genre clich\u00e9",
+          "tagline drawn from the creatures captivity and story  -  never a genre cliché",
           "cold clinical palette with a single eerie bioluminescent light source",
           "billing block inspired by subjects",
           "ASPECT RATIO 3:4"
@@ -897,12 +910,11 @@
         "key": "comedy_indie",
         "label": "Indie Comedy",
         "prompt": [
-          "indie comedy movie one-sheet poster aesthetic",
-          "subjects re-rendered in a moment of profound social awkwardness",
-          "standing perfectly still  -  excruciating discomfort as facial expression",
-          "setting rendered as the most painfully mundane environment imaginable inspired by subjects",
-          "dry understated movie title inspired by subjects",
-          "tagline inspired by subjects",
+          "comedy movie one-sheet poster aesthetic",
+          "subjects re-rendered in a moment of profound awkwardness",
+          "excruciating discomfort as facial expressions",
+          "setting intact yet reimagined as the most painfully mundane environment",
+          "dry understated movie title and tagline inspired by subjects",
           "flat even lighting with nowhere to hide",
           "satirical billing block inspired by subjects",
           "ASPECT RATIO 3:4"
@@ -916,7 +928,7 @@
           "comedy movie one-sheet poster aesthetic",
           "subjects multiplied into an ensemble cast of distinct characters as multiple selves",
           "each version of subjects caught in a different comedic reaction to the same disaster",
-          "setting transformed into the shared scene of collective chaos inspired by subjects",
+          "setting intact yet reimagined as the shared scene of collective chaos inspired by subjects",
           "bold playful movie title inspired by subjects",
           "tagline inspired by subjects",
           "full bleed ensemble key art with maximum comic energy",
@@ -931,7 +943,7 @@
         "prompt": [
           "comedy movie one-sheet poster aesthetic",
           "subjects re-rendered perfectly calm and unbothered  -  serene smile as facial expression",
-          "setting transformed into a scene of ridiculous mundane mayhem behind subjects",
+          "setting intact yet reimagined as a scene of ridiculous mundane mayhem behind subjects",
           "absurd non-threatening chaos unfolding in every corner of the background",
           "subjects completely unaware that any of this is happening",
           "bold playful movie title inspired by subjects",
@@ -1067,7 +1079,7 @@
           "subjects re-rendered as rodeo stars at the peak and edge of their glory",
           "dust-covered and defiant  -  reckless pride and hidden vulnerability as facial expression",
           "costume and rodeo details inspired by subjects  -  sequins and dirt in equal measure",
-          "floodlit rodeo arena inspired by setting  -  crowd a blur of noise behind the figure",
+          "floodlit rodeo arena inspired by setting  -  crowd a blur of noise behind the figures",
           "bold American movie title inspired by subjects",
           "dramatic tagline inspired by subjects",
           "warm tungsten arena lighting with dramatic dust haze",
@@ -1082,7 +1094,7 @@
         "prompt": [
           "classic Hollywood western movie one-sheet poster aesthetic",
           "subjects re-rendered as golden era western stars in full heroic register",
-          "tall in the saddle arms wide  -  noble determination as facial expression",
+          "tall in the saddle arms wide  -  noble determination as facial expressions",
           "pristine costume and silver details inspired by subjects",
           "double exposure  -  subjects' face vast and luminous in the sky above their own figures riding through the landscape inspired by setting",
           "bold classic movie title inspired by subjects in painted western lettering",
@@ -1127,7 +1139,7 @@
           "aged cream document stock with period typographic formatting",
           "subjects rendered as patented invention in precise hand-drawn technical illustration",
           "figure numbers with reference lines annotating subjects' distinguishing features invented from subjects",
-          "multiple views of subjects \u2014 frontal, profile, detail \u2014 as technical figure plates",
+          "multiple views of subjects — frontal, profile, detail — as technical figure plates",
           "silly patent claims in dense legal run-on language describing subjects' novel characteristics invented from subjects",
           "inventor name, patent number and filing date at document header",
           "examiner notation and playful registration stamp at footer",
@@ -1142,13 +1154,13 @@
         "prompt": [
           "IKEA style wordless flat-pack assembly instruction manual aesthetic",
           "clean white background with Scandinavian minimalist illustration clarity",
-          "subjects presented as the assembled object \u2014 final result shown complete on cover panel",
+          "subjects presented as the assembled object — final result shown complete on cover panel",
           "exploded parts diagram showing subjects disassembled into components invented from subjects",
           "numbered step-by-step assembly sequence with simple line drawing figures",
           "parts list and component inventory with alphanumeric codes invented from subjects",
           "small warning icons and helpful tip panels invented from setting",
           "one frustrated stick figure struggling with assembly in corner panel",
-          "no text beyond part numbers and step numerals \u2014 entirely wordless",
+          "no text beyond part numbers and step numerals — entirely wordless",
           "ASPECT RATIO 3:4"
         ]
       },
@@ -1193,7 +1205,7 @@
         "prompt": [
           "elementary school science fair display board aesthetic",
           "wobbly tri-fold cardboard panel covered in construction paper and glitter glue",
-          "big bubbly hand-lettered section headings in alternating marker colors \u2014 hypothesis, procedure, results, conclusion",
+          "big bubbly hand-lettered section headings in alternating marker colors — hypothesis, procedure, results, conclusion",
           "large central photograph of subjects mounted with too much tape and slightly crooked",
           "charmingly bad hand-drawn graphs and diagrams inspired by subjects",
           "earnest hypothesis and conclusion paragraphs with childlike logic",
@@ -1214,12 +1226,12 @@
         "size": "1024x1536",
         "prompt": [
           "scrapbook of memories page aesthetic",
-          "aged leather journal open to a single page \u2014 worn spine valley visible at left edge",
-          "subjects transformed into a well faded photograph kept on the page \u2014 warm-toned and slightly soft with age",
+          "aged leather journal open to a single page — worn spine valley visible at left edge",
+          "subjects transformed into a well faded photograph kept on the page — warm-toned and slightly soft with age",
           "ephemera assembled around the photograph as evidence of the moment inspired by setting",
           "nostalgic paper mementos inspired by subjects",
           "pressed dried botanicals tucked at corners and edges",
-          "handwritten fragments in the subjectss' own voice inspired by subjects \u2014 intimate, unfinished, kept",
+          "handwritten fragments in the subjectss' own voice inspired by subjects — intimate, unfinished, kept",
           "washi tape and torn paper strips holding pieces at irregular angles",
           "aged cream page with foxing, soft creases and handling wear throughout",
           "ASPECT RATIO 3:4"
@@ -1251,10 +1263,10 @@
         "size": "1536x1024",
         "prompt": [
           "holiday travel scrapbook spread aesthetic",
-          "scrapbook lying open flat \u2014 full two page spread visible in landscape orientation",
-          "subjects transformed into multiple overlapping travel snapshots across both pages \u2014 candid, sun-bright, slightly overexposed",
+          "scrapbook lying open flat — full two page spread visible in landscape orientation",
+          "subjects transformed into multiple overlapping travel snapshots across both pages — candid, sun-bright, slightly overexposed",
           "destination and activities inspired by setting",
-          "playful handwritten captions and labels inspired by subjects \u2014 enthusiastic, breathless, fun",
+          "playful handwritten captions and labels inspired by subjects — enthusiastic, breathless, fun",
           "photos at varying angles, some with white borders, some tucked under others",
           "bold patterned paper backing on both pages inspired by setting",
           "page titles and destination headers in marker or cut lettering inspired by setting",
@@ -1268,13 +1280,13 @@
         "size": "1024x1536",
         "prompt": [
           "1970s rock fan scrapbook page aesthetic",
-          "scrapbook open to a single page \u2014 spine valley visible at left edge",
-          "subjects transformed into a mythologized 1970s rock guitar icon \u2014 wild long hair, leather and denim",
+          "scrapbook open to a single page — spine valley visible at left edge",
+          "subjects transformed into a mythologized 1970s rock guitar icon — wild long hair, leather and denim",
           "crudely cut from faded full color music press magazine with raw scissor edge in dynamic rock star pose",
           "black and white halftone newspaper and magazine clippings inspired by setting",
           "authentic concert ticket stubs and handwritten setlist on torn ruled paper inspired by start image",
-          "large hand-lettered headline with rock hero name inspired by subjects \u2014 bold, declarative, underlined",
-          "devoted fan annotations in ink pen inspired by subjects \u2014 informed, possessive, serious",
+          "large hand-lettered headline with rock hero name inspired by subjects — bold, declarative, underlined",
+          "devoted fan annotations in ink pen inspired by subjects — informed, possessive, serious",
           "ASPECT RATIO 3:4"
         ]
       },
@@ -1284,13 +1296,12 @@
         "size": "1024x1536",
         "prompt": [
           "modern celebrity fan scrapbook page aesthetic",
-          "pristine scrapbook open to a single page \u2014 clean spine valley visible at left edge",
-          "subjects transformed into an impossibly glamorous A-list celebrity \u2014 red carpet, flawless, untouchable",
+          "pristine scrapbook open to a single page — clean spine valley visible at left edge",
+          "subjects transformed into an impossibly glamorous A-list celebrity — red carpet, flawless, untouchable",
           "high quality press photos and paparazzi shots of subjects cut with precision and arranged obsessively",
-          "one small awkward fan selfie tucked among the glamour shots \u2014 slightly blurry, too close, deeply treasured",
           "coordinated decorative tape, premium stickers and die-cut elements inspired by subjects",
-          "color coordinated cardstock and premium scrapbook materials throughout \u2014 pristine construction",
-          "obsessive handwritten annotations in gel pen inspired by subjects \u2014 breathless, possessive, unraveling slightly",
+          "color coordinated cardstock and premium scrapbook materials throughout — pristine construction",
+          "obsessive handwritten annotations in gel pen inspired by subjects — breathless, possessive, unraveling slightly",
           "ASPECT RATIO 3:4"
         ]
       },
@@ -1300,8 +1311,8 @@
         "size": "1536x1024",
         "prompt": [
           "modern wedding scrapbook spread aesthetic",
-          "pristine scrapbook lying open flat \u2014 full two page spread in landscape orientation",
-          "subjects transformed into a radiant bride or groom \u2014 formal wedding portrait dominating left page",
+          "pristine scrapbook lying open flat — full two page spread in landscape orientation",
+          "subjects transformed into a radiant bride or groom — formal wedding portrait dominating left page",
           "unique wedding attire inspired by start image",
           "golden hour photography with soft bokeh and immaculate styling",
           "right page assembled with quirky yet formal wedding ephemera inspired by subjects",
@@ -1318,14 +1329,14 @@
         "size": "1536x1024",
         "prompt": [
           "1920s wedding album spread aesthetic",
-          "dark leather bound album lying open flat \u2014 full two page spread in landscape orientation",
-          "subjects transformed into a 1920s bride or groom \u2014 era appropriate hairstyle and formal wedding attire",
-          "right page: platinum print portrait \u2014 subjects emerging from luminous dark ground with soft focus pictorialist quality",
-          "Serious composure \u2014 direct gaze, chin level, no emotion performed",
-          "Patrician distance \u2014 slightly above the viewer, cool and removed",
+          "dark leather bound album lying open flat — full two page spread in landscape orientation",
+          "subjects transformed into a 1920s bride or groom — era appropriate hairstyle and formal wedding attire",
+          "right page: platinum print portrait — subjects emerging from luminous dark ground with soft focus pictorialist quality",
+          "Serious composure — direct gaze, chin level, no emotion performed",
+          "Patrician distance — slightly above the viewer, cool and removed",
           "Rembrandt side lighting with deep shadow and velvety tonal range",
           "held by art deco gold corner mounts",
-          "left page: restrained art deco assembly \u2014 geometric borders and gold embossed lettering",
+          "left page: restrained art deco assembly — geometric borders and gold embossed lettering",
           "pressed wedding flowers and newspaper society announcement clipping inspired by start image",
           "handwritten date and formal inscription in period copperplate",
           "ASPECT RATIO 4:3"
@@ -1337,9 +1348,9 @@
         "size": "1024x1536",
         "prompt": [
           "1950s college football scrapbook page aesthetic",
-          "aged scrapbook open to a single page \u2014 worn spine valley visible at left edge",
-          "subjects transformed into a granite-jawed gridiron hero of the leather helmet era \u2014 canvas uniform, enormous shoulder pads, leather helmet",
-          "black and white halftone newspaper action shot as anchor \u2014 heroic pose, absurd caption inspired by subjects",
+          "aged scrapbook open to a single page — worn spine valley visible at left edge",
+          "subjects transformed into a granite-jawed gridiron hero of the leather helmet era — canvas uniform, enormous shoulder pads, leather helmet",
+          "black and white halftone newspaper action shot as anchor — heroic pose, absurd caption inspired by subjects",
           "cutout pompous headlines treating subjects as national hero",
           "baffling long-winded coach quote in small attributed text",
           "hand-lettered felt pennant tucked at corner inspired by subjects",
@@ -1347,22 +1358,6 @@
           "absurdly specific and meaningless game statistics in ruled box score inspired by subjects",
           "yellowed brittle newsprint clippings overlapping at slight angles throughout",
           "aged cream page with foxing and handling wear throughout",
-          "ASPECT RATIO 3:4"
-        ]
-      },
-      {
-        "key": "scrapbook_silhouette",
-        "label": "Victorian Memorial",
-        "size": "1024x1536",
-        "prompt": [
-          "Victorian memorial scrapbook page aesthetic",
-          "black cloth bound mourning album open to a single page \u2014 spine valley visible at left edge",
-          "subjects transformed into a cut paper silhouette portrait \u2014 pure black profile mounted on aged mourning card",
-          "silhouette mounted at center with black ruled border and memorial inscription in copperplate inspired by subjects",
-          "pressed funeral flowers with black ribbon still tied at stem arranged at corners",
-          "carefully placed mourning card with black edge and formal condolence language inspired by start image",
-          "lock of hair pressed into page",
-          "heavy cream page with careful grieving hand throughout \u2014 tender, formal, final",
           "ASPECT RATIO 3:4"
         ]
       }
@@ -1434,7 +1429,7 @@
           "Victorian mail-order seed catalog page aesthetic",
           "aged cream stock with spine valley visible at right edge and slight page curl at corners",
           "multiple botanical varieties arranged in dense illustrated grid layout",
-          "subjects rendered as featured variety in central chromolithograph illustration \u2014 vibrant saturated color",
+          "subjects rendered as featured variety in central chromolithograph illustration — vibrant saturated color",
           "variety name in ornate Victorian decorative typeface invented from subjects",
           "growing conditions, bloom notes and soil requirements in small dense type invented from subjects",
           "neighboring varieties with illustrations and descriptions invented from setting",
@@ -1490,7 +1485,7 @@
         "prompt": [
           "intelligence agency surveillance dossier aesthetic",
           "open manila folder spread with string tie closure, classification stamps and case reference number",
-          "subjects photographed unaware \u2014 candid surveillance shots at distance, slightly grainy",
+          "subjects photographed unaware — candid surveillance shots at distance, slightly grainy",
           "multiple exposure angles with timestamps assembled on folder interior as evidence spread",
           "handwritten field notes and typed observation logs describing subjects' movements and contacts",
           "redacted text blocks obscuring names and locations throughout",
@@ -1508,7 +1503,7 @@
         "prompt": [
           "intelligence agency operative personnel file aesthetic",
           "open manila folder spread with classification stamps, operative designation and case reference number",
-          "subjects in official field operative portrait \u2014 composed, direct, aware of the camera",
+          "subjects in official field operative portrait — composed, direct, aware of the camera",
           "capability profile sidebar listing skills, languages and specializations invented from setting",
           "mission history log with operation codenames and deployment regions invented from setting",
           "psychological assessment notes and field commendations in typed institutional format",
@@ -1545,7 +1540,7 @@
           "flat even institutional lighting eliminating shadows across all five",
           "full length standing poses, neutral expressions, forward facing",
           "height markers and position numbers visible on wall behind",
-          "observation window implied \u2014 viewer positioned as witness making the identification",
+          "observation window implied — viewer positioned as witness making the identification",
           "ASPECT RATIO 4:3"
         ]
       },
@@ -1556,12 +1551,12 @@
         "prompt": [
           "1960s most wanted bulletin poster aesthetic",
           "high contrast black and white photographic print on aged newsprint stock",
-          "subjects in two photographs \u2014 frontal and three-quarter profile \u2014 printed with visible halftone dot pattern",
+          "subjects in two photographs — frontal and three-quarter profile — printed with visible halftone dot pattern",
           "bold condensed sans-serif header: WANTED and reward amount in large type",
           "physical description block with height, weight, hair and eye color invented from subjects",
           "known aliases and last known location invented from setting",
           "issuing agency name and jurisdiction invented from setting",
-          "bulletin pinned to surface with visible wear \u2014 creased, slightly torn at edges",
+          "bulletin pinned to surface with visible wear — creased, slightly torn at edges",
           "ASPECT RATIO 3:4"
         ]
       },
@@ -1572,7 +1567,7 @@
         "prompt": [
           "modern federal law enforcement most wanted bulletin aesthetic",
           "clean white ground with official agency header and seal invented from setting",
-          "large full color portrait photograph of subjects \u2014 sharp, clinical, no flattery",
+          "large full color portrait photograph of subjects — sharp, clinical, no flattery",
           "WANTED header in bold institutional typeface above photograph",
           "charges and offenses listed in deadpan bureaucratic language invented from setting",
           "physical description block with height, weight, distinguishing marks invented from subjects",
@@ -1590,7 +1585,7 @@
           "anthropometric identification record aesthetic",
           "archive record presented with humor as satire",
           "aged sepia-toned card stock with period english typographic formatting",
-          "subjects in dual frontal and profile portrait photographs \u2014 grainy, high contrast, unsparing",
+          "subjects in dual frontal and profile portrait photographs — grainy, high contrast, unsparing",
           "playful anthropometric measurement table alongside portraits with precise numerical notations",
           "silly bodily proportions catalogued in obsessive detail",
           "handwritten measurement entries in period copperplate script",
@@ -1613,7 +1608,7 @@
         "prompt": [
           "1950s school yearbook portrait grid page aesthetic",
           "uncoated book stock with visible letterpress impression and slight page yellowing",
-          "subjects transformed into 1950s student with awkward smile \u2014 era appropriate hair, clothing and styling invented from subjects",
+          "subjects transformed into 1950s student with awkward smile — era appropriate hair, clothing and styling invented from subjects",
           "tight frame on subjects' portrait with neighboring student entries visible at edges",
           "black and white photography with formal studio lighting and plain draped backdrop",
           "subjects name and formal class designation in period serif typeface beneath portrait",
@@ -1630,7 +1625,7 @@
         "prompt": [
           "1960s school yearbook portrait grid page aesthetic",
           "matte coated book stock with slight page yellowing and age toning",
-          "subjects transformed into appropriate 1960s archetype student with awkward smile \u2014 era appropriate hair, clothing and styling invented from subjects",
+          "subjects transformed into appropriate 1960s archetype student with awkward smile — era appropriate hair, clothing and styling invented from subjects",
           "tight frame on subjects' portrait with neighboring student entries visible at edges",
           "early color photography with flat studio lighting on plain backdrop",
           "subjects name and class designation in period sans-serif typeface beneath portrait",
@@ -1650,7 +1645,7 @@
           "subjects transformed into appropriate 1970s archetype hippy student",
           "long hair and droopy stoner eyes and big goofy smile",
           "tight frame on subjects' portrait with neighboring student entries visible at edges",
-          "warm soft focus color photography on earth tone backdrop \u2014 burnt orange, avocado or harvest gold",
+          "warm soft focus color photography on earth tone backdrop — burnt orange, avocado or harvest gold",
           "subjects name and rambling hippy nonsense quote inspired by start image in groovy typeface beneath portrait",
           "loose wandering handwritten notes and signatures with 1970s hippy slang overlapping subjects' portrait",
           "adjacent portraits showing invented 1970s stoner classmates inspired by setting",
@@ -1665,9 +1660,9 @@
         "prompt": [
           "1980s school yearbook portrait grid page aesthetic",
           "matte coated book stock",
-          "subjects transformed into 1980s student with awkward smile \u2014 era appropriate hair, clothing and styling invented from subjects",
+          "subjects transformed into 1980s student with awkward smile — era appropriate hair, clothing and styling invented from subjects",
           "tight frame on subjects' portrait with neighboring student entries visible at edges",
-          "flat direct flash studio lighting on jewel tone backdrop \u2014 teal, burgundy or royal blue",
+          "flat direct flash studio lighting on jewel tone backdrop — teal, burgundy or royal blue",
           "subjects name, and playful quote inspired by subjects in small institutional typeface beneath portrait",
           "quirky handwritten notes and signatures from other students with specific 80s lingo overlapping subjects' portrait",
           "adjacent portraits showing invented 1980s classmates inspired by setting",
@@ -1682,7 +1677,7 @@
         "prompt": [
           "1990s school yearbook portrait grid page aesthetic",
           "matte coated book stock with cool neutral tone",
-          "subjects transformed into appropriate 1990s grunge archetype student \u2014 flannel and scraggly unwashed hair",
+          "subjects transformed into appropriate 1990s grunge archetype student — flannel and scraggly unwashed hair",
           "arms crossed with complete indifference with disdainful gaze at viewer",
           "tight frame on subjects' portrait with neighboring student entries visible at edges",
           "sharp film photography on swirling neon laser backdrop",
@@ -1700,7 +1695,7 @@
         "prompt": [
           "2000s school yearbook portrait grid page aesthetic",
           "glossy coated book stock with flat clean digital print quality",
-          "subjects transformed into Y2K emo archetype student \u2014 heavy black eyeliner, side-swept fringe covering one eye, band tee and studded belt",
+          "subjects transformed into Y2K emo archetype student — heavy black eyeliner, side-swept fringe covering one eye, band tee and studded belt",
           "expression of profound theatrical suffering with chin slightly down",
           "tight frame on subjects' portrait with neighboring y2k student archetypes entries visible at edges",
           "sharp overexposed early digital photography on plain graduated grey backdrop",
@@ -1713,10 +1708,10 @@
     ]
   },
   {
-    "family_key": "ascii_terminal",
+    "family_key": "pixel",
     "family_label": "Pixel",
     "subtheme": "Darkroom",
-    "file": "ascii_terminal.jpg",
+    "file": "pixel.jpg",
     "variants": [
       {
         "key": "ascii_terminal",
@@ -1804,10 +1799,10 @@
     ]
   },
   {
-    "family_key": "cctv",
+    "family_key": "surveillance",
     "family_label": "Surveillance",
     "subtheme": "Darkroom",
-    "file": "cctv.jpg",
+    "file": "surveillance.jpg",
     "variants": [
       {
         "key": "cctv",
@@ -1879,10 +1874,10 @@
     ]
   },
   {
-    "family_key": "expressions_happy",
+    "family_key": "expressions",
     "family_label": "Expressions",
     "subtheme": "Darkroom",
-    "file": "expressions_happy.jpg",
+    "file": "expressions.jpg",
     "variants": [
       {
         "key": "expressions_happy",
@@ -2022,10 +2017,10 @@
     ]
   },
   {
-    "family_key": "polaroid",
+    "family_key": "photo",
     "family_label": "Photo",
     "subtheme": "Darkroom",
-    "file": "polaroid.jpg",
+    "file": "photo.jpg",
     "variants": [
       {
         "key": "polaroid",
@@ -2081,29 +2076,14 @@
         ]
       },
       {
-        "key": "photobooth_naughty",
-        "label": "Naughty Photo Booth",
-        "size": "1024x1536",
-        "prompt": [
-          "photo booth strip style",
-          "vertical sequence of 4 small portraits",
-          "subjects in playful poses progressing through strip from innocent to naughty",
-          "harsh flash contained inside booth",
-          "thick white border between each frame on dark strip backing",
-          "cramped booth framing with bright red velvet curtain backdrop only",
-          "chemical processing marks on strip surface",
-          "ASPECT RATIO 3:4"
-        ]
-      },
-      {
         "key": "double_exposure",
         "label": "Double Exposure",
         "size": "1536x1024",
         "prompt": [
           "double exposure analog photography technique",
-          "figure silhouette filled with a secondary scene drawn from the prompt's own world",
+          "subjects' silhouettes filled with a secondary scene inspired by the start image",
           "two exposures merged in camera with deliberate tonal overlap",
-          "figure rendered in high contrast silhouette to maximize second exposure visibility",
+          "figures rendered in high contrast silhouette to maximize second exposure visibility",
           "secondary image bleeding through skin, hair, and clothing with ghostly luminosity",
           "dark areas of figure revealing second exposure most intensely",
           "seamless tonal blending where both exposures occupy the same film plane",
@@ -2111,6 +2091,23 @@
           "matte black or deep gradient background isolating the merged composition",
           "fine grain film texture unifying both exposures into single photographic surface",
           "ASPECT RATIO 4:3"
+        ]
+      },
+      {
+        "key": "pinhole_camera",
+        "label": "Pinhole Camera",
+        "size": "1024x1536",
+        "prompt": [
+          "pinhole camera photography style",
+          "extreme soft focus with dreamy atmospheric blur",
+          "infinite depth of field with everything softly rendered",
+          "vignetting with light falloff at edges",
+          "long exposure time creating ghostly motion",
+          "handmade camera aesthetic with lo-fi optics",
+          "ethereal otherworldly quality with gentle luminosity",
+          "no lens sharpness, pure light aperture rendering",
+          "meditative contemplative photographic purity",
+          "ASPECT RATIO 3:4"
         ]
       },
       {
@@ -2157,7 +2154,7 @@
       {
         "key": "infomercial",
         "label": "Late Night Infomercial",
-        "size": "1024x1536",
+        "size": "1536x1024",
         "prompt": [
           "1990s late-night infomercial aesthetic",
           "subjects as manic host mid-demonstration with frantic energy  -  wide-eyed and urgent as facial expression",
@@ -2252,10 +2249,10 @@
     ]
   },
   {
-    "family_key": "comic",
+    "family_key": "comic_book",
     "family_label": "Comic Book",
     "subtheme": "Newsstand",
-    "file": "comic.jpg",
+    "file": "comic_book.jpg",
     "variants": [
       {
         "key": "comic",
@@ -2316,7 +2313,7 @@
         "label": "Golden Age Comic",
         "size": "1024x1536",
         "prompt": [
-          "Golden Age comic book cover aesthetic, 1930s\u20131940s printing tradition",
+          "Golden Age comic book cover aesthetic, 1930s–1940s printing tradition",
           "subjects as cape-and-tights hero in stiff upright heroic stance  -  jaw-set and duty-bound as facial expression",
           "period costume and insignia inspired by subjects",
           "hand-painted cover illustration with limited color separation and visible plate misalignment",
@@ -2353,7 +2350,7 @@
     "family_key": "magazine",
     "family_label": "Magazine",
     "subtheme": "Newsstand",
-    "file": "time.jpg",
+    "file": "magazine.jpg",
     "variants": [
       {
         "key": "magazine",
@@ -2468,10 +2465,10 @@
     ]
   },
   {
-    "family_key": "your_story",
+    "family_key": "book",
     "family_label": "Book",
     "subtheme": "Newsstand",
-    "file": "your_story.jpg",
+    "file": "book.jpg",
     "variants": [
       {
         "key": "your_story",
@@ -2511,9 +2508,9 @@
       {
         "key": "fairy_tale",
         "label": "Children's Fairy Tale",
-        "size": "1024x1536",
+        "size": "1536x1024",
         "prompt": [
-          "oversized children\u2019s fairy tale book open and presented at a slight angle",
+          "oversized children’s fairy tale book open and presented at a slight angle",
           "fully illustrated double page spread visible",
           "subjects transformed into fairy tale hero or heroine with exuberant facial expression and pose",
           "fantastical dreamscape inspired by setting",
@@ -2521,8 +2518,8 @@
           "elegant serif story text caption block inspired by subjects",
           "warm golden palette with soft painterly light and storybook depth",
           "rich detailed gouache illustration style",
-          "cozy child\u2019s bedroom in warm soft bokeh behind  -  soft lamp, stuffed animals, warm light identifiable at edges",
-          "ASPECT RATIO 3:4"
+          "cozy child’s bedroom in warm soft bokeh behind  -  soft lamp, stuffed animals, warm light identifiable at edges",
+          "ASPECT RATIO 4:3"
         ]
       },
       {
@@ -2547,17 +2544,17 @@
     ]
   },
   {
-    "family_key": "circus",
+    "family_key": "vintage_poster",
     "family_label": "Vintage Poster",
     "subtheme": "Poster",
-    "file": "circus.jpg",
+    "file": "vintage_poster.jpg",
     "variants": [
       {
         "key": "circus",
         "label": "Circus Headliner",
         "size": "1024x1536",
         "prompt": [
-          "golden age circus lithograph poster aesthetic 1880s\u20131940s",
+          "golden age circus lithograph poster aesthetic 1880s–1940s",
           "subjects illustrated as the headline act  -  body elongated and idealized in the manner of Strobridge lithographers",
           "heroic central figure filling the full vertical space with theatrical confidence",
           "arms spread wide or one fist raised skyward  -  thrilled and fearless as facial expression",
@@ -2592,7 +2589,7 @@
         "label": "Vaudeville Bill",
         "size": "1024x1536",
         "prompt": [
-          "vaudeville variety bill poster aesthetic 1890s\u20131920s",
+          "vaudeville variety bill poster aesthetic 1890s–1920s",
           "subjects redrawn as the headlining act in Victorian wood engraving illustration style",
           "dramatic singing pose commanding the stage  -  enthusiastic as facial expression",
           "ornate letterpress typography with wood type blocks framing the figure",
@@ -2617,7 +2614,7 @@
         "size": "1024x1536",
         "prompt": [
           "anarchic photomontage collage aesthetic",
-          "subjects embedded in assembled chaos \u2014 torn fragments layering through and around the figure",
+          "subjects embedded in assembled chaos — torn fragments layering through and around the figure",
           "official imagery, propaganda, signage and advertising torn and reassembled inspired by setting",
           "headlines and typography cut and colliding out of context inspired by subjects",
           "found photographic fragments layered with visible cut edges and torn borders",
@@ -2633,7 +2630,7 @@
         "prompt": [
           "fashion moodboard collage aesthetic",
           "cork board surface with casual overlapping assembly throughout",
-          "subjects transformed into the creative concept at the center of the board \u2014 the idea everything else is reaching toward",
+          "subjects transformed into the creative concept at the center of the board — the idea everything else is reaching toward",
           "torn magazine tearsheets and editorial fragments inspired by subjects layered around the concept",
           "fabric swatches, color chips and texture samples invented from subjects pinned at edges",
           "handwritten creative direction notes and annotations inspired by subjects",
@@ -2650,7 +2647,7 @@
         "prompt": [
           "satirical vision board manifestation collage aesthetic",
           "poster board surface with absurdly joyful overlapping assembly throughout meant as parody",
-          "outrageous cut word affirmations and ridiculous handwritten intentions inspired by subjects \u2014 bold, personal, meant",
+          "outrageous cut word affirmations and ridiculous handwritten intentions inspired by subjects — bold, personal, meant",
           "anti-aspirational imagery and unattainable goals inspired by start image in overlapping layers",
           "playful doodles and glitter accents throughout",
           "stickers and decorative elements inspired by subjects",
@@ -2666,7 +2663,7 @@
           "subversive pop art consumer collage aesthetic",
           "punchy flat color fields and crisp halftone dot patterns throughout",
           "subjects presented as a product with other ridiculous gleaming consumer products and brash advertising imagery",
-          "clean surgical cuts \u2014 no torn edges, no mess",
+          "clean surgical cuts — no torn edges, no mess",
           "confusing product slogans and absurd advertising copy inspired by start image",
           "everything shamelessly on the same visual plane",
           "ASPECT RATIO 3:4"
@@ -2678,10 +2675,10 @@
         "size": "1024x1536",
         "prompt": [
           "Rauschenberg combine collage aesthetic",
-          "subjects screenprinted as urgent news image \u2014 repeated at varying scales and opacities across the composition",
-          "photographic fragments from setting layered at competing scales \u2014 nothing more important than anything else",
-          "gestural paint marks running through and over the imagery \u2014 loose, urgent, indifferent to what they obscure",
-          "dense information overload \u2014 the world is too much and the surface holds all of it",
+          "subjects screenprinted as urgent news image — repeated at varying scales and opacities across the composition",
+          "photographic fragments from setting layered at competing scales — nothing more important than anything else",
+          "gestural paint marks running through and over the imagery — loose, urgent, indifferent to what they obscure",
+          "dense information overload — the world is too much and the surface holds all of it",
           "silkscreen texture and ink bleed throughout",
           "ASPECT RATIO 3:4"
         ]
@@ -2692,12 +2689,12 @@
         "size": "1024x1536",
         "prompt": [
           "Joseph Cornell shadow box collage aesthetic",
-          "subjects transformed into a sepia toned Victorian albumen portrait \u2014 high collar, formal composure, utterly still",
+          "subjects transformed into a sepia toned Victorian albumen portrait — high collar, formal composure, utterly still",
           "enshrined at the center of a shallow wooden shadow box with obsessive tenderness",
-          "found objects arranged around the portrait invented from subjects \u2014 star charts, maps, mirrors, glass vessels, cork balls, vintage ephemera",
-          "each object chosen to orbit the specific quality of the subjectss \u2014 a private universe assembled with care",
-          "monochrome and muted palette \u2014 color lives only in the objects themselves",
-          "straight on presentation \u2014 the full shadow box face as a framed print",
+          "found objects arranged around the portrait invented from subjects — star charts, maps, mirrors, glass vessels, cork balls, vintage ephemera",
+          "each object chosen to orbit the specific quality of the subjectss — a private universe assembled with care",
+          "monochrome and muted palette — color lives only in the objects themselves",
+          "straight on presentation — the full shadow box face as a framed print",
           "worn wood frame with compartments and dividers organizing the obsession",
           "ASPECT RATIO 3:4"
         ]
@@ -2708,31 +2705,45 @@
         "size": "1024x1536",
         "prompt": [
           "modern shadow box collage aesthetic",
-          "subjects transformed into a futuristic humanoid with cybernetic glowing red eye \u2014 clean, precise, slightly clinical",
+          "subjects transformed into a futuristic humanoid with cybernetic glowing red eye — clean, precise, slightly clinical",
           "enshrined at the center of a shallow brushed metal shadow box with deep black void",
           "found technological objects arranged around the portrait inspired by start image",
           "circuit fragments, fiber optic threads, USB cables",
-          "each object chosen to orbit the specific quality of the subjectss \u2014 a private technological universe assembled with intention",
-          "cool muted palette \u2014 steel, glass, electric blue, the occasional pulse of light",
-          "straight on presentation \u2014 the full shadow box face as a framed print",
+          "each object chosen to orbit the specific quality of the subjectss — a private technological universe assembled with intention",
+          "cool muted palette — steel, glass, electric blue, the occasional pulse of light",
+          "straight on presentation — the full shadow box face as a framed print",
           "brushed metal frame with precise machined compartments organizing the obsession",
           "ASPECT RATIO 3:4"
+        ]
+      },
+      {
+        "key": "collage_art_deco",
+        "label": "Art Deco Collage",
+        "size": "1536x1024",
+        "prompt": [
+          "introspective layered paper collage aesthetic",
+          "subjects reimagined as art deco fashion figure",
+          "subjects composed of torn and overlapping textures of found papers",
+          "setting rearranged and juxtaposed with precisely cut glamorous 1920s art deco figures and silhouettes from graphic prints",
+          "translucent vellum, textured cardstock, and delicate shaded paper",
+          "embodies a dreamscape built from fragmented surfaces",
+          "ASPECT RATIO 4:3"
         ]
       }
     ]
   },
   {
-    "family_key": "constuctivist",
+    "family_key": "propaganda",
     "family_label": "Propaganda",
     "subtheme": "Poster",
-    "file": "constuctivist.jpg",
+    "file": "propaganda.jpg",
     "variants": [
       {
         "key": "constuctivist",
         "label": "Soviet Constructivist",
         "size": "1024x1536",
         "prompt": [
-          "Soviet constructivist propaganda poster aesthetic 1920s\u20131930s",
+          "Soviet constructivist propaganda poster aesthetic 1920s–1930s",
           "subjects redrawn as a revolutionary symbol with stoic pose and facial expression",
           "body angled on a bold diagonal, larger than life",
           "flat graphic forms with hard edges and no modelling  -  pure shape and silhouette",
@@ -2816,7 +2827,7 @@
     ]
   },
   {
-    "family_key": "groovy_psychedelic",
+    "family_key": "psychedelic",
     "family_label": "Psychedelic",
     "subtheme": "Poster",
     "file": "psychedelic.jpg",
@@ -2848,6 +2859,63 @@
           "ASPECT RATIO 3:4"
         ]
       },
+      {
+        "key": "op_art",
+        "label": "Op Art",
+        "size": "1024x1536",
+        "prompt": [
+          "op art optical illusion poster aesthetic",
+          "entire image transformed into a field of warping black and white repeating geometric patterns",
+          "subjects and setting equally consumed by the optical field — no element escapes the pattern",
+          "subjects identifiable within the vibration — faces and forms readable but destabilised by the geometry",
+          "patterns bending and warping around contours of subjects and every element of the scene",
+          "the eye cannot rest — the image vibrates and refuses to resolve into stillness",
+          "ASPECT RATIO 3:4"
+        ]
+      },
+      {
+        "key": "op_art_color",
+        "label": "Op Art Color",
+        "size": "1024x1536",
+        "prompt": [
+          "op art optical illusion poster aesthetic",
+          "entire image transformed into a field of warping high contrast colors repeating geometric patterns and psychedelic infinite dots",
+          "subjects and setting equally consumed by the optical field — no element escapes the pattern",
+          "subjects identifiable within the vibration — faces and forms readable but destabilised by the geometry",
+          "bold chromatic palette with clashing colors inspired by subjects",
+          "circular dot patterns bending and warping around contours of subjects and every element of the scene",
+          "the eye cannot rest — the image vibrates and refuses to resolve into stillness",
+          "ASPECT RATIO 3:4"
+        ]
+      },
+      {
+        "key": "yellow_submarine",
+        "label": "Yellow Submarine",
+        "size": "1024x1536",
+        "prompt": [
+          "Yellow Submarine psychedelic animation aesthetic, Heinz Edelmann illustration style",
+          "subjects redrawn as flat graphic cutout figures — wide-eyed and mid-flee, arms pumping, legs a blur of motion",
+          "expressions of pure baffled alarm — not quite terror, not quite delight, somewhere impossible between both",
+          "Blue Meanies in hot pursuit — a chaotic mob of flat graphic menace spilling in from behind and above",
+          "subjects and creatures equally consumed by the collage logic — no hierarchy between figures and world",
+          "the Yellow Submarine appears somewhere in the composition obeying no spatial logic — simply present",
+          "The Beatles visible as flat graphic figures in matching mod suits somewhere aboard or alongside it",
+          "the landscape itself fleeing and reforming around the chase — patterns exploding outward from footfalls",
+          "kaleidoscopic ground tiles warping under running feet, optical illusion sky fracturing overhead",
+          "surreal cutout flora, floating letterforms and pattern bursts filling every gap in the composition",
+          "flat mod color planes with hard graphic edges and zero shadow or depth throughout",
+          "lysergic dreamscape with maximum playful chaos and zero breathing room",
+          "ASPECT RATIO 3:4"
+        ]
+      }
+    ]
+  },
+  {
+    "family_key": "blacklight",
+    "family_label": "Blacklight",
+    "subtheme": "Poster",
+    "file": "blacklight.jpg",
+    "variants": [
       {
         "key": "ascension",
         "label": "Cosmic Ascension",
@@ -2915,10 +2983,10 @@
     ]
   },
   {
-    "family_key": "motivational_poster",
+    "family_key": "motivational",
     "family_label": "Motivational",
     "subtheme": "Poster",
-    "file": "motivational_poster.jpg",
+    "file": "motivational.jpg",
     "variants": [
       {
         "key": "motivational_poster",
@@ -2966,7 +3034,7 @@
     ]
   },
   {
-    "family_key": "nouveau",
+    "family_key": "art_nouveau",
     "family_label": "Art Nouveau",
     "subtheme": "Poster",
     "file": "art_nouveau.jpg",
@@ -2977,7 +3045,7 @@
         "size": "1024x1536",
         "prompt": [
           "Art Nouveau lithograph poster aesthetic Alphonse Mucha tradition",
-          "subjects fully re-illustrated in Mucha's hand as a Belle \u00c9poque goddess",
+          "subjects fully re-illustrated in Mucha's hand as a Belle Époque goddess",
           "serene three-quarter pose with flowing hair dissolving into border",
           "elaborate botanical halo of flora and fauna blooming around subjects",
           "the natural world of the setting rendered as ornamental devotion",
@@ -3154,10 +3222,10 @@
     ]
   },
   {
-    "family_key": "sports_poster_football",
+    "family_key": "sports",
     "family_label": "Sports",
     "subtheme": "Poster",
-    "file": "sports_poster_football.jpg",
+    "file": "sports.jpg",
     "variants": [
       {
         "key": "sports_poster_football",
@@ -3207,6 +3275,30 @@
           "ASPECT RATIO 3:4"
         ]
       },
+      {
+        "key": "boxing_championship",
+        "label": "PPV Boxing",
+        "size": "1024x1536",
+        "prompt": [
+          "modern championship boxing fight poster aesthetic",
+          "subjects as headlining fighter in full-length confrontational stance  -  steely and predatory as facial expression",
+          "boxing robe and gloves transformed from subjects' clothes and accessories",
+          "face to face against a generated opponent with intense eye contact and electric tension",
+          "fighter names and nickname in massive bold typeface dominating the poster",
+          "dramatic spotlight with stark limited palette illustration",
+          "fictional promoter name and sanctioning body inspired by setting",
+          "arena venue, date, and PPV information at bottom",
+          "ASPECT RATIO 3:4"
+        ]
+      }
+    ]
+  },
+  {
+    "family_key": "vintage_sports",
+    "family_label": "Vintage Sports",
+    "subtheme": "Poster",
+    "file": "vintage_sports.jpg",
+    "variants": [
       {
         "key": "baseball_vintage",
         "label": "Vintage Baseball",
@@ -3269,7 +3361,15 @@
           "clean modernist typography with event and date details at bottom",
           "ASPECT RATIO 3:4"
         ]
-      },
+      }
+    ]
+  },
+  {
+    "family_key": "retro_sports",
+    "family_label": "Retro Sports",
+    "subtheme": "Poster",
+    "file": "retro_sports.jpg",
+    "variants": [
       {
         "key": "action_80s",
         "label": "80s Action Sports",
@@ -3299,22 +3399,6 @@
         ]
       },
       {
-        "key": "boxing_championship",
-        "label": "PPV Boxing",
-        "size": "1024x1536",
-        "prompt": [
-          "modern championship boxing fight poster aesthetic",
-          "subjects as headlining fighter in full-length confrontational stance  -  steely and predatory as facial expression",
-          "boxing robe and gloves transformed from subjects' clothes and accessories",
-          "face to face against a generated opponent with intense eye contact and electric tension",
-          "fighter names and nickname in massive bold typeface dominating the poster",
-          "dramatic spotlight with stark limited palette illustration",
-          "fictional promoter name and sanctioning body inspired by setting",
-          "arena venue, date, and PPV information at bottom",
-          "ASPECT RATIO 3:4"
-        ]
-      },
-      {
         "key": "wrestling_championship",
         "label": "Wrestling Card",
         "size": "1024x1536",
@@ -3334,10 +3418,10 @@
     ]
   },
   {
-    "family_key": "vintage_travel_poster",
+    "family_key": "travel_poster",
     "family_label": "Travel Poster",
     "subtheme": "Poster",
-    "file": "vintage_travel_poster.jpg",
+    "file": "travel_poster.jpg",
     "variants": [
       {
         "key": "vintage_travel_poster",
@@ -3360,7 +3444,7 @@
         "label": "World's Fair",
         "size": "1024x1536",
         "prompt": [
-          "retro-futuristic world\u2019s fair promotional poster aesthetic",
+          "retro-futuristic world’s fair promotional poster aesthetic",
           "subjects redrawn in mid-century commercial illustration style  -  smooth airbrush rendering, idealized proportions",
           "clothing reimagined as retro-futuristic costume and fancy chrome helmet",
           "posed as fabulous ambassador",
@@ -3411,7 +3495,7 @@
         "prompt": [
           "1930s European travel poster aesthetic",
           "subjects reimagined as a wealthy traveler",
-          "fully transformed with 30s era attire inspired by subject\u2019s clothing",
+          "fully transformed with 30s era attire inspired by subject’s clothing",
           "fully rendered as elegant Deco chromolithograph illustration",
           "sophisticated muted palette with fine lithographic detail",
           "international destination scene inspired by setting",
@@ -3423,10 +3507,10 @@
     ]
   },
   {
-    "family_key": "apothecary_label",
+    "family_key": "vessel",
     "family_label": "Vessel",
     "subtheme": "Relic",
-    "file": "apothecary_label.jpg",
+    "file": "vessel.jpg",
     "variants": [
       {
         "key": "apothecary_label",
@@ -3499,14 +3583,14 @@
       },
       {
         "key": "wine_bottle",
-        "label": "Ch\u00e2teau Wine Bottle",
+        "label": "Château Wine Bottle",
         "size": "1024x1536",
         "prompt": [
           "1940s era antique wine bottle presented on a weathered oak barrel",
-          "elaborate ch\u00e2teau estate label with ornate typographic border and crest",
+          "elaborate château estate label with ornate typographic border and crest",
           "subjects rendered as engraved portrait integrated into label as founding estate figure",
-          "era appropriate attire inspired by subject\u2019s clothing",
-          "ch\u00e2teau name and vintage inspired by subjects",
+          "era appropriate attire inspired by subject’s clothing",
+          "château name and vintage inspired by subjects",
           "tasting notes and appellation details in formal French typography inspired by subjects",
           "aged cream label with foxing and slight moisture curl at edges",
           "bottle with deep punted base and wax capsule seal",
@@ -3517,10 +3601,10 @@
     ]
   },
   {
-    "family_key": "award_plaque",
+    "family_key": "memorabilia",
     "family_label": "Memorabilia",
     "subtheme": "Relic",
-    "file": "award_plaque.jpg",
+    "file": "memorabilia.jpg",
     "variants": [
       {
         "key": "award_plaque",
@@ -3613,11 +3697,11 @@
           "small figure presented as engraved portrait vignette with small title logo on formal card stock",
           "dress reinterpreted as fine copperplate engraving detail within the portrait vignette",
           "cream or ivory card stock with deckled or gilt edges",
-          "ornate copperplate typography announcing subject\u2019s full name in formal visiting card tradition",
+          "ornate copperplate typography announcing subject’s full name in formal visiting card tradition",
           "decorative flourishes, scrollwork, and floral engraving surrounding the portrait vignette",
           "card leaning against or emerging from an opened envelope lined in tissue paper",
-          "envelope exterior absorbing the prompt\u2019s palette and motifs as decorative postmark and wax seal",
-          "subject\u2019s name engraved in elegant copperplate script as the card\u2019s primary nameplate",
+          "envelope exterior absorbing the prompt’s palette and motifs as decorative postmark and wax seal",
+          "subject’s name engraved in elegant copperplate script as the card’s primary nameplate",
           "prominent notation of time and occasion in 1880s Victorian period ink",
           "subtle embossing and letterpress impression visible on card surface",
           "intimate object scale with worn corner suggesting frequent handling and social circulation",
@@ -3642,7 +3726,7 @@
           "surreal scale and perspective wrong in ways that feel inevitable",
           "clean scissor cut edges and flat simplified shapes throughout",
           "soft cast shadows falling between each suspended paper layer",
-          "deep box frame presented straight on \u2014 the impossible depth fully visible",
+          "deep box frame presented straight on — the impossible depth fully visible",
           "ASPECT RATIO 3:4"
         ]
       },
@@ -3652,7 +3736,7 @@
         "size": "1024x1536",
         "prompt": [
           "origami figure in photorealistic world aesthetic",
-          "subjects transformed into a folded paper origami figure \u2014 angular faceted planes, crisp fold lines, matte paper surface",
+          "subjects transformed into a folded paper origami figure — angular faceted planes, crisp fold lines, matte paper surface",
           "placed in a photorealistic real world environment inspired by setting",
           "the paper figure's flatness and geometry in sharp contrast with the living world around it",
           "fold lines mapping the subjectss' form across angular geometric planes",
@@ -3666,7 +3750,7 @@
         "size": "1536x1024",
         "prompt": [
           "photorealistic figure in origami world aesthetic",
-          "subjects is photorealistic \u2014 warm, living, soft",
+          "subjects is photorealistic — warm, living, soft",
           "placed in a world obsessively constructed from folded paper inspired by start image",
           "every surface, object and environment around the subjectss is angular folded geometry",
           "the subjectss' warmth and humanity in sharp contrast with the flat paper world surrounding them",
@@ -3682,10 +3766,10 @@
         "prompt": [
           "elaborate celebration cake aesthetic",
           "subjects transformed into a head and shoulders decorated cake on a cake stand or podium",
-          "subjects' face and head fully rendered in cake materials \u2014 fondant skin, piped hair, sculpted sugar features",
-          "a single slice removed and displayed \u2014 revealing the subjectss' layers, colors and filling inside",
-          "exterior decoration and design invented from subjects \u2014 piped, sculpted and adorned",
-          "interior layers and filling inspired by subjects \u2014 color, texture and flavor visible in the cut",
+          "subjects' face and head fully rendered in cake materials — fondant skin, piped hair, sculpted sugar features",
+          "a single slice removed and displayed — revealing the subjectss' layers, colors and filling inside",
+          "exterior decoration and design invented from subjects — piped, sculpted and adorned",
+          "interior layers and filling inspired by subjects — color, texture and flavor visible in the cut",
           "soft bokeh environment inspired by setting behind the cake",
           "dramatic presentation lighting on the cake as hero object",
           "ASPECT RATIO 3:4"
@@ -3697,11 +3781,11 @@
         "size": "1536x1024",
         "prompt": [
           "competition sand sculpture aesthetic",
-          "start image transformed into a monumental competition-grade sand sculpture \u2014 extraordinary detail and scale",
-          "half consumed by tide and wind \u2014 the lower half dissolving back into wet sand",
+          "start image transformed into a monumental competition-grade sand sculpture — extraordinary detail and scale",
+          "half consumed by tide and wind — the lower half dissolving back into wet sand",
           "surviving upper detail in sharp contrast with the eroded dissolution below",
           "tool marks and carved precision still visible in the sections the sea hasn't reached",
-          "abandoned beach setting \u2014 no crowd, no carvers, just the sculpture and the tide",
+          "abandoned beach setting — no crowd, no carvers, just the sculpture and the tide",
           "soft overcast coastal light on wet sand throughout",
           "ASPECT RATIO 4:3"
         ]
@@ -3713,7 +3797,7 @@
         "prompt": [
           "artisan carved soap bar aesthetic",
           "subjects transformed into a relief portrait carved into the face of an artisan soap bar",
-          "soap significantly used \u2014 the subjectss' features dissolving and wearing smooth by handling",
+          "soap significantly used — the subjectss' features dissolving and wearing smooth by handling",
           "glistening wet and covered with thick soapy suds and bubbles",
           "knife-cut carving marks still visible at edges",
           "smooth waxy surface catching light across the remaining carved relief",
@@ -3730,8 +3814,8 @@
           "narrative story quilt aesthetic",
           "subjects transformed into the central figure of a hand-stitched story quilt hung as a wall artwork",
           "each patch a distinct scene inspired by start image",
-          "the whole quilt reading as a narrative across the patches \u2014 a life told in fabric",
-          "visible hand stitching, embroidery detail and appliqu\u00e9 construction throughout",
+          "the whole quilt reading as a narrative across the patches — a life told in fabric",
+          "visible hand stitching, embroidery detail and appliqué construction throughout",
           "decorative sashing and border framing each scene and the whole composition",
           "faded and softened fabric with the warmth of a well-loved object",
           "quilt hung against a wood panel wall slightly rippled",
@@ -3759,10 +3843,10 @@
     ]
   },
   {
-    "family_key": "pocket_watch",
+    "family_key": "heirloom",
     "family_label": "Heirloom",
     "subtheme": "Relic",
-    "file": "pocket_watch.jpg",
+    "file": "heirloom.jpg",
     "variants": [
       {
         "key": "pocket_watch",
@@ -3803,7 +3887,7 @@
         "label": "Collector's Plate",
         "size": "1024x1536",
         "prompt": [
-          "Franklin Mint style commemorative collector\u2019s plate object aesthetic",
+          "Franklin Mint style commemorative collector’s plate object aesthetic",
           "subjects rendered as idealized painted porcelain portrait illustration fully integrated into plate surface",
           "ornate decorative border inspired by subjects with gold rim detail",
           "plate presented face-out on velvet display easel",
@@ -3835,24 +3919,24 @@
     ]
   },
   {
-    "family_key": "postage_stamp",
+    "family_key": "collection",
     "family_label": "Collection",
     "subtheme": "Relic",
-    "file": "postage_stamp.jpg",
+    "file": "collection.jpg",
     "variants": [
       {
         "key": "postage_stamp",
         "label": "Postage Stamp",
         "size": "1024x1536",
         "prompt": [
-          "vintage postage stamp presented in open collector\u2019s album on aged paper mount",
+          "vintage postage stamp presented in open collector’s album on aged paper mount",
           "subjects fully absorbed into fine intaglio engraved portrait style within perforated stamp border",
           "crosshatched line art and etching technique rendering figure in miniature engraved hand",
           "fictional nation and denomination inspired by subjects in period serif typography",
           "decorative motifs and symbolic imagery inspired by setting filling stamp margins",
           "rich limited color palette with aged ink and paper texture",
           "perforations crisp and clean suggesting mint condition",
-          "collector\u2019s album page and adjacent stamps visible at edges in soft bokeh",
+          "collector’s album page and adjacent stamps visible at edges in soft bokeh",
           "ASPECT RATIO 3:4"
         ]
       },
@@ -3861,13 +3945,15 @@
         "label": "Paper Currency",
         "size": "1536x1024",
         "prompt": [
-          "paper currency banknote aesthetic",
-          "intricate engraved line work with fine cross-hatching",
-          "subjects line drawn as central portrait vignette on note face",
-          "ornate scrollwork borders and decorative filigree",
-          "denomination, currency name and issuing authority inspired by subjects",
-          "serial number, watermark and fine print text inspired by setting",
-          "worn cotton-linen paper with fold lines and circulation damage",
+          "open duffel bag on luxury hotel bed aesthetic",
+          "revealing interior of duffel bag packed with authentic bank notes",
+          "subjects rendered together as central portrait vignette engraved on the face of each visible bill",
+          "ornate engraved scrollwork borders and fine cross-hatching on each note face",
+          "impossible denomination, playful currency name and absurd issuing authority inspired by subject",
+          "rumpled high thread-count bedding surrounding the duffel bag with small pistol and the subjects’ passports laying nearby",
+          "subjects visible in soft bokeh behind — formal evening attire, standing at floor-to-ceiling windows",
+          "luxury hotel suite atmosphere with warm lamp light dissolving into background blur",
+          "dramatic directional light picking out the bills and suitcase interior",
           "ASPECT RATIO 4:3"
         ]
       },
@@ -3876,34 +3962,33 @@
         "label": "Commemorative Coin",
         "size": "1024x1536",
         "prompt": [
-          "silver dollar engraving portrait style with geographically appropriate denomination",
-          "profile engraved in metal surface",
-          "circular composition with raised edge",
-          "playful inscriptions around border should be influenced by the subjects",
-          "presented in 3D floating frame shadow box display case",
-          "aged patina or polished metal finish",
-          "symbol of authority and value",
-          "portrait simplified into relief form",
-          "appropriate historical currency design language",
-          "subjects immortalized in metal",
+          "vintage coin collection album page aesthetic",
+          "open album page filled with coins in clear plastic pockets — subject coin as the hero centre piece",
+          "subjects portrait engraved in relief on hero coin face — profiles together in classic mint tradition",
+          "surrounding coins partially visible at edges in adjacent pockets — aged and varied denominations",
+          "playful inscriptions and impossible denomination on hero coin inspired by subjects",
+          "worn album page with printed grid labels and handwritten collector annotations",
+          "spiral spine valley visible at left edge — page curving slightly into the binding",
+          "aged patina and polished metal finish on hero coin",
+          "soft directional light picking out coin relief and album page texture",
           "ASPECT RATIO 3:4"
         ]
       },
       {
         "key": "faberge_egg",
-        "label": "Faberg\u00e9 Egg",
+        "label": "Fabergé Egg",
         "size": "1024x1536",
         "prompt": [
-          "Imperial Faberg\u00e9 egg display case aesthetic",
+          "Imperial Fabergé egg display case aesthetic",
           "subjects presented as miniature hand-painted portrait medallion set into the egg surface",
-          "dress reinterpreted as guilloche enamel pattern across the egg\u2019s curved surface panels",
+          "dress reinterpreted as guilloche enamel pattern across the egg’s curved surface panels",
           "egg form constructed in jeweled gold with translucent enamel over engine-turned ground",
           "hinged opening at egg equator revealing miniature surprise element inspired by subjects",
           "rose-cut diamond, ruby, and sapphire encrustation along panel borders and seam lines",
           "egg mounted on ornate gold tripod stand with claw feet and acanthus detailing",
           "guilloche sunburst or wave engine-turning visible beneath translucent enamel panels",
           "aged gold with slight patina suggesting imperial provenance and museum handling",
-          "adjacent Faberg\u00e9 eggs partially visible at edges",
+          "adjacent Fabergé eggs partially visible at edges",
           "intimate collectible scale implying extreme rarity and dynastic ownership",
           "ASPECT RATIO 3:4"
         ]
@@ -3911,10 +3996,10 @@
     ]
   },
   {
-    "family_key": "sculpt",
+    "family_key": "sculpture",
     "family_label": "Sculpture",
     "subtheme": "Relic",
-    "file": "sculpt.jpg",
+    "file": "sculpture.jpg",
     "variants": [
       {
         "key": "sculpt",
@@ -3955,7 +4040,7 @@
           "subjects emerging organically from the material itself in flowing sinuous pose",
           "translucent alabaster with warm ivory tones and natural veining",
           "organic decorative base with floral and tendril motifs",
-          "subject\u2019s form dissolving into and emerging from the stone surface",
+          "subject’s form dissolving into and emerging from the stone surface",
           "soft diffused light filtering through translucent alabaster",
           "mantle edge and domestic interior visible at edges in soft bokeh",
           "ASPECT RATIO 3:4"
@@ -3979,10 +4064,10 @@
     ]
   },
   {
-    "family_key": "brick",
+    "family_key": "playtime",
     "family_label": "Playtime",
     "subtheme": "Toybox",
-    "file": "brick.jpg",
+    "file": "playtime.jpg",
     "variants": [
       {
         "key": "brick",
@@ -4082,23 +4167,23 @@
     ]
   },
   {
-    "family_key": "holographic",
+    "family_key": "trading_card",
     "family_label": "Trading Card",
     "subtheme": "Toybox",
-    "file": "holographic.jpg",
+    "file": "trading_card.jpg",
     "variants": [
       {
-        "key": "holographic",
+        "key": "trading_card_football",
         "label": "Football Card",
         "size": "1024x1536",
         "prompt": [
           "modern holographic professional football trading card style",
-          "subjects reimagined as a star player in full football uniform and helmet  -  intense and focused",
+          "subjects reimagined as star players in full football uniform and helmet  -  intense and focused",
           "team name, jersey number and logo inspired by subjects",
-          "dynamic mid-play action pose",
+          "dynamic mid-play action poses",
           "rainbow prism holographic foil treatment rippling across entire card surface",
           "sharp corner mint condition card with gloss finish and prismatic refraction",
-          "player name, position and stats grid at card base inspired by subjects",
+          "player nicknames and silly team stats grid at card base inspired by subjects",
           "rare parallel chase insert with foil stamped series numbering",
           "ASPECT RATIO 3:4"
         ]
@@ -4109,12 +4194,13 @@
         "size": "1024x1536",
         "prompt": [
           "modern holographic professional basketball trading card style",
-          "subjects reimagined as a star player in full basketball uniform  -  driven and game focused",
+          "subjects reimagined as star players in full basketball uniform  -  intense and focused",
           "team name, jersey number and logo inspired by subjects",
-          "dynamic mid-play action pose",
+          "dynamic mid-play action poses",
           "rainbow prism holographic foil treatment rippling across entire card surface",
           "sharp corner mint condition card with gloss finish and prismatic refraction",
-          "player name, position and stats grid at card base inspired by subjects",
+          "player nicknames and silly team stats grid at card base inspired by subjects",
+          "rare parallel chase insert with foil stamped series numbering",
           "ASPECT RATIO 3:4"
         ]
       },
@@ -4154,7 +4240,7 @@
         "label": "Monster Card",
         "size": "1024x1536",
         "prompt": [
-          "90s Pok\u00e9mon inspired trading card style",
+          "90s Pokémon inspired trading card style",
           "subjects transformed into a tiny cute monster creature  -  type, form and abilities inspired by subjects",
           "unique creature illustrated in watercolor style on card art panel",
           "playful name, HP and elemental type inspired by subjects at card top",
@@ -4197,10 +4283,10 @@
     ]
   },
   {
-    "family_key": "pink_box",
+    "family_key": "doll",
     "family_label": "Doll",
     "subtheme": "Toybox",
-    "file": "barbie.jpg",
+    "file": "doll.jpg",
     "variants": [
       {
         "key": "pink_box",
@@ -4331,10 +4417,10 @@
     ]
   },
   {
-    "family_key": "springfield",
+    "family_key": "toon",
     "family_label": "Toon",
     "subtheme": "Toybox",
-    "file": "springfield.jpg",
+    "file": "toon.jpg",
     "variants": [
       {
         "key": "springfield",
@@ -4387,7 +4473,7 @@
         "label": "Anime Cel",
         "size": "1024x1536",
         "prompt": [
-          "1980s\u201390s anime cel animation style",
+          "1980s–90s anime cel animation style",
           "subjects mid power-up transformation  -  windswept hair, determined expression, energy radiating outward",
           "bold consistent ink outlines with no weight variation",
           "hand-painted acetate with opaque chalky cel paint",
@@ -4405,14 +4491,14 @@
         "size": "1024x1536",
         "prompt": [
           "modern digital anime illustration style",
-          "subjects transported into an iconic anime scene moment  -  rain soaked street at night or convenience store glow or rooftop at golden hour",
+          "subjects transported into an iconic anime scene moment inspired by setting",
           "soft gradient shading on skin and fabric with radial glow",
           "fine tapered linework with variable weight fading into color",
           "hair rendered in luminous strand clusters with specular highlights",
           "hard-edged anime shadows with subtle gradient fill inside",
           "lens bloom and chromatic aberration on light sources",
           "particle effects and atmospheric light scatter",
-          "semi-photorealistic background behind stylized character",
+          "semi-photorealistic background behind stylized characters",
           "ASPECT RATIO 3:4"
         ]
       },
@@ -4466,33 +4552,17 @@
     ]
   },
   {
-    "family_key": "trnka",
+    "family_key": "puppet",
     "family_label": "Puppet",
     "subtheme": "Toybox",
-    "file": "trnka.jpg",
+    "file": "puppet.jpg",
     "variants": [
-      {
-        "key": "puppet_shadow",
-        "label": "Shadow Puppet",
-        "size": "1536x1024",
-        "prompt": [
-          "shadow puppet theater aesthetic",
-          "subjects rendered as pure black articulated silhouette puppet in motion",
-          "intricate cut edge detail and negative space throughout",
-          "white illuminated backlit cloth screen as image ground",
-          "dramatic high contrast black against glowing screen",
-          "shadow puppet scene inspired by start image",
-          "jointed articulated figure construction throughout",
-          "wayang kulit tradition with ornate edge detail",
-          "ASPECT RATIO 4:3"
-        ]
-      },
       {
         "key": "trnka",
         "label": "Marionette",
         "size": "1024x1536",
         "prompt": [
-          "Ji\u0159\u00ed Trnka puppet animation style",
+          "Jiří Trnka puppet animation style",
           "subjects reimagined as an intricate hand-carved wooden marionette",
           "faint delicate strings attached only to puppet's head, shoulders, hands, and knees",
           "carved and painted wooden face with delicate hand-crafted features",
@@ -4531,6 +4601,22 @@
           "painted theatrical backdrop inspired by setting",
           "warm stage lighting with footlight glow",
           "ASPECT RATIO 3:4"
+        ]
+      },
+      {
+        "key": "shadow_puppet",
+        "label": "Shadow Puppet",
+        "size": "1536x1024",
+        "prompt": [
+          "shadow puppet theater aesthetic",
+          "subjects rendered as pure black articulated silhouette puppets in motion",
+          "intricate cut edge detail and negative space throughout",
+          "white illuminated backlit cloth screen as image ground",
+          "dramatic high contrast black against glowing screen",
+          "shadow puppet scene inspired by start image",
+          "jointed articulated figure construction throughout",
+          "wayang kulit tradition with ornate edge detail",
+          "ASPECT RATIO 4:3"
         ]
       }
     ]
@@ -4582,7 +4668,7 @@
           "exaggerated height difference with playful scale contrast",
           "matching outfit with identical styling and accessories",
           "failed mirrored pose attempt with adorable imperfection",
-          "mentor-prot\u00e9g\u00e9 or sidekick dynamic",
+          "mentor-protégé or sidekick dynamic",
           "slightly off synchronization with sweet mimicry",
           "tiny companion energy with charming visual comedy and thought bubble",
           "ASPECT RATIO 3:4"
@@ -4759,7 +4845,7 @@
         "size": "1024x1536",
         "prompt": [
           "Neo-Expressionist painting aesthetic",
-          "subjects rendered with intentional anatomical distortion \u2014 figure contested and raw",
+          "subjects rendered with intentional anatomical distortion — figure contested and raw",
           "aggressive impasto brushwork with paint scraped, layered, and attacked across the surface",
           "crude gestural marks and symbolic scrawl bleeding into the composition",
           "raw ground showing through where paint has been dragged or removed",
@@ -4775,11 +4861,11 @@
         "size": "1024x1536",
         "prompt": [
           "Abstract Expressionist action painting aesthetic",
-          "subjects emerging from dense layered gestural brushwork \u2014 figure suggested rather than rendered",
+          "subjects emerging from dense layered gestural brushwork — figure suggested rather than rendered",
           "identity retained through silhouette and gesture rather than facial detail",
-          "paint applied physically \u2014 dripped, thrown, scraped, and built into thick impasto",
+          "paint applied physically — dripped, thrown, scraped, and built into thick impasto",
           "color palette inspired by subjects' emotional presence in start image",
-          "figure and ground in constant tension \u2014 subjects threatening to dissolve into pure gesture",
+          "figure and ground in constant tension — subjects threatening to dissolve into pure gesture",
           "raw canvas bleeding through at edges where paint thins to nothing",
           "composition treating mark-making as emotional event rather than representation",
           "ASPECT RATIO 3:4"
@@ -4791,23 +4877,41 @@
         "size": "1024x1536",
         "prompt": [
           "German Expressionist painting aesthetic",
-          "subjects rendered in hard angular planes \u2014 face flattened into a mask of carved geometry",
-          "every edge cut rather than brushed \u2014 woodcut sensibility throughout the painted surface",
-          "color chosen for psychological violence \u2014 dissonant greens, sickly yellows, raw reds",
+          "subjects rendered in hard angular planes — face flattened into a mask of carved geometry",
+          "every edge cut rather than brushed — woodcut sensibility throughout the painted surface",
+          "color chosen for psychological violence — dissonant greens, sickly yellows, raw reds",
           "figure and environment fractured into jagged interlocking planes of anxious line",
-          "no naturalistic curve surviving \u2014 all form broken into angular psychological shards",
+          "no naturalistic curve surviving — all form broken into angular psychological shards",
           "atmosphere of urban dread or existential anguish pressing in from every edge",
-          "paint applied with deliberate harshness \u2014 no blending, no softness, no relief",
+          "paint applied with deliberate harshness — no blending, no softness, no relief",
+          "ASPECT RATIO 3:4"
+        ]
+      },
+      {
+        "key": "expressionism_seussian",
+        "label": "Seussian Expressionist",
+        "size": "1024x1536",
+        "prompt": [
+          "psychedelic expressionist painting aesthetic — Van Gogh turbulence meets Seussian grotesque",
+          "subjects redrawn in rubbery elongated proportions — all bodies and setting made of the same molten neon substance",
+          "every subject's expression locked between ecstatic grin and existential horror — none resolving",
+          "figures dissolving into each other and the surrounding world — no boundary between flesh, other figures, or environment",
+          "setting transformed into impossible warped architecture of candy-colored melting forms",
+          "swirling spiral geometry consuming every surface — floor, walls, sky obeying the same vortex logic",
+          "paint dripping, oozing and smearing across every element as if the image itself is melting",
+          "faces and eyes hidden within landscape forms — emerging from terrain, walls and furniture",
+          "maximum chromatic saturation — hot magenta, acid orange, poison purple, radioactive chartreuse, turquoise",
+          "thick impasto brushwork throughout — every stroke turbulent, no surface at rest",
           "ASPECT RATIO 3:4"
         ]
       }
     ]
   },
   {
-    "family_key": "ghost",
+    "family_key": "spectre",
     "family_label": "Spectre",
     "subtheme": "Uncanny",
-    "file": "ghost.jpg",
+    "file": "spectre.jpg",
     "variants": [
       {
         "key": "ghost",
@@ -4833,12 +4937,12 @@
         "size": "1024x1536",
         "prompt": [
           "darkroom solarization Sabattier effect aesthetic",
-          "subjects reimagined as a malevolent spectre caught mid-eruption  -  lunging forward with furious expression",
-          "Mackie lines of bright halation tracing the figure's edges like burning electricity",
-          "partial tone reversal radiating outward from the figure  -  the subjectss is the source of the inversion",
+          "subjects reimagined as malevolent specters caught mid-eruption  -  lunging forward directly at camera, eyes locked on viewer with furious expressions",
+          "Mackie lines of bright halation tracing the figures' edges like burning electricity",
+          "partial tone reversal radiating outward from the figures  -  the subjects are the source of the inversion",
           "skin tones partially inverted creating an otherworldly burning luminosity",
           "deep blacks and searing whites coexisting in the same tonal plane",
-          "personal objects and possessions inspired by setting caught in the reversal field around the figure",
+          "personal objects and possessions inspired by setting caught in the reversal field around the figures",
           "fabric and hair erupting outward as if charged by the spectral force",
           "fine grain silver gelatin print surface with chemical luminosity",
           "ASPECT RATIO 3:4"
@@ -4931,7 +5035,7 @@
           "subjects and entire setting sculpted from dark grey-brown clay",
           "crude thumb-pressed facial features with visible fingerprint texture throughout",
           "uneven clay surface with cracks, pocks, and imperfect joins",
-          "setting fully rendered in clay \u2014 every object hand-sculpted and slightly wrong",
+          "setting fully rendered in clay — every object hand-sculpted and slightly wrong",
           "dim practical lighting casting deep shadow into every surface imperfection",
           "tone of damp decay and cheerful wrongness",
           "ASPECT RATIO 3:4"
@@ -4943,9 +5047,12 @@
         "size": "1024x1536",
         "prompt": [
           "black demotivational poster aesthetic",
-          "vertical format with small professional illustration quality portrait centered",
-          "single moderately self-deprecating word in bold serif type at top  -  inspired by subjects",
-          "awful deflating tagline across bottom with insulting logo",
+          "vertical format with small professional group portrait centered",
+          "single devastating one-word adjective in bold serif type at top  -  targeting the specific collective failure these subjects represent together",
+          "brutal deflating tagline below that relates to adjective above",
+          "identifies exactly what is wrong with this particular combination of people",
+          "punchline feels personally researched not generically applied",
+          "awful insulting logo at bottom",
           "glossy laminated finish with professional framing",
           "ASPECT RATIO 3:4"
         ]
@@ -4961,7 +5068,7 @@
           "cage frame and base ornately decorated with motifs inspired by setting",
           "deep dark void background with harsh spotlight casting bar shadows",
           "subjects gazing through the bars directly at viewer with quiet melancholic resignation",
-          "dramatic theatrical isolation \u2014 the world reduced to this one gilded prison",
+          "dramatic theatrical isolation — the world reduced to this one gilded prison",
           "ASPECT RATIO 3:4"
         ]
       },
@@ -5001,6 +5108,22 @@
           "absurd investigation notes",
           "forensic case file format with deadpan institutional register",
           "ASPECT RATIO 4:3"
+        ]
+      },
+      {
+        "key": "memorial_silhouette",
+        "label": "Victorian Memorial",
+        "size": "1024x1536",
+        "prompt": [
+          "Victorian memorial scrapbook page aesthetic",
+          "black cloth bound mourning album open to a single page — spine valley visible at left edge",
+          "subjects transformed into cut paper silhouette portraits — pure black profiles mounted on aged mourning card",
+          "silhouettes mounted at center with black ruled border and memorial inscription in copperplate inspired by subjects",
+          "pressed funeral flowers with black ribbon still tied at stem arranged at corners",
+          "carefully placed mourning card with black edge and formal condolence language inspired by start image",
+          "lock of hair pressed into page",
+          "heavy cream page with careful grieving hand throughout — tender, formal, final",
+          "ASPECT RATIO 3:4"
         ]
       }
     ]
@@ -5077,19 +5200,19 @@
       {
         "key": "mystical_grimoire",
         "label": "Witch's Grimoire",
-        "size": "1024x1536",
+        "size": "1536x1024",
         "prompt": [
-"witch's obsession scrapbook spread aesthetic",
-"ancient grimoire lying open in a candlelit witch's lair — full two page spread visible in landscape orientation",
-"dark aged pages with wax drips, ink bleed and urgent assembly throughout",
-"witch's silhouette looming in background darkness — cauldron, hanging dried herbs, candlelight",
-"left page: obsessive surveillance of subjects — hasty sketches, pressed botanicals keyed to subject's qualities, physical observations in cramped handwriting growing increasingly large and unhinged",
-"things circled and underlined with escalating urgency inspired by subjects",
-"right page: the recipe and ritual instructions for becoming the subjects",
-"ingredients with absurd quantities and steps numbered in spidery handwriting inspired by subjects",
-"something crossed out and rewritten three times — a warning underlined so hard it tore the page",
-"theatrical operatic obsession throughout — totally committed, completely over the top",
-"ASPECT RATIO 4:3"
+          "witch's obsession scrapbook spread aesthetic",
+          "ancient grimoire lying open in a candlelit witch's lair — full two page spread visible in landscape orientation",
+          "dark aged pages with wax drips, ink bleed and urgent assembly throughout",
+          "witch's silhouette looming in background darkness — cauldron, hanging dried herbs, candlelight",
+          "left page: obsessive surveillance of subjects — hasty sketches, pressed botanicals keyed to subject's qualities, physical observations in cramped handwriting growing increasingly large and unhinged",
+          "things circled and underlined with escalating urgency inspired by subjects",
+          "right page: the recipe and ritual instructions for becoming the subjects",
+          "ingredients with absurd quantities and steps numbered in spidery handwriting inspired by subjects",
+          "something crossed out and rewritten three times — a warning underlined so hard it tore the page",
+          "theatrical operatic obsession throughout — totally committed, completely over the top",
+          "ASPECT RATIO 4:3"
         ]
       },
       {
@@ -5098,8 +5221,8 @@
         "size": "1024x1536",
         "prompt": [
           "Turkish ebru paper marbling mystical portrait aesthetic",
-          "subjects is the source of the marbling pattern \u2014 swirling ink radiating outward from the figure",
-          "face and eyes rendered in the same ink marbling language as the body \u2014 no photographic realism",
+          "subjects is the source of the marbling pattern — swirling ink radiating outward from the figure",
+          "face and eyes rendered in the same ink marbling language as the body — no photographic realism",
           "facial features suggested through pattern density and flow rather than realistic rendering",
           "body and surroundings dissolving completely into turbulent swirling ink",
           "organic comb-pulled and stylus-drawn ink patterns mapping subjects' energy outward",
@@ -5114,10 +5237,10 @@
         "size": "1024x1536",
         "prompt": [
           "Australian Aboriginal dot painting mystical portrait aesthetic",
-          "subjects mapped as sacred country \u2014 body dissolving into songline cartography",
+          "subjects mapped as sacred country — body dissolving into songline cartography",
           "concentric dot circles radiating from subjects' form as sacred waterhole sites",
           "limbs and silhouette becoming ancestral tracks connecting points across the composition",
-          "aerial viewpoint with no horizon \u2014 pure cosmological map with no perspective",
+          "aerial viewpoint with no horizon — pure cosmological map with no perspective",
           "dots of varying density building form and spiritual topography simultaneously",
           "earth palette of ochre, burnt sienna, deep burgundy, and desert sand",
           "subjects' essence recorded as landscape rather than likeness",
@@ -5141,13 +5264,13 @@
           "subjects rendered as grotesque exaggerated comix figure with bulging eyes and gnarled hands",
           "every object in setting redrawn with obsessive crosshatched ink detail",
           "invented comic title in bold hand-lettered display type inspired by subjects' situation",
-          "invented tagline and cover blurb in period comix voice \u2014 defiant, absurdist, self-aware",
+          "invented tagline and cover blurb in period comix voice — defiant, absurdist, self-aware",
           "speech bubble with single muttered observation inspired by subjects' activity",
           "invented absurd product labels and text on every object in the scene",
           "small print caption at bottom in deadpan countercultural register",
           "aged newsprint texture with sepia ink and muted color palette on cream stock",
           "cover price and limited edition number in corner",
-          "all text invented from visual content \u2014 nothing transcribed from outside the image",
+          "all text invented from visual content — nothing transcribed from outside the image",
           "ASPECT RATIO 3:4"
         ]
       },
@@ -5162,6 +5285,21 @@
           "painted illustration style with glossy hyperdetailed gross-out quality",
           "die-cut sticker format with classic GPK border and logo at top",
           "playful two word character name inspired by subjects in chunky rounded typeface at bottom",
+          "ASPECT RATIO 3:4"
+        ]
+      },
+      {
+        "key": "photobooth_subversive",
+        "label": "Subversive Photo Booth",
+        "size": "1024x1536",
+        "prompt": [
+          "photo booth strip style",
+          "vertical sequence of 4 small portraits",
+          "subjects in playful poses progressing through strip from innocent to subversive",
+          "harsh flash contained inside booth",
+          "thick white border between each frame on dark strip backing",
+          "cramped booth framing with bright red velvet curtain backdrop only",
+          "chemical processing marks on strip surface",
           "ASPECT RATIO 3:4"
         ]
       }
@@ -5179,9 +5317,9 @@
         "size": "1024x1536",
         "prompt": [
           "uncanny surrealist oil painting aesthetic",
-          "subjects' face replaced by an open window revealing the subjectss' head and shoulders",
+          "subjects' faces each replaced by an open window revealing an appropriately unique animal face",
           "every object and subjects' clothing details in start image transformed by all of the surrealist tropes",
-          "window frame integrated seamlessly into facial structure as if always there",
+          "window frames integrated seamlessly into facial structure as if always there",
           "surrounding environment bending subtly toward the impossibility at center",
           "rich painterly oil technique throughout with deep shadow and luminous detail",
           "one impossible thing accepted as completely normal by the composition",
@@ -5221,6 +5359,60 @@
           "carnival sideshow aesthetic with unsettling whimsy",
           "liquid reality bending with impossible geometry",
           "ASPECT RATIO 4:3"
+        ]
+      },
+      {
+        "key": "surreal_botanical",
+        "label": "Surrealist Botanical",
+        "size": "1024x1536",
+        "prompt": [
+          "Retro-futuristic mixed media collage",
+          "subjects emerging from a dark field as a halftone photographic cut-outs at unnatural angle",
+          "botanical explosion erupting from and replacing all heads while fully consuming subjects and setting",
+          "wild psychedelic plants with tiny faces of every subject fills the frame",
+          "1970s album art and pop surrealism and obsessive infinite dots",
+          "bold contrasts of black, pale color tones, and bright neon colors inspired by start image",
+          "combines photographic cut-outs, halftone noise, and block-printed patterns from the start image",
+          "abstract shapes and celestial diagrams",
+          "moody, layered, and richly textured with a dreamy yet analog tone",
+          "chiaroscuro lighting with deep shadows and ethereal highlights",
+          "ASPECT RATIO 3:4"
+        ]
+      },
+      {
+        "key": "salon_macabre",
+        "label": "Salon Macabre",
+        "size": "1024x1536",
+        "prompt": [
+          "gothic fairytale surrealism aesthetic",
+          "subjects reimagined as creepy salonists with exaggerated and elongated character designs",
+          "dark yet whimsical atmosphere with eerie and playful mood",
+          "high-contrast monochromatic tones with pops of vivid color",
+          "setting intact yet reimagined as a fantastical salon",
+          "gothic Victorian influences, surreal and theatrical set designs",
+          "twisted and fantastical storytelling",
+          "melancholic yet charming expressions, haunting yet endearing aesthetic",
+          "abstract shapes, primary colors, playful energy, minimalist layout, whimsical forms, organic curves, bold lines, dreamlike quality, floating elements, non-representational imagery, intuitive design, spontaneous expression, vivid contrasts, surreal atmosphere, joyful abstraction",
+          "The Most Wonderful and Colorful Hair Salon and also Monsters. This is Salon Macabre!",
+          "ASPECT RATIO 3:4"
+        ]
+      },
+      {
+        "key": "hosercore",
+        "label": "Hosercore",
+        "size": "1024x1536",
+        "prompt": [
+          "hosercore aesthetic — Hieronymus Bosch surrealism collides with Canadian cultural kitsch",
+          "subjects reimagined as a Boschian flannel-clad hosers — plaid shirts, ruddy cheeks, beers in hand, wide-eyed reverence or rowdy chaos",
+          "setting intact yet reimagined as frozen and snow-covered",
+          "northern lights rendered as green maple-leaf-shaped auroras writhing across the sky",
+          "a glowing Timbit hangs where the moon should be",
+          "Boschian Canadian animals inhabiting the scene",
+          "iconic Canadian landmarks visible in far background and slightly wrong at intentionally jarring angles",
+          "logos of major Canadian companies are crisp and legible amid the surreal carnage",
+          "oil-painted painterly texture throughout — antique and tactile, never hyperdigital",
+          "composition of cheerful folk horror nationalism — hilarious and heartfelt and deeply unsettling in equal measure",
+          "ASPECT RATIO 3:4"
         ]
       }
     ]
@@ -5295,10 +5487,12 @@
         "prompt": [
           "D&D trading card aesthetic",
           "pen and ink with watercolor wash in classic tabletop roleplaying illustration tradition",
-          "subjects fully reimagined as legendary orc warchiefs, faces retained with green skin and prominent tusks portruding from inside mouth beneath battle-worn crown and ceremonial war armor",
+          "subjects fully reimagined as legendary orc warchiefs",
+          "faces retained with green skin and prominent tusks protruding from inside corners of wide mouth",
+          "battle-worn crown and ceremonial war armor",
           "commanding frontal poses with intense eye contact of ones who did not ask for your opinion and will not be taking questions",
           "simple atmospheric background suggestion of a brutal throne room or conquered fortress",
-          "ornate fantasy card border with tusks skulls war trophies and tribal motifs inspired by start image",
+          "ornate fantasy card border with orc-ish tribal motifs inspired by start image",
           "character name banner below illustration in hand-lettered period fantasy typography inspired by subjects",
           "four silly stat blocks relating to subjects in start image with a fantasy vibe",
           "one line of blunt magnificent flavour text inspired by subjects with maximum orc authority",
