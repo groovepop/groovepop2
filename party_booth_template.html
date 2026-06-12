@@ -589,7 +589,7 @@
     </div>
   </div>
 
-  <div id="home-alert-container" onclick="goTo('activation')" style="background: var(--gold); color: var(--black); font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; font-weight: bold; letter-spacing: 0.12em; text-align: center; padding: 0.5rem 1.25rem; cursor: pointer; display: none; z-index: 10; transition: background 0.2s;">⚡ ACTIVATE YOUR PARTY</div>
+  <div id="home-alert-container" onclick="goTo('activation')" style="background: var(--gold); color: var(--black); font-family: 'Bebas Neue', sans-serif; font-size: 0.72rem; font-weight: bold; letter-spacing: 0.15em; text-align: center; padding: 4px 12px; cursor: pointer; display: none; z-index: 10; transition: background 0.2s; line-height: 1.2;">⚡ ACTIVATE YOUR PARTY</div>
 
   <!-- CONTENT — left: image zone | right: style picker -->
   <div class="home-content">
@@ -672,14 +672,14 @@
   <div class="home-bottom">
 
     <!-- Home: style label + transform button -->
-    <div class="bottom-home" id="bottom-home">
-      <div style="display:flex;align-items:baseline;justify-content:space-between;">
-        <span class="selected-style-name" id="selected-style-name" style="opacity:0.3;">No style selected</span>
-        <span class="version-tag" style="padding:0;opacity:0.25;font-size:0.48rem;">v0530</span>
+    <div class="bottom-home" id="bottom-home" style="display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:0.65rem 1.25rem 0.875rem;">
+      <div style="display:flex; flex-direction:column; flex:1; min-width:0; gap:0.2rem;">
+        <span class="selected-style-name" id="selected-style-name" style="opacity:0.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-bottom:0;">No style selected</span>
+        <span class="version-tag" style="padding:0; opacity:0.25; font-size:0.48rem; text-align:left;">v0530</span>
       </div>
-      <button class="btn-primary" id="btn-generate" disabled onclick="startGeneration()" style="display:flex;align-items:center;justify-content:center;gap:0.4em;border-radius:100px;">
-        <span style="font-size:1.6rem;line-height:1;opacity:0.75;">3</span>
-        <span style="font-size:1.05rem;letter-spacing:0.15em;">PARTY</span>
+      <button class="btn-primary" id="btn-generate" disabled onclick="startGeneration()" style="width:68px; height:68px; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0; padding:0; line-height:1.05; box-shadow:0 4px 12px rgba(0,0,0,0.3); flex-shrink:0;">
+        <span style="font-size:1.8rem; font-weight:bold;">3</span>
+        <span style="font-size:0.68rem; letter-spacing:0.1em; font-family:'Bebas Neue',sans-serif; margin-top:-2px;">PARTY</span>
       </button>
     </div>
 
@@ -1401,10 +1401,10 @@ function updateGenerateButton() {
   if (!btn) return;
   if (!isActiveEvent && photosTakenCount >= 10) {
     btn.disabled = false;
-    btn.innerHTML = '<span>ACTIVATE TO 3 PARTY</span>';
+    btn.innerHTML = '<span style="font-size:1.4rem; line-height:1;">🔒</span><span style="font-size:0.55rem; letter-spacing:0.05em; margin-top:-2px; line-height:1; font-family:\'Bebas Neue\',sans-serif;">ACTIVATE</span>';
   } else {
     btn.disabled = !(uploadedDataUrl && selectedStyle);
-    btn.innerHTML = '<span>3</span><span>PARTY</span>';
+    btn.innerHTML = '<span style="font-size:1.8rem; font-weight:bold; line-height:1;">3</span><span style="font-size:0.68rem; letter-spacing:0.1em; font-family:\'Bebas Neue\',sans-serif; margin-top:-2px; line-height:1;">PARTY</span>';
   }
 }
 
