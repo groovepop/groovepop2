@@ -572,6 +572,7 @@
     </div>
     <div class="app-bar-right" id="app-bar-right" style="flex-shrink:0;margin-left:auto;gap:0.5rem;">
       <button class="pill-btn" id="btn-randomize" disabled onclick="randomizeGeneration()">⚡ SURPRISE ME</button>
+      <button class="pill-btn" id="btn-info" onclick="openInfoModal()" style="display:none;">INFO</button>
       <button class="pill-btn" id="btn-install" onclick="showInstallBanner()" style="display:none;" title="Add to home screen">⊕ INSTALL</button>
       <button class="pill-btn" id="btn-gallery" onclick="drawerGoGallery()">GALLERY</button>
     </div>
@@ -806,6 +807,21 @@
       <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>PRINT POSTER
     </button>
     <button class="btn-danger" onclick="confirmDeleteImage()">DELETE FROM GALLERY</button>
+  </div>
+</div>
+
+<!-- EVENT INFO MODAL -->
+<div class="gallery-lightbox" id="info-modal" style="display:none; justify-content:center; align-items:center; z-index:150; background:rgba(10,10,10,0.85);">
+  <div class="modal glass-panel" style="width:calc(100% - 2.5rem); max-width:400px; padding:2rem; border:1px solid var(--border); border-radius:4px; display:flex; flex-direction:column; gap:1.2rem; background:var(--surface); text-align:center;">
+    <h2 id="info-event-name" style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:0.1em; color:var(--gold); margin-bottom:0.5rem;">EVENT INFO</h2>
+    <div style="display:flex; flex-direction:column; gap:0.8rem; text-align:left; font-size:0.85rem; color:var(--white);">
+      <div id="info-host-row" style="display:none;"><strong style="color:var(--gold); font-family:'Bebas Neue',sans-serif; letter-spacing:0.05em;">HOSTS:</strong> <span id="info-hosts" style="float:right;"></span></div>
+      <div id="info-date-row" style="display:none;"><strong style="color:var(--gold); font-family:'Bebas Neue',sans-serif; letter-spacing:0.05em;">DATE:</strong> <span id="info-date" style="float:right;"></span></div>
+      <div id="info-venue-row" style="display:none;"><strong style="color:var(--gold); font-family:'Bebas Neue',sans-serif; letter-spacing:0.05em;">VENUE:</strong> <span id="info-venue" style="float:right;"></span></div>
+      <div id="info-dress-row" style="display:none;"><strong style="color:var(--gold); font-family:'Bebas Neue',sans-serif; letter-spacing:0.05em;">DRESS CODE:</strong> <span id="info-dress" style="float:right;"></span></div>
+    </div>
+    <a id="info-rsvp-btn" href="#" target="_blank" class="btn-primary" style="display:none; text-decoration:none; text-align:center; border-radius:100px; padding:0.8rem 1rem;">RSVP / GET TICKETS</a>
+    <button class="btn-ghost" onclick="closeInfoModal()" style="border-radius:100px; padding:0.8rem; font-size:0.9rem; width:100%;">CLOSE</button>
   </div>
 </div>
 
@@ -1061,14 +1077,71 @@ async function initApp() {
               // Welcome Message
               if (data.welcomeMessage) {
                   const welcomeEl = document.createElement('div');
-                  welcomeEl.style.padding = "1rem";
+                  welcomeEl.style.padding = "1rem 1.25rem 0.5rem";
                   welcomeEl.style.textAlign = "center";
                   welcomeEl.style.fontStyle = "italic";
+                  welcomeEl.style.fontSize = "0.85rem";
                   welcomeEl.style.opacity = "0.8";
+                  welcomeEl.style.color = "var(--white)";
                   welcomeEl.textContent = data.welcomeMessage;
-                  // Prepend to screen-home so it shows above the upload box
-                  const screenHome = document.getElementById('screen-home');
-                  if (screenHome) screenHome.prepend(welcomeEl);
+                  // Prepend inside home-left column to keep three-row grid intact
+                  const homeLeft = document.getElementById('home-left');
+                  if (homeLeft) homeLeft.insertBefore(welcomeEl, homeLeft.firstChild);
+              }
+
+              // Populate Event Info Modal details
+              let hasInfo = false;
+              if (data.eventName) {
+                  const infoEvTitle = document.getElementById('info-event-name');
+                  if (infoEvTitle) infoEvTitle.textContent = data.eventName.toUpperCase();
+              }
+              if (data.eventHost) {
+                  const hostSpan = document.getElementById('info-hosts');
+                  const hostRow = document.getElementById('info-host-row');
+                  if (hostSpan && hostRow) {
+                      hostSpan.textContent = data.eventHost;
+                      hostRow.style.display = 'block';
+                      hasInfo = true;
+                  }
+              }
+              if (data.eventDate) {
+                  const dateSpan = document.getElementById('info-date');
+                  const dateRow = document.getElementById('info-date-row');
+                  if (dateSpan && dateRow) {
+                      dateSpan.textContent = data.eventDate;
+                      dateRow.style.display = 'block';
+                      hasInfo = true;
+                  }
+              }
+              if (data.eventVenue) {
+                  const venueSpan = document.getElementById('info-venue');
+                  const venueRow = document.getElementById('info-venue-row');
+                  if (venueSpan && venueRow) {
+                      venueSpan.textContent = data.eventVenue;
+                      venueRow.style.display = 'block';
+                      hasInfo = true;
+                  }
+              }
+              if (data.dressCode) {
+                  const dressSpan = document.getElementById('info-dress');
+                  const dressRow = document.getElementById('info-dress-row');
+                  if (dressSpan && dressRow) {
+                      dressSpan.textContent = data.dressCode;
+                      dressRow.style.display = 'block';
+                      hasInfo = true;
+                  }
+              }
+              if (data.rsvpLink) {
+                  const rsvpBtn = document.getElementById('info-rsvp-btn');
+                  if (rsvpBtn) {
+                      rsvpBtn.href = data.rsvpLink;
+                      rsvpBtn.style.display = 'block';
+                      hasInfo = true;
+                  }
+              }
+              if (hasInfo) {
+                  const infoBtn = document.getElementById('btn-info');
+                  if (infoBtn) infoBtn.style.display = 'block';
               }
           }
       }
@@ -2851,6 +2924,15 @@ function initLogo() {
 // ══════════════════════════════════════════
 // KICK OFF
 // ══════════════════════════════════════════
+window.openInfoModal = function() {
+  const modal = document.getElementById('info-modal');
+  if (modal) modal.style.display = 'flex';
+};
+window.closeInfoModal = function() {
+  const modal = document.getElementById('info-modal');
+  if (modal) modal.style.display = 'none';
+};
+
 handleStripeReturn();
 initAuth();
 </script>
