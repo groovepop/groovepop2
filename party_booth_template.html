@@ -82,8 +82,8 @@
   .home-right { display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; min-height:0; overscroll-behavior:contain; }
 
   /* Upload zone — natural height from content */
-  .upload-unified { display:flex; flex-direction:column; flex-shrink:0; background:var(--surface); }
-  .upload-opt { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.55rem; padding:1.2rem 0; cursor:pointer; transition:background 0.2s; flex-shrink:0; }
+  .upload-unified { display:flex; flex-direction:column; flex:1; background:var(--surface); }
+  .upload-opt { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.55rem; padding:1.2rem 0; cursor:pointer; transition:background 0.2s; flex:1; }
   .upload-opt:hover { background:var(--surface2); }
   .upload-opt-divider { display:none; }
   .upload-icon { width:40px; height:40px; border:1px solid var(--border); border-radius:50%; display:flex; align-items:center; justify-content:center; }
@@ -92,7 +92,7 @@
   #file-input, #selfie-input { display:none; }
 
   /* Photo preview — viewport-relative max, no forced expansion */
-  #upload-preview-zone { display:none; flex-shrink:0; max-height:42dvh; overflow:hidden; position:relative; }
+  #upload-preview-zone { display:none; flex:1; overflow:hidden; position:relative; }
   #upload-preview-zone .preview-img { width:100%; height:100%; object-fit:cover; display:block; }
   .photo-change-btn { position:absolute; bottom:0.6rem; right:0.6rem; padding:0.3rem 0.6rem; background:rgba(10,10,10,0.8); border:1px solid rgba(200,168,75,0.5); border-radius:2px; color:var(--gold); font-family:'Bebas Neue',sans-serif; font-size:0.68rem; letter-spacing:0.12em; cursor:pointer; display:flex; align-items:center; gap:0.3rem; backdrop-filter:blur(4px); }
 
@@ -551,6 +551,12 @@
       <h2 style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:0.1em; color:var(--gold); margin-bottom:0.5rem;">ACTIVATE YOUR PARTY</h2>
       <p id="activation-prompt-text" style="font-size:0.75rem; color:var(--white); opacity:0.8; line-height:1.5;">Enter your activation key to unlock for your event!</p>
     </div>
+    <!-- Countdown widget -->
+    <div id="activation-countdown" style="display:none; font-family:'Bebas Neue',sans-serif; margin:0.5rem 0;">
+      <div style="font-size:0.75rem; letter-spacing:0.1em; color:var(--muted); margin-bottom:0.25rem;">EVENT STARTS IN</div>
+      <div id="countdown-timer" style="font-size:1.8rem; letter-spacing:0.05em; color:var(--gold);">00d 00h 00m 00s</div>
+    </div>
+
     <div style="display:flex; flex-direction:column; gap:0.5rem; text-align:left;">
       <label style="font-family:'Bebas Neue',sans-serif; font-size:0.8rem; letter-spacing:0.1em; color:var(--gold);">Activation Key</label>
       <input type="text" id="activation-input" placeholder="PARTY-XXXX-XXXX" style="width:100%; padding:0.8rem; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:2px; color:var(--white); font-family:monospace; font-size:1rem; letter-spacing:0.1em; text-align:center; text-transform:uppercase;">
@@ -583,7 +589,7 @@
     </div>
   </div>
 
-  <div id="home-alert-container" style="background: rgba(200, 168, 75, 0.1); border-bottom: 1px solid var(--border); padding: 0.75rem 1.25rem; font-size: 0.75rem; text-align: center; color: var(--gold); letter-spacing: 0.05em; display: none; z-index: 10;"></div>
+  <div id="home-alert-container" onclick="goTo('activation')" style="background: var(--gold); color: var(--black); font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; font-weight: bold; letter-spacing: 0.12em; text-align: center; padding: 0.5rem 1.25rem; cursor: pointer; display: none; z-index: 10; transition: background 0.2s;">⚡ ACTIVATE YOUR PARTY</div>
 
   <!-- CONTENT — left: image zone | right: style picker -->
   <div class="home-content">
@@ -995,11 +1001,7 @@ async function initApp() {
               if (alertBanner) {
                   if (!isActiveEvent) {
                       alertBanner.style.display = 'block';
-                      if (photosTakenCount >= 10) {
-                          alertBanner.innerHTML = `🔒 TRIAL ENDED: 10/10 photos generated. <a href="#" onclick="goTo('activation'); return false;" style="color:var(--white); text-decoration:underline; font-weight:bold; margin-left:0.5rem;">ENTER KEY TO ACTIVATE</a>`;
-                      } else {
-                          alertBanner.innerHTML = `⚡ TRIAL MODE: ${photosTakenCount}/10 free photos generated. <a href="#" onclick="goTo('activation'); return false;" style="color:var(--white); text-decoration:underline; font-weight:bold; margin-left:0.5rem;">ACTIVATE KEY</a>`;
-                      }
+                      alertBanner.innerHTML = `⚡ ACTIVATE YOUR PARTY`;
                   } else {
                       alertBanner.style.display = 'none';
                   }
@@ -1108,16 +1110,22 @@ async function initApp() {
                   const dateSpan = document.getElementById('info-date');
                   const dateRow = document.getElementById('info-date-row');
                   if (dateSpan && dateRow) {
-                      dateSpan.textContent = data.eventDate;
+                      const displayDate = data.eventTime ? `${data.eventDate} @ ${data.eventTime}` : data.eventDate;
+                      dateSpan.textContent = displayDate;
                       dateRow.style.display = 'block';
                       hasInfo = true;
                   }
+                  startEventCountdown(data.eventDate, data.eventTime);
               }
               if (data.eventVenue) {
                   const venueSpan = document.getElementById('info-venue');
                   const venueRow = document.getElementById('info-venue-row');
                   if (venueSpan && venueRow) {
-                      venueSpan.textContent = data.eventVenue;
+                      if (data.eventMaps) {
+                          venueSpan.innerHTML = `<a href="${data.eventMaps}" target="_blank" style="color:var(--gold); text-decoration:underline;">${data.eventVenue} 📍</a>`;
+                      } else {
+                          venueSpan.textContent = data.eventVenue;
+                      }
                       venueRow.style.display = 'block';
                       hasInfo = true;
                   }
@@ -1146,6 +1154,40 @@ async function initApp() {
           }
       }
   } catch(e) { console.warn('Party skinning failed or missing.', e); }
+
+  let countdownInterval = null;
+  function startEventCountdown(dateStr, timeStr) {
+      const timerEl = document.getElementById('countdown-timer');
+      const wrapEl = document.getElementById('activation-countdown');
+      if (!timerEl || !wrapEl || !dateStr) return;
+      
+      const targetStr = timeStr ? `${dateStr}T${timeStr}:00` : `${dateStr}T00:00:00`;
+      const targetDate = new Date(targetStr);
+      if (isNaN(targetDate.getTime())) return;
+      
+      wrapEl.style.display = 'block';
+      if (countdownInterval) clearInterval(countdownInterval);
+      
+      const updateTimer = () => {
+          const now = new Date();
+          const diff = targetDate - now;
+          if (diff <= 0) {
+              timerEl.textContent = "EVENT STARTED! 🥳";
+              clearInterval(countdownInterval);
+              return;
+          }
+          
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+          
+          timerEl.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+      };
+      
+      updateTimer();
+      countdownInterval = setInterval(updateTimer, 1000);
+  }
 
   // Expose key activation logic globally
   window.attemptKeyActivation = async function() {
@@ -1784,11 +1826,7 @@ async function autoUploadToCloudinary(imageDataUrl, style) {
           // Update the trial alert banner
           const alertBanner = document.getElementById('home-alert-container');
           if (alertBanner && !isActiveEvent) {
-              if (photosTakenCount >= 10) {
-                  alertBanner.innerHTML = `🔒 TRIAL ENDED: 10/10 photos generated. <a href="#" onclick="goTo('activation'); return false;" style="color:var(--white); text-decoration:underline; font-weight:bold; margin-left:0.5rem;">ENTER KEY TO ACTIVATE</a>`;
-              } else {
-                  alertBanner.innerHTML = `⚡ TRIAL MODE: ${photosTakenCount}/10 free photos generated. <a href="#" onclick="goTo('activation'); return false;" style="color:var(--white); text-decoration:underline; font-weight:bold; margin-left:0.5rem;">ACTIVATE KEY</a>`;
-              }
+              alertBanner.innerHTML = `⚡ ACTIVATE YOUR PARTY`;
           }
           
           // Update prompt text on activation screen

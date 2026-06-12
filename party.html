@@ -31,18 +31,28 @@
                                     <input type="text" id="event-name" class="req-field" placeholder="Sarah's 30th" required>
                                 </div>
                                 <div class="input-group">
-                                    <label for="event-date">Date *</label>
-                                    <input type="date" id="event-date" class="req-field" required>
+                                    <label for="event-host">Host(s) *</label>
+                                    <input type="text" id="event-host" class="req-field" placeholder="Sarah & John" required>
                                 </div>
                             </div>
                             <div class="input-row">
                                 <div class="input-group">
-                                    <label for="event-host">Host(s) *</label>
-                                    <input type="text" id="event-host" class="req-field" placeholder="Sarah & John" required>
+                                    <label for="event-date">Date *</label>
+                                    <input type="date" id="event-date" class="req-field" required>
                                 </div>
+                                <div class="input-group">
+                                    <label for="event-time">Start Time *</label>
+                                    <input type="time" id="event-time" class="req-field" required>
+                                </div>
+                            </div>
+                            <div class="input-row">
                                 <div class="input-group">
                                     <label for="event-venue">Venue *</label>
                                     <input type="text" id="event-venue" class="req-field" placeholder="The Grand Hotel" required>
+                                </div>
+                                <div class="input-group">
+                                    <label for="event-maps">Google Maps Link</label>
+                                    <input type="url" id="event-maps" placeholder="https://maps.google.com/?q=...">
                                 </div>
                             </div>
                         </section>
@@ -114,37 +124,37 @@
                         </section>
                     </div>
                 </div>
-
-                <!-- Output / Share Section (Hidden until generated) -->
-                <div class="overlay" id="output-overlay" style="display: none;">
-                    <div class="modal glass-panel">
-                        <h2>Ready to Party! 🚀</h2>
-                        <p>Your custom PWA prototype is ready.</p>
-                        
-                        <div class="share-box">
-                            <label>Shareable URL</label>
-                            <div class="url-group">
-                                <input type="text" id="share-url" readonly value="Generating...">
-                                <button type="button" id="copy-btn" class="btn-icon">📋</button>
-                            </div>
-                        </div>
-                        <div class="share-box" style="margin-top: 1rem;">
-                            <label>Activation Key (Enter in app to activate)</label>
-                            <div class="url-group">
-                                <input type="text" id="activation-key" readonly value="Generating...">
-                                <button type="button" id="copy-key-btn" class="btn-icon">📋</button>
-                            </div>
-                        </div>
-
-                        <div class="qr-container">
-                            <div id="qrcode"></div>
-                            <p>Scan to test on your phone</p>
-                        </div>
-                        
-                        <button type="button" class="btn-secondary mt-1" id="btn-reset">Close & Create Another</button>
-                    </div>
-                </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Output / Share Section (Placed as direct body child so fixed positioning works correctly) -->
+    <div class="overlay" id="output-overlay" style="display: none;">
+        <div class="modal glass-panel">
+            <h2>Ready to Party! 🚀</h2>
+            <p>Your custom PWA prototype is ready.</p>
+            
+            <div class="share-box">
+                <label>Shareable URL</label>
+                <div class="url-group">
+                    <input type="text" id="share-url" readonly value="Generating...">
+                    <button type="button" id="copy-btn" class="btn-icon">📋</button>
+                </div>
+            </div>
+            <div class="share-box" style="margin-top: 1rem;">
+                <label>Activation Key (Enter in app to activate)</label>
+                <div class="url-group">
+                    <input type="text" id="activation-key" readonly value="Generating...">
+                    <button type="button" id="copy-key-btn" class="btn-icon">📋</button>
+                </div>
+            </div>
+
+            <div class="qr-container">
+                <div id="qrcode"></div>
+                <p>Scan to test on your phone</p>
+            </div>
+            
+            <button type="button" class="btn-secondary mt-1" id="btn-reset">Close & Create Another</button>
         </div>
     </div>
 
