@@ -683,6 +683,7 @@
           <div class="gen-logo-image-wrap">
             <img id="gen-logo-a" class="layer-a" src="/logos/gp-logo-001.jpg" alt="GROOVE POP">
             <img id="gen-logo-b" class="layer-b" src="/logos/gp-logo-001.jpg" alt="GROOVE POP">
+            <div id="gen-logo-text" style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.15em;color:var(--white);display:none;text-align:center;padding:0.5rem 1rem;text-shadow:0 0 10px rgba(255,255,255,0.4);"></div>
             <div class="gen-logo-scan"></div>
             <div class="gen-logo-static" id="gen-logo-static"></div>
           </div>
@@ -877,6 +878,8 @@ let photosTakenCount = 0;
 let partyDocId = null;
 let dbRef = null;
 let expectedKey = null;
+let customLogoUrl = null;
+let customEventName = null;
 
 let STYLES = [], STYLES_MULTI = [];
 let uploadedDataUrl = null;
@@ -964,6 +967,8 @@ async function initApp() {
               expectedKey = data.pendingKey;
               isActiveEvent = data.isActive !== false;
               photosTakenCount = data.photosTaken || 0;
+              customLogoUrl = data.logoUrl || null;
+              customEventName = data.eventName || null;
               
               if (data.isActive === false) {
                   isLocked = true;
@@ -2642,38 +2647,51 @@ function startLogoTransformation() {
   const barLogo = document.getElementById('app-bar-logo-wrap');
   const layerA  = document.getElementById('gen-logo-a');
   const layerB  = document.getElementById('gen-logo-b');
+  const logoText = document.getElementById('gen-logo-text');
   if (!zone || !layerA || !layerB) return;
 
   // Hide app bar logo
   if (barLogo) barLogo.classList.add('hidden');
 
-  // Set starting logo on layer A, reset layer B
+  // Pick a random effect for this generation run
+  zone.classList.remove('logo-cycling', 'logo-static',
+    'fx-hue','fx-holo','fx-glitch','fx-pixel','fx-heat','fx-glow','fx-grain');
+  const FX_EFFECTS = ['fx-hue','fx-holo','fx-glitch','fx-pixel','fx-heat','fx-glow','fx-grain'];
+  zone.classList.add(FX_EFFECTS[Math.floor(Math.random() * FX_EFFECTS.length)]);
+  zone.classList.add('active');
+
+  if (customLogoUrl) {
+    layerA.src = customLogoUrl;
+    layerA.style.opacity = '1';
+    layerA.style.zIndex  = '2';
+    layerA.style.display = 'block';
+    layerB.style.display = 'none';
+    if (logoText) logoText.style.display = 'none';
+    return; // Stop here! No swapping sequence.
+  } else if (customEventName) {
+    if (logoText) {
+      logoText.textContent = customEventName.toUpperCase();
+      logoText.style.display = 'block';
+    }
+    layerA.style.display = 'none';
+    layerB.style.display = 'none';
+    return; // Stop here! No swapping sequence.
+  }
+
+  // Fallback to Groove Pop Logo Swapping Sequence
+  layerA.style.display = 'block';
+  layerB.style.display = 'block';
+  if (logoText) logoText.style.display = 'none';
+
   layerA.src = GROOVE_POP_LOGOS[currentLogoIndex];
   layerA.style.opacity = '1';
   layerA.style.zIndex  = '2';
   layerB.src = GROOVE_POP_LOGOS[currentLogoIndex];
   layerB.style.opacity = '0';
   layerB.style.zIndex  = '1';
-  zone.classList.remove('logo-cycling', 'logo-static',
-    'fx-hue','fx-holo','fx-glitch','fx-pixel','fx-heat','fx-glow','fx-grain');
-
-  // Pick a random effect for this generation run
-  const FX_EFFECTS = ['fx-hue','fx-holo','fx-glitch','fx-pixel','fx-heat','fx-glow','fx-grain'];
-  zone.classList.add(FX_EFFECTS[Math.floor(Math.random() * FX_EFFECTS.length)]);
-  zone.classList.add('active');
 
   // Crossfade state — activeLayer is module-scoped, reset here each run
   activeLayer = 'a';
-
-  // Two-phase logo swap — separates preload from opacity swap to eliminate flash.
-  //
-  // Timing (SCAN_CYCLE = 6s, one logo per cycle):
-  //   t=0        scan at top going DOWN  → preload logo#2 into hidden back layer (3s to load)
-  //   t=3000ms   scan at BOTTOM going UP → opacity swap starts (2.8s fade — full upward journey)
-  //   t=6000ms   scan back at TOP        → logo#2 fully visible, preload logo#3
-  //   t=9000ms   scan at bottom going UP → swap to logo#3 …and so on
-  //
-  // Result: ~10 logos over 65s. Downward sweep = logo revealed. Upward sweep = gradual fade to next.
 
   const SCAN_CYCLE = 6000;           // must match logo-scan-pingpong CSS duration
   const SWAP_MS    = SCAN_CYCLE;     // one logo per scan cycle — new logo every sweep
@@ -2682,14 +2700,12 @@ function startLogoTransformation() {
   function getBack() { return activeLayer === 'a' ? layerB : layerA; }
 
   function preloadNext() {
-    // Load next image into the invisible back layer — no opacity change yet
     const idx = pickRandomLogo(true);
     currentLogoIndex = idx;
     getBack().src = GROOVE_POP_LOGOS[idx];
   }
 
   function swapNow() {
-    // rAF-driven crossfade — bypasses GPU compositing interference from parent filter animation
     const fromLayer = activeLayer === 'a' ? layerA : layerB;
     const toLayer   = activeLayer === 'a' ? layerB : layerA;
     toLayer.style.zIndex   = '3';
@@ -2712,15 +2728,11 @@ function startLogoTransformation() {
     requestAnimationFrame(step);
   }
 
-  // Kick off: preload logo#2 into back layer right now
   preloadNext();
 
-  // Preload every SWAP_MS (scan at top, going down — max time for image to load)
   const preloadTimer = setInterval(preloadNext, SWAP_MS);
   logoIntervals.push(preloadTimer);
 
-  // Swap fires FADE_LEAD ms before each SWAP_MS boundary (scan at bottom, going up)
-  // 1.8s CSS transition completes just as scan reaches the top
   const firstSwap = setTimeout(() => {
     swapNow();
     const swapTimer = setInterval(swapNow, SWAP_MS);
@@ -2728,7 +2740,6 @@ function startLogoTransformation() {
   }, SWAP_MS - FADE_LEAD);
   logoIntervals.push(firstSwap);
 
-  // 65s — stop cycling, hold final logo clean (no hue, no scan)
   const returnStart = setTimeout(() => {
     clearLogoIntervals();
     zone.classList.remove('logo-cycling', 'logo-static');
@@ -2744,55 +2755,57 @@ function endLogoTransformation(finalLogoIndex) {
   const barLogo = document.getElementById('app-bar-logo-wrap');
   const wrap    = zone ? zone.querySelector('.gen-logo-image-wrap') : null;
 
-  // Detect which layer is visible. activeLayer is the JS-tracked string ('a' or 'b').
-  // Fall back to CSS class if activeLayer is somehow unset.
   const layerA  = document.getElementById('gen-logo-a');
   const layerB  = document.getElementById('gen-logo-b');
-  // activeLayer is the module-level var updated by crossfadeToNext — trust it directly
   const topLayer = (typeof activeLayer !== 'undefined' && activeLayer === 'b') ? layerB : layerA;
 
-  // Stop crossfade animation, suppress hue-cycle and scan
   if (zone) {
     zone.classList.remove('logo-cycling', 'logo-static');
     zone.classList.add('logo-final');
   }
 
-  // Freeze whichever layer is on top — no src touch, no transition
   if (topLayer) {
     topLayer.style.transition = 'none';
     topLayer.style.opacity    = '1';
     topLayer.style.zIndex     = '3';
   }
-  // Snap the other layer away instantly
   const otherLayer = (topLayer === layerA) ? layerB : layerA;
   if (otherLayer) {
     otherLayer.style.transition = 'none';
     otherLayer.style.opacity    = '0';
   }
 
-  // Enlarge wrap — pure transform, no image load involved
   if (wrap) {
     wrap.style.transition = 'transform 0.4s ease';
     wrap.style.animation  = 'none';
-    // Force a reflow so the transition fires from scale(1)
     void wrap.offsetWidth;
     wrap.style.transform = 'scale(1.12)';
   }
 
-  // After 3s hold — shrink, dismiss zone, restore bar with the SAME logo
   setTimeout(() => {
     if (wrap) wrap.style.transform = 'scale(1)';
     setTimeout(() => {
-          if (zone) zone.classList.remove('active', 'logo-final', 'fx-hue','fx-holo','fx-glitch','fx-pixel','fx-heat','fx-glow','fx-grain');
-      // Clean up inline styles
+      if (zone) zone.classList.remove('active', 'logo-final', 'fx-hue','fx-holo','fx-glitch','fx-pixel','fx-heat','fx-glow','fx-grain');
       [layerA, layerB].forEach(l => { if (l) { l.style.transition = ''; l.style.transform = ''; } });
       if (wrap) { wrap.style.transition = ''; wrap.style.transform = ''; wrap.style.animation = ''; }
-      // Restore bar with the logo that was actually showing
-      const shownSrc = topLayer ? topLayer.src : GROOVE_POP_LOGOS[finalLogoIndex];
-      if (barImg) {
-        barImg.style.opacity = '0';
-        barImg.src = shownSrc;
-        barImg.onload = () => { barImg.style.opacity = '1'; };
+      
+      // Restore bar branding
+      if (customLogoUrl) {
+        if (barImg) {
+          barImg.src = customLogoUrl;
+          barImg.style.display = 'block';
+        }
+      } else if (customEventName) {
+        if (barLogo) {
+          barLogo.innerHTML = `<span style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.08em;color:var(--white);">${customEventName.toUpperCase()}</span>`;
+        }
+      } else {
+        const shownSrc = topLayer ? topLayer.src : GROOVE_POP_LOGOS[finalLogoIndex];
+        if (barImg) {
+          barImg.style.opacity = '0';
+          barImg.src = shownSrc;
+          barImg.onload = () => { barImg.style.opacity = '1'; };
+        }
       }
       if (barLogo) barLogo.classList.remove('hidden');
     }, 400);
@@ -2801,15 +2814,30 @@ function endLogoTransformation(finalLogoIndex) {
   currentLogoIndex = finalLogoIndex;
 }
 
-// Fixed start logo — always gp-logo-001 on fresh load, random on each generation
 function initLogo() {
   currentLogoIndex = 0;
   const barImg = document.getElementById('app-bar-logo-img');
   const layerA = document.getElementById('gen-logo-a');
   const layerB = document.getElementById('gen-logo-b');
-  if (barImg) barImg.src = GROOVE_POP_LOGOS[0];
-  if (layerA) layerA.src = GROOVE_POP_LOGOS[0];
-  if (layerB) layerB.src = GROOVE_POP_LOGOS[0];
+  const logoText = document.getElementById('gen-logo-text');
+  
+  if (customLogoUrl) {
+    if (layerA) { layerA.src = customLogoUrl; layerA.style.display = 'block'; }
+    if (layerB) { layerB.src = customLogoUrl; layerB.style.display = 'block'; }
+    if (logoText) logoText.style.display = 'none';
+  } else if (customEventName) {
+    if (logoText) {
+      logoText.textContent = customEventName.toUpperCase();
+      logoText.style.display = 'block';
+    }
+    if (layerA) layerA.style.display = 'none';
+    if (layerB) layerB.style.display = 'none';
+  } else {
+    if (barImg) barImg.src = GROOVE_POP_LOGOS[0];
+    if (layerA) { layerA.src = GROOVE_POP_LOGOS[0]; layerA.style.display = 'block'; }
+    if (layerB) { layerB.src = GROOVE_POP_LOGOS[0]; layerB.style.display = 'block'; }
+    if (logoText) logoText.style.display = 'none';
+  }
 }
 
 // ══════════════════════════════════════════
