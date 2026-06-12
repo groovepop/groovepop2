@@ -166,7 +166,7 @@
   .bottom-home { display:flex; flex-direction:column; gap:0.45rem; padding:0.65rem 1rem 0.875rem; }
   .selected-style-name { font-family:'Bebas Neue',sans-serif; font-size:0.8rem; letter-spacing:0.08em; color:var(--gold); min-height:1rem; }
   .bottom-generating { display:none; height:80px; overflow:hidden; }
-  .bottom-result { display:none; grid-template-columns:repeat(5,1fr); gap:1px; background:var(--border); }
+  .bottom-result { display:none; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); }
   .btn-result-action { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.25rem; padding:0.6rem 0.2rem; background:var(--surface); border:none; cursor:pointer; font-family:'Bebas Neue',sans-serif; font-size:0.58rem; letter-spacing:0.06em; color:var(--white); transition:background 0.15s,color 0.15s; }
   .btn-result-action svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:1.8; }
   .btn-result-action:hover { background:var(--surface2); color:var(--gold); }
@@ -598,18 +598,9 @@
         <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
         SHARE
       </button>
-      <button class="btn-result-action" onclick="goToPrint()">
-        <svg viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
-        PRINT
-      </button>
-      <button class="btn-result-action" onclick="startGeneration()" style="position:relative; overflow:hidden;">
-        <img class="result-thumb" id="result-thumb" src="" alt="">
-        <svg viewBox="0 0 24 24" style="position:relative; z-index:1;"><path d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg>
-        <span style="position:relative; z-index:1;">TRY AGAIN</span>
-      </button>
       <button class="btn-result-action" onclick="startOver()">
-        <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 109-9M3 3v6h6"/></svg>
-        START OVER
+        <svg viewBox="0 0 24 24"><path d="M3 9l-7 7 7 7M17 3v18"/></svg>
+        HOME
       </button>
     </div>
 
