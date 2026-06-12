@@ -1121,11 +1121,8 @@ async function initApp() {
                   const venueSpan = document.getElementById('info-venue');
                   const venueRow = document.getElementById('info-venue-row');
                   if (venueSpan && venueRow) {
-                      if (data.eventMaps) {
-                          venueSpan.innerHTML = `<a href="${data.eventMaps}" target="_blank" style="color:var(--gold); text-decoration:underline;">${data.eventVenue} 📍</a>`;
-                      } else {
-                          venueSpan.textContent = data.eventVenue;
-                      }
+                      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.eventVenue)}`;
+                      venueSpan.innerHTML = `<a href="${mapsUrl}" target="_blank" style="color:var(--gold); text-decoration:underline; font-weight:500;">${data.eventVenue} 📍</a>`;
                       venueRow.style.display = 'block';
                       hasInfo = true;
                   }

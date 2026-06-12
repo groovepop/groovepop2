@@ -31,7 +31,6 @@ const els = {
     eventTime: document.getElementById('event-time'),
     eventHost: document.getElementById('event-host'),
     eventVenue: document.getElementById('event-venue'),
-    eventMaps: document.getElementById('event-maps'),
     
     // Type
     eventType: document.getElementById('event-type'),
@@ -125,7 +124,6 @@ els.btnGenerate.addEventListener('click', async () => {
             eventTime: els.eventTime.value || '',
             eventHost: els.eventHost.value,
             eventVenue: els.eventVenue.value,
-            eventMaps: els.eventMaps.value || '',
             eventType: els.eventType.value,
             welcomeMessage: els.welcomeMessage.value,
             rsvpLink: els.rsvpLink.value,
