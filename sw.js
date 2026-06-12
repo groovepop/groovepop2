@@ -1,6 +1,6 @@
 // GROOVE POP — Service Worker
 // Bump CACHE_VERSION to invalidate all cached assets on next deploy.
-const CACHE_VERSION = 'gp-v5';
+const CACHE_VERSION = 'gp-v6';
 
 const SHELL_ASSETS = [
   '/offline.html',
