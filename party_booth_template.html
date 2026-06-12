@@ -280,7 +280,7 @@
   .app-bar-logo { flex-shrink:0; transition:opacity 0.3s ease; }
   .app-bar-logo.hidden { opacity:0; pointer-events:none; }
 
-  /* ── GENERATION LOGO ZONE — lives in .bottom-generating ── */
+  /* ── GENERATION LOGO ZONE — 7 randomised effects ── */
   .gen-logo-zone {
     position:relative;
     width:100%; height:100%;
@@ -302,7 +302,24 @@
   }
   .gen-logo-inner .layer-a { opacity:1; z-index:2; }
   .gen-logo-inner .layer-b { opacity:0; z-index:1; }
-  .gen-logo-zone.active .gen-logo-image-wrap { animation:logo-hue-cycle 3s linear infinite; }
+
+  /* Scan bar — used by hue-cycle and scan effects */
+  .gen-logo-scan {
+    position:absolute; left:50%; transform:translateX(-50%);
+    width:180px; height:2px; z-index:5;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.95),transparent);
+    box-shadow:0 0 8px rgba(255,255,255,0.9);
+    top:15%; opacity:0; pointer-events:none;
+  }
+  .gen-logo-static {
+    position:absolute; inset:0; opacity:0; pointer-events:none; z-index:6;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    background-size:cover; mix-blend-mode:screen;
+  }
+
+  /* ── EFFECT 1: Hue Cycle (original) ── */
+  .gen-logo-zone.fx-hue.active .gen-logo-image-wrap { animation:logo-hue-cycle 3s linear infinite; }
+  .gen-logo-zone.fx-hue.active:not(.logo-final) .gen-logo-scan { opacity:1; animation:logo-scan-pingpong 6s ease-in-out infinite; }
   @keyframes logo-hue-cycle {
     0%  {filter:sepia(1) saturate(8) hue-rotate(0deg)   brightness(1.4);}
     14% {filter:sepia(1) saturate(8) hue-rotate(51deg)  brightness(1.4);}
@@ -313,22 +330,87 @@
     85% {filter:sepia(1) saturate(8) hue-rotate(312deg) brightness(1.4);}
     100%{filter:sepia(1) saturate(8) hue-rotate(360deg) brightness(1.4);}
   }
-  .gen-logo-scan {
-    position:absolute; left:50%; transform:translateX(-50%);
-    width:180px; height:2px; z-index:5;
-    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.95),transparent);
-    box-shadow:0 0 8px rgba(255,255,255,0.9);
-    top:15%; opacity:0; pointer-events:none;
-  }
-  .gen-logo-zone.active:not(.logo-final) .gen-logo-scan { opacity:1; animation:logo-scan-pingpong 6s ease-in-out infinite; }
   @keyframes logo-scan-pingpong { 0%{top:15%} 50%{top:85%} 100%{top:15%} }
-  .gen-logo-zone.logo-final .gen-logo-image-wrap { animation:none !important; filter:none !important; }
-  .gen-logo-zone.logo-final .gen-logo-scan { opacity:0 !important; animation:none !important; }
-  .gen-logo-static {
-    position:absolute; inset:0; opacity:0; pointer-events:none; z-index:6;
-    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-    background-size:cover; mix-blend-mode:screen;
+
+  /* ── EFFECT 2: Holographic Shimmer ── */
+  .gen-logo-zone.fx-holo.active .gen-logo-image-wrap { animation:logo-holo 2.4s ease-in-out infinite; }
+  @keyframes logo-holo {
+    0%   { filter:hue-rotate(0deg)   saturate(1.8) brightness(1.2); }
+    25%  { filter:hue-rotate(60deg)  saturate(3)   brightness(1.5); }
+    50%  { filter:hue-rotate(180deg) saturate(2)   brightness(1.3); }
+    75%  { filter:hue-rotate(280deg) saturate(3)   brightness(1.5); }
+    100% { filter:hue-rotate(360deg) saturate(1.8) brightness(1.2); }
   }
+
+  /* ── EFFECT 3: Glitch / Channel Split ── */
+  .gen-logo-zone.fx-glitch.active .gen-logo-image-wrap { animation:logo-glitch 0.9s steps(1) infinite; }
+  @keyframes logo-glitch {
+    0%   { filter:none; transform:translate(0,0); }
+    10%  { filter:drop-shadow(-4px 0 0 rgba(255,0,80,0.9)) drop-shadow(4px 0 0 rgba(0,220,255,0.9)); transform:translate(-3px,0); }
+    20%  { filter:none; transform:translate(0,0); }
+    30%  { filter:drop-shadow(3px 0 0 rgba(255,0,80,0.9)) drop-shadow(-3px 0 0 rgba(0,220,255,0.9)); transform:translate(2px,1px); }
+    40%  { filter:none; transform:translate(0,0); }
+    50%  { filter:drop-shadow(-5px 0 0 rgba(255,0,80,0.9)) drop-shadow(5px 0 0 rgba(0,220,255,0.9)) brightness(1.6); transform:translate(-4px,0); }
+    55%  { filter:none; transform:translate(0,0); }
+    70%  { filter:drop-shadow(2px 0 0 rgba(255,0,80,0.9)) drop-shadow(-2px 0 0 rgba(0,220,255,0.9)); transform:translate(0,0); }
+    80%  { filter:none; transform:translate(0,0); }
+    90%  { filter:drop-shadow(-3px 0 0 rgba(255,0,80,0.9)) drop-shadow(3px 0 0 rgba(0,220,255,0.9)); transform:translate(2px,-1px); }
+    100% { filter:none; transform:translate(0,0); }
+  }
+
+  /* ── EFFECT 4: Pixel Mosaic Resolve ── */
+  .gen-logo-zone.fx-pixel.active .gen-logo-image-wrap { animation:logo-pixel 2s steps(6) infinite; }
+  @keyframes logo-pixel {
+    0%   { filter:blur(6px)  contrast(20) brightness(0.8); transform:scale(1.05); }
+    20%  { filter:blur(4px)  contrast(14) brightness(0.9); transform:scale(1.03); }
+    40%  { filter:blur(2.5px) contrast(8) brightness(1.0); transform:scale(1.02); }
+    60%  { filter:blur(1.2px) contrast(4) brightness(1.1); transform:scale(1.01); }
+    80%  { filter:blur(0.4px) contrast(2) brightness(1.1); transform:scale(1.0);  }
+    100% { filter:blur(6px)  contrast(20) brightness(0.8); transform:scale(1.05); }
+  }
+
+  /* ── EFFECT 5: Heat Distortion / Ripple ── */
+  .gen-logo-zone.fx-heat.active .gen-logo-image-wrap { animation:logo-heat 1.8s ease-in-out infinite; }
+  @keyframes logo-heat {
+    0%   { filter:blur(0px)   brightness(1.0); transform:skewX(0deg)   scaleY(1.0);  }
+    15%  { filter:blur(0.8px) brightness(1.1); transform:skewX(1.5deg) scaleY(1.01); }
+    30%  { filter:blur(0px)   brightness(1.0); transform:skewX(0deg)   scaleY(1.0);  }
+    45%  { filter:blur(1px)   brightness(1.2); transform:skewX(-2deg)  scaleY(0.99); }
+    60%  { filter:blur(0px)   brightness(1.0); transform:skewX(0deg)   scaleY(1.0);  }
+    75%  { filter:blur(0.5px) brightness(1.1); transform:skewX(1deg)   scaleY(1.01); }
+    100% { filter:blur(0px)   brightness(1.0); transform:skewX(0deg)   scaleY(1.0);  }
+  }
+
+  /* ── EFFECT 6: Breathing Glow ── */
+  .gen-logo-zone.fx-glow.active .gen-logo-image-wrap { animation:logo-glow 2s ease-in-out infinite; }
+  @keyframes logo-glow {
+    0%   { filter:brightness(1.0) drop-shadow(0 0 0px  var(--gold)); transform:scale(1.0);  }
+    50%  { filter:brightness(1.6) drop-shadow(0 0 20px var(--gold)) drop-shadow(0 0 40px rgba(200,168,75,0.4)); transform:scale(1.04); }
+    100% { filter:brightness(1.0) drop-shadow(0 0 0px  var(--gold)); transform:scale(1.0);  }
+  }
+
+  /* ── EFFECT 7: Film Grain ── */
+  .gen-logo-zone.fx-grain.active .gen-logo-image-wrap { animation:logo-grain 3s ease-in-out infinite; }
+  .gen-logo-zone.fx-grain.active .gen-logo-static { animation:static-flicker 0.06s steps(1) infinite; }
+  @keyframes logo-grain {
+    0%   { filter:sepia(0.8) contrast(1.1) brightness(0.9); }
+    33%  { filter:sepia(0.3) contrast(1.2) brightness(1.1); }
+    66%  { filter:sepia(0.6) contrast(0.9) brightness(0.95); }
+    100% { filter:sepia(0.8) contrast(1.1) brightness(0.9); }
+  }
+  @keyframes static-flicker {
+    0%  { opacity:.35; transform:translate(0,0); }
+    25% { opacity:.6;  transform:translate(-2px,1px); }
+    50% { opacity:.4;  transform:translate(1px,-1px); }
+    75% { opacity:.7;  transform:translate(-1px,2px); }
+    100%{ opacity:.35; transform:translate(2px,0); }
+  }
+
+  /* ── Final state: snap to clean logo ── */
+  .gen-logo-zone.logo-final .gen-logo-image-wrap { animation:none !important; filter:none !important; transform:none !important; }
+  .gen-logo-zone.logo-final .gen-logo-scan { opacity:0 !important; animation:none !important; }
+  .gen-logo-zone.logo-final .gen-logo-static { opacity:0 !important; animation:none !important; }
+
   .version-tag { text-align:center; padding:0.5rem; font-size:0.5rem; color:var(--muted); letter-spacing:0.15em; opacity:0.25; }
 
   /* ── GALLERY ── */
@@ -1172,7 +1254,7 @@ function cancelGeneration() {
   clearWaitIntervals();
   clearLogoIntervals();
   const zone = document.getElementById('gen-logo-zone');
-  if (zone) zone.classList.remove('active', 'logo-final');
+      if (zone) zone.classList.remove('active', 'logo-final', 'fx-hue','fx-holo','fx-glitch','fx-pixel','fx-heat','fx-glow','fx-grain');
   const barLogo = document.getElementById('app-bar-logo-wrap');
   if (barLogo) barLogo.classList.remove('hidden');
   setImageZoneState('upload');
@@ -2345,7 +2427,12 @@ function startLogoTransformation() {
   layerB.src = GROOVE_POP_LOGOS[currentLogoIndex];
   layerB.style.opacity = '0';
   layerB.style.zIndex  = '1';
-  zone.classList.remove('logo-cycling', 'logo-static');
+  zone.classList.remove('logo-cycling', 'logo-static',
+    'fx-hue','fx-holo','fx-glitch','fx-pixel','fx-heat','fx-glow','fx-grain');
+
+  // Pick a random effect for this generation run
+  const FX_EFFECTS = ['fx-hue','fx-holo','fx-glitch','fx-pixel','fx-heat','fx-glow','fx-grain'];
+  zone.classList.add(FX_EFFECTS[Math.floor(Math.random() * FX_EFFECTS.length)]);
   zone.classList.add('active');
 
   // Crossfade state — activeLayer is module-scoped, reset here each run
@@ -2469,7 +2556,7 @@ function endLogoTransformation(finalLogoIndex) {
   setTimeout(() => {
     if (wrap) wrap.style.transform = 'scale(1)';
     setTimeout(() => {
-      if (zone) zone.classList.remove('active', 'logo-final');
+          if (zone) zone.classList.remove('active', 'logo-final', 'fx-hue','fx-holo','fx-glitch','fx-pixel','fx-heat','fx-glow','fx-grain');
       // Clean up inline styles
       [layerA, layerB].forEach(l => { if (l) { l.style.transition = ''; l.style.transform = ''; } });
       if (wrap) { wrap.style.transition = ''; wrap.style.transform = ''; wrap.style.animation = ''; }
