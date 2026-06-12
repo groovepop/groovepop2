@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Prototype</title>
+    <!-- Use system fonts for a clean native app look -->
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --accent-color: #cccccc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.5s ease;
+        }
+
+        /* Loading & Error States */
+        #loader, #error-state {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: var(--bg-color);
+            z-index: 100;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        #loader p {
+            margin-top: 1rem;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+
+        /* Main App Layout */
+        #app-content {
+            display: none; /* Hidden until data loads */
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+        }
+
+        .header-bg {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--accent-color);
+            opacity: 0.15;
+            z-index: -1;
+        }
+
+        .event-type-badge {
+            display: inline-block;
+            background: var(--accent-color);
+            color: var(--bg-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
+        }
+
+        .host {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            font-weight: 500;
+        }
+
+        main {
+            flex-grow: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo-container {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border: 4px solid var(--accent-color);
+            display: none; /* Hidden until loaded */
+        }
+
+        .details-card {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .detail-row {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .detail-value {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .welcome-msg {
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            font-style: italic;
+            opacity: 0.9;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .action-container {
+            margin-top: auto;
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-rsvp {
+            display: block;
+            width: 100%;
+            padding: 1.2rem;
+            background: var(--accent-color);
+            color: var(--bg-color);
+            text-align: center;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+
+        .btn-rsvp:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <h2 style="color: var(--accent-color);">Loading Event...</h2>
+        <p>Please wait</p>
+    </div>
+
+    <div id="error-state" style="display: none;">
+        <h1 style="font-size: 4rem; margin-bottom: 1rem;">😕</h1>
+        <h2>Event Not Found</h2>
+        <p style="margin-top: 1rem; opacity: 0.7;">The link may be broken or the event may have been removed.</p>
+    </div>
+
+    <div id="app-content">
+        <header>
+            <div class="header-bg"></div>
+            <div class="event-type-badge" id="app-type">Event Type</div>
+            <h1 id="app-title">Event Name</h1>
+            <div class="host">Hosted by <span id="app-host">Host</span></div>
+        </header>
+
+        <main>
+            <div class="logo-container" id="app-logo"></div>
+            
+            <div class="details-card">
+                <div class="detail-row">
+                    <div class="detail-label">When</div>
+                    <div class="detail-value" id="app-date">Date</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Where</div>
+                    <div class="detail-value" id="app-venue">Venue</div>
+                </div>
+                <div class="detail-row" id="app-dress-container" style="display: none;">
+                    <div class="detail-label">Dress Code</div>
+                    <div class="detail-value" id="app-dress">Dress Code</div>
+                </div>
+            </div>
+
+            <div class="welcome-msg" id="app-welcome"></div>
+        </main>
+
+        <div class="action-container" id="app-rsvp-container" style="display: none;">
+            <a href="#" class="btn-rsvp" id="app-rsvp" target="_blank">RSVP Now</a>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="prototype.js"></script>
+</body>
+</html>

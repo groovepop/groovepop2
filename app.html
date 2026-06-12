@@ -13,6 +13,8 @@
 <meta name="theme-color" content="#c8a84b">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Caveat:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -809,6 +811,12 @@ let imageZoneState = 'upload';
 // AUTH
 // ══════════════════════════════════════════
 function initAuth() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (window.location.protocol === 'file:' || urlParams.get('partyId')) {
+      onAuthReady(null);
+      return;
+  }
+
   if (typeof netlifyIdentity === 'undefined') { redirectToLanding(); return; }
   netlifyIdentity.on('init', user => { if (!user) redirectToLanding(); else { currentUser = user; onAuthReady(user); } });
   netlifyIdentity.on('login', user => { currentUser = user; netlifyIdentity.close(); onAuthReady(user); });
@@ -822,10 +830,72 @@ async function onAuthReady(user) { await initApp(); }
 // ══════════════════════════════════════════
 // APP INIT
 // ══════════════════════════════════════════
+// Live Firebase configuration for Groove Pop Party
+const firebaseConfig = {
+  apiKey: "AIzaSyCdHuNkf8kdfvPjjYvt-p4te13UnJiCW1U",
+  authDomain: "groovepopparty.firebaseapp.com",
+  projectId: "groovepopparty",
+  storageBucket: "groovepopparty.firebasestorage.app",
+  messagingSenderId: "12398739529",
+  appId: "1:12398739529:web:9480eedb11ec1219ea3f98"
+};
+
 async function initApp() {
+  let stylesFileName = 'styles.json';
+  
+  // Party Engine Skinning Logic
+  try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const partyId = urlParams.get('partyId');
+      
+      if (partyId) {
+          firebase.initializeApp(firebaseConfig);
+          const db = firebase.firestore();
+          const docRef = db.collection("parties").doc(partyId);
+          const docSnap = await docRef.get();
+          
+          if (docSnap.exists) {
+              const data = docSnap.data();
+              // Apply Colors
+              if (data.colors) {
+                  const root = document.documentElement;
+                  root.style.setProperty('--bg-color', data.colors.bg || '#0f172a');
+                  root.style.setProperty('--text-main', data.colors.text || '#f8fafc');
+                  root.style.setProperty('--primary', data.colors.accent || '#ff0055');
+              }
+              // Set custom file
+              if (data.eventType) {
+                  stylesFileName = `styles_${data.eventType}.json`;
+              }
+              // Update branding
+              const logoEl = document.querySelector('.logo');
+              if (logoEl) {
+                  if (data.logoUrl) {
+                      logoEl.innerHTML = `<img src="${data.logoUrl}" style="max-height:40px;">`;
+                  } else {
+                      logoEl.textContent = data.eventName;
+                  }
+              }
+              
+              // Welcome Message
+              if (data.welcomeMessage) {
+                  const welcomeEl = document.createElement('div');
+                  welcomeEl.style.padding = "1rem";
+                  welcomeEl.style.textAlign = "center";
+                  welcomeEl.style.fontStyle = "italic";
+                  welcomeEl.style.opacity = "0.8";
+                  welcomeEl.textContent = data.welcomeMessage;
+                  // Prepend to screen-home so it shows above the upload box
+                  const screenHome = document.getElementById('screen-home');
+                  if (screenHome) screenHome.prepend(welcomeEl);
+              }
+          }
+      }
+  } catch(e) { console.warn('Party skinning failed or missing.', e); }
+
   try {
     const [single, multi] = await Promise.all([
-      fetch('/styles.json').then(r => r.json()).catch(() => []),
+      fetch(`/${stylesFileName}`).then(r => r.json()).catch(() => []),
       fetch('/styles-multi.json').then(r => r.json()).catch(() => [])
     ]);
     STYLES = single; STYLES_MULTI = multi;

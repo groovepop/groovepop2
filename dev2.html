@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230c0c0c'/><rect x='2' y='2' width='28' height='28' rx='5' fill='none' stroke='%2300e5a0' stroke-width='1.5'/><text x='50%' y='52%' dominant-baseline='central' text-anchor='middle' font-size='18' fill='%2300e5a0'>◈</text></svg>">
-<title>GROOVE POP — Dev</title>
+<title>GROOVE POP — Dev2 (Gemini API)</title>
 <style>
 :root {
   --bg:#0c0c0c;--bg2:#131313;--bg3:#1a1a1a;
@@ -251,7 +251,7 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
 <div id="lightbox" onclick="closeLightbox()"><img id="lightbox-img" src="" alt=""></div>
 
 <div id="topbar">
-  <div class="logo">GROOVE POP <span>// DEV v44</span></div>
+  <div class="logo">GROOVE POP <span>// DEV2 (Gemini API)</span></div>
   <div class="tsep"></div>
   <div class="tstat">Subthemes: <strong id="h-subthemes">—</strong></div>
   <div class="tstat">Tags: <strong id="h-total">—</strong></div>
@@ -316,8 +316,11 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
     </div>
 
     <div class="sb-block">
-      <div class="sb-label">Azure Key</div>
-      <input type="password" id="key-input" style="width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 8px" value="FfARuIc0mT0VdK75ESYHpwuPwJsDxQ91HWFstlzrFred9LSO8EZnJQQJ99CEACHYHv6XJ3w3AAAAACOGPLMh">
+      <div class="sb-label">Azure Key (Vision)</div>
+      <input type="password" id="key-input" style="width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 8px;margin-bottom:10px" value="FfARuIc0mT0VdK75ESYHpwuPwJsDxQ91HWFstlzrFred9LSO8EZnJQQJ99CEACHYHv6XJ3w3AAAAACOGPLMh">
+      <div class="sb-label">GCP Bearer Token</div>
+      <textarea id="gcp-token-input" rows="3" style="width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:9px;border-radius:3px;padding:4px 8px;resize:none;line-height:1.4" placeholder="Paste from: gcloud auth print-access-token"></textarea>
+      <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-top:4px">Expires ~1hr. Run <span style="color:var(--accent)">gcloud auth print-access-token</span> to refresh.</div>
     </div>
   </div>
 
@@ -1347,28 +1350,41 @@ function startTimer(id) {
 }
 
 async function generateRaw(styleLines, caption, tag1, signal) {
-  const key     = document.getElementById('key-input').value.trim();
-  const size    = getOutputSize();
-  const quality = document.getElementById('quality-select').value;
-  const prompt  = caption + '\n\n---\n\n' + styleLines;
+  const token = document.getElementById('gcp-token-input').value.trim();
+  if (!token) throw new Error('GCP Bearer Token is missing — run: gcloud auth print-access-token');
 
-  const fd = new FormData();
-  if (photoBlob) fd.append('image[]', photoBlob, 'photo.jpg');
-  fd.append('prompt', prompt);
-  fd.append('n','1'); fd.append('size',size); fd.append('quality',quality);
-  fd.append('output_format','jpeg'); fd.append('output_compression','80');
+  const sizeStr = getOutputSize();
+  let aspectHint = 'portrait (3:4)';
+  if (sizeStr === '1536x1024') aspectHint = 'landscape (4:3)';
+  if (sizeStr === '1024x1024') aspectHint = 'square (1:1)';
 
-  const url = `${AZURE_EP}/openai/deployments/${IMG_DEP}/images/edits?api-version=2025-04-01-preview`;
+  const prompt = `${caption}\n\n---\n\n${styleLines}`;
+  const projectId = 'project-2f5b2aa2-6635-4a8a-9a4';
+  const location  = 'us-central1';
+  const url = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-generate-002:predict`;
+
+  const payload = {
+    instances: [{ prompt }],
+    parameters: { sampleCount: 1, aspectRatio }
+  };
+
   for (let attempt = 0; attempt < 3; attempt++) {
-    const res = await fetch(url, { method:'POST', headers:{'api-key':key}, body:fd, signal });
-    if (res.ok) return `data:image/jpeg;base64,${(await res.json()).data[0].b64_json}`;
-    if (res.status === 429 && attempt < 2) {
-      const retryAfter = parseInt(res.headers.get('retry-after') || '10');
-      await new Promise(r => setTimeout(r, (retryAfter || 10) * 1000));
-      continue;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(payload),
+      signal
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const b64 = data.predictions?.[0]?.bytesBase64Encoded;
+      if (!b64) throw new Error('No image data returned from Vertex AI');
+      return `data:image/jpeg;base64,${b64}`;
     }
+    if (res.status === 401) throw new Error('Token expired — run: gcloud auth print-access-token');
+    if (res.status === 429 && attempt < 2) { await new Promise(r => setTimeout(r, 5000)); continue; }
     const t = await res.text();
-    throw new Error(`Image ${res.status}: ${t.slice(0,200)}`);
+    throw new Error(`Vertex AI ${res.status}: ${t.slice(0, 300)}`);
   }
 }
 
@@ -1869,34 +1885,50 @@ async function runDirect() {
   if (nowD - lastDirectRunTime < DIRECT_COOLDOWN_MS) return;
   lastDirectRunTime = nowD;
 
-  const key     = document.getElementById('key-input').value.trim();
-  const size    = document.getElementById('direct-size').value;
-  const quality = document.getElementById('direct-quality').value;
-  const status  = document.getElementById('direct-status');
+  const token = document.getElementById('gcp-token-input').value.trim();
+  if (!token) {
+    document.getElementById('direct-status').textContent = '⚠ GCP Bearer Token missing — run: gcloud auth print-access-token';
+    return;
+  }
 
-  // Allow multiple concurrent direct generations
+  const sizeStr = document.getElementById('direct-size').value;
+  let aspectHint = 'portrait (3:4)';
+  if (sizeStr === '1536x1024') aspectHint = 'landscape (4:3)';
+  if (sizeStr === '1024x1024') aspectHint = 'square (1:1)';
+
+  const status = document.getElementById('direct-status');
   const controller = new AbortController();
   directController = controller;
   document.getElementById('direct-cancel-btn').style.display = 'inline-block';
-  status.textContent = '';
+  status.textContent = 'Generating…';
 
-  // Add spinner placeholder immediately
   const placeholder = document.createElement('div');
   placeholder.className = 'dr-card dr-pending';
-  const selSize = document.getElementById('direct-size').value;
-  const ar = selSize === '1536x1024' ? '3/2' : selSize === '1024x1024' ? '1/1' : '2/3';
+  const ar = sizeStr === '1536x1024' ? '3/2' : sizeStr === '1024x1024' ? '1/1' : '2/3';
   placeholder.innerHTML = `<div style="aspect-ratio:${ar};background:var(--bg3);display:flex;align-items:center;justify-content:center"><div class="spin"></div></div>`;
   document.getElementById('direct-results').prepend(placeholder);
 
+  const projectId = 'project-2f5b2aa2-6635-4a8a-9a4';
+  const location  = 'us-central1';
+  const url = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/imagen-3.0-generate-002:predict`;
+  const payload = {
+    instances: [{ prompt }],
+    parameters: { sampleCount: 1, aspectRatio: aspectHint === 'landscape (4:3)' ? '4:3' : aspectHint === 'square (1:1)' ? '1:1' : '3:4' }
+  };
+
   try {
-    const res = await fetch(`${AZURE_EP}/openai/deployments/${IMG_DEP}/images/generations?api-version=2025-04-01-preview`, {
-      method:'POST',
-      headers:{'api-key':key,'Content-Type':'application/json'},
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       signal: controller.signal,
-      body: JSON.stringify({ prompt, n:1, size, quality, output_format:'jpeg', output_compression:80 })
+      body: JSON.stringify(payload)
     });
-    if (!res.ok) { const t=await res.text(); throw new Error(`${res.status}: ${t.slice(0,200)}`); }
-    const imgURL = `data:image/jpeg;base64,${(await res.json()).data[0].b64_json}`;
+    if (res.status === 401) throw new Error('Token expired — run: gcloud auth print-access-token');
+    if (!res.ok) { const t = await res.text(); throw new Error(`${res.status}: ${t.slice(0, 300)}`); }
+    const data = await res.json();
+    const b64 = data.predictions?.[0]?.bytesBase64Encoded;
+    if (!b64) throw new Error('No image in Vertex AI response');
+    const imgURL = `data:image/jpeg;base64,${b64}`;
     const ts = Date.now();
     const card = document.createElement('div');
     card.className = 'dr-card';
@@ -1909,7 +1941,7 @@ async function runDirect() {
   } finally {
     directController = null;
     document.getElementById('direct-cancel-btn').style.display = 'none';
-    status.textContent = '';
+    if (status.textContent === 'Generating…') status.textContent = '';
   }
 }
 
