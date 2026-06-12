@@ -251,7 +251,7 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
 <div id="lightbox" onclick="closeLightbox()"><img id="lightbox-img" src="" alt=""></div>
 
 <div id="topbar">
-  <div class="logo">GROOVE POP <span>// DEV v44</span></div>
+  <div class="logo">GROOVE POP <span>// DEV v45</span></div>
   <div class="tsep"></div>
   <div class="tstat">Subthemes: <strong id="h-subthemes">—</strong></div>
   <div class="tstat">Tags: <strong id="h-total">—</strong></div>
@@ -339,6 +339,14 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
     </div>
 
     <div id="freeform-bar">
+      <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border2); border-radius: 4px; padding: 10px; margin-bottom: 16px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <div class="sb-label" style="margin:0; color:var(--text)">Custom Vision Prompt</div>
+          <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">Optional override for the vision model</span>
+        </div>
+        <textarea id="vision-prompt-override" placeholder="Override default vision prompt here..." style="width:100%;height:40px;background:var(--bg);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:6px 8px;resize:vertical;"></textarea>
+      </div>
+
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
         <div class="sb-label" style="margin:0">Custom Style Prompt</div>
         <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">Click tags below to add · --- separates stacked tags</span>
@@ -1314,7 +1322,8 @@ Respond with only the single word. Nothing else.` }
   const subjectCount = classData.choices[0].message.content.trim().toUpperCase() === 'MULTIPLE' ? 'multiple' : 'single';
 
   // ── Call 2: Targeted caption ────────────────────────────────
-  const instruction = subjectCount === 'multiple' ? CAPTION_MULTIPLE : CAPTION_SINGLE;
+  const overridePrompt = document.getElementById('vision-prompt-override')?.value.trim();
+  const instruction = overridePrompt ? overridePrompt : (subjectCount === 'multiple' ? CAPTION_MULTIPLE : CAPTION_SINGLE);
   const capRes = await fetch(url, {
     method:'POST', headers, signal,
     body: JSON.stringify({ max_tokens:250, messages:[{ role:'user', content:[
