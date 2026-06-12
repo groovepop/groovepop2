@@ -548,8 +548,8 @@
   <div class="modal glass-panel" style="width:100%; max-width:400px; padding:2.5rem 2rem; border:1px solid var(--border); border-radius:4px; display:flex; flex-direction:column; gap:1.5rem; background:var(--surface);">
     <div class="authgate-logo" style="font-size:2.5rem; margin-bottom:0.5rem;"><span class="groove" style="color:var(--white);">GROOVE</span> <span class="pop" style="color:var(--gold);">POP</span><br><span style="font-size:1.2rem; letter-spacing:0.3em; color:var(--muted);">PARTY</span></div>
     <div>
-      <h2 style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:0.1em; color:var(--gold); margin-bottom:0.5rem;">ACTIVATE YOUR BOOTH</h2>
-      <p id="activation-prompt-text" style="font-size:0.75rem; color:var(--white); opacity:0.8; line-height:1.5;">This photo booth is currently locked. Enter the activation key generated at purchase to start the party!</p>
+      <h2 style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:0.1em; color:var(--gold); margin-bottom:0.5rem;">ACTIVATE YOUR PARTY</h2>
+      <p id="activation-prompt-text" style="font-size:0.75rem; color:var(--white); opacity:0.8; line-height:1.5;">Enter your activation key to unlock for your event!</p>
     </div>
     <div style="display:flex; flex-direction:column; gap:0.5rem; text-align:left;">
       <label style="font-family:'Bebas Neue',sans-serif; font-size:0.8rem; letter-spacing:0.1em; color:var(--gold);">Activation Key</label>
@@ -557,7 +557,7 @@
     </div>
     <button class="btn-primary" id="btn-activate-key" onclick="attemptKeyActivation()" style="margin-top:0.5rem; border-radius:100px;">ACTIVATE NOW</button>
     <div id="activation-error" style="font-size:0.7rem; color:var(--rust); display:none; margin-top:-0.5rem;">Invalid activation key. Please try again.</div>
-    <button class="btn-ghost" id="btn-activation-back" onclick="goTo('home')" style="border-radius:100px; padding:0.8rem; font-size:0.9rem; width:100%;">BACK TO BOOTH</button>
+    <button class="btn-ghost" id="btn-activation-back" onclick="goTo('home')" style="border-radius:100px; padding:0.8rem; font-size:0.9rem; width:100%;">BACK TO APP</button>
   </div>
 </section>
 
@@ -984,13 +984,14 @@ async function initApp() {
                   }
               }
 
-              // Set the text prompt on the activation screen
+              // Set the text prompt on the activation screen with eventName customization
               const promptText = document.getElementById('activation-prompt-text');
+              const nameText = data.eventName ? ` for ${data.eventName.toUpperCase()}` : '';
               if (promptText) {
                   if (photosTakenCount >= 10) {
-                      promptText.textContent = "TRIAL ENDED: You've used all 10 trial generations. Enter your activation key to unlock unlimited photos!";
+                      promptText.textContent = `TRIAL ENDED: You've used all 10 trial generations. Enter your activation key to unlock${nameText}!`;
                   } else {
-                      promptText.textContent = `TRIAL MODE: You've used ${photosTakenCount} of 10 free trial generations. Enter your activation key to unlock unlimited photos!`;
+                      promptText.textContent = `TRIAL MODE: You've used ${photosTakenCount} of 10 free trial generations. Enter your activation key to unlock${nameText}!`;
                   }
               }
 
@@ -1001,7 +1002,7 @@ async function initApp() {
                       actBackBtn.textContent = "VIEW GALLERY";
                       actBackBtn.setAttribute('onclick', "goTo('gallery'); loadGallery();");
                   } else {
-                      actBackBtn.textContent = "BACK TO BOOTH";
+                      actBackBtn.textContent = "BACK TO APP";
                       actBackBtn.setAttribute('onclick', "goTo('home')");
                   }
               }
@@ -1710,11 +1711,12 @@ async function autoUploadToCloudinary(imageDataUrl, style) {
           
           // Update prompt text on activation screen
           const promptText = document.getElementById('activation-prompt-text');
+          const nameText = (typeof data !== 'undefined' && data && data.eventName) ? ` for ${data.eventName.toUpperCase()}` : '';
           if (promptText) {
               if (photosTakenCount >= 10) {
-                  promptText.textContent = "TRIAL ENDED: You've used all 10 trial generations. Enter your activation key to unlock unlimited photos!";
+                  promptText.textContent = `TRIAL ENDED: You've used all 10 trial generations. Enter your activation key to unlock${nameText}!`;
               } else {
-                  promptText.textContent = `TRIAL MODE: You've used ${photosTakenCount} of 10 free trial generations. Enter your activation key to unlock unlimited photos!`;
+                  promptText.textContent = `TRIAL MODE: You've used ${photosTakenCount} of 10 free trial generations. Enter your activation key to unlock${nameText}!`;
               }
           }
           
@@ -1725,7 +1727,7 @@ async function autoUploadToCloudinary(imageDataUrl, style) {
                   actBackBtn.textContent = "VIEW GALLERY";
                   actBackBtn.setAttribute('onclick', "goTo('gallery'); loadGallery();");
               } else {
-                  actBackBtn.textContent = "BACK TO BOOTH";
+                  actBackBtn.textContent = "BACK TO APP";
                   actBackBtn.setAttribute('onclick', "goTo('home')");
               }
           }
