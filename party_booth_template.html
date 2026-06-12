@@ -549,7 +549,7 @@
     <div class="authgate-logo" style="font-size:2.5rem; margin-bottom:0.5rem;"><span class="groove" style="color:var(--white);">GROOVE</span> <span class="pop" style="color:var(--gold);">POP</span><br><span style="font-size:1.2rem; letter-spacing:0.3em; color:var(--muted);">PARTY</span></div>
     <div>
       <h2 style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:0.1em; color:var(--gold); margin-bottom:0.5rem;">ACTIVATE YOUR BOOTH</h2>
-      <p style="font-size:0.75rem; color:var(--white); opacity:0.8; line-height:1.5;">This photo booth is currently locked. Enter the activation key generated at purchase to start the party!</p>
+      <p id="activation-prompt-text" style="font-size:0.75rem; color:var(--white); opacity:0.8; line-height:1.5;">This photo booth is currently locked. Enter the activation key generated at purchase to start the party!</p>
     </div>
     <div style="display:flex; flex-direction:column; gap:0.5rem; text-align:left;">
       <label style="font-family:'Bebas Neue',sans-serif; font-size:0.8rem; letter-spacing:0.1em; color:var(--gold);">Activation Key</label>
@@ -557,6 +557,7 @@
     </div>
     <button class="btn-primary" id="btn-activate-key" onclick="attemptKeyActivation()" style="margin-top:0.5rem; border-radius:100px;">ACTIVATE NOW</button>
     <div id="activation-error" style="font-size:0.7rem; color:var(--rust); display:none; margin-top:-0.5rem;">Invalid activation key. Please try again.</div>
+    <button class="btn-ghost" id="btn-activation-back" onclick="goTo('home')" style="border-radius:100px; padding:0.8rem; font-size:0.9rem; width:100%;">BACK TO BOOTH</button>
   </div>
 </section>
 
@@ -580,6 +581,8 @@
       <button class="pill-btn" onclick="cancelGeneration()">CANCEL</button>
     </div>
   </div>
+
+  <div id="home-alert-container" style="background: rgba(200, 168, 75, 0.1); border-bottom: 1px solid var(--border); padding: 0.75rem 1.25rem; font-size: 0.75rem; text-align: center; color: var(--gold); letter-spacing: 0.05em; display: none; z-index: 10;"></div>
 
   <!-- CONTENT — left: image zone | right: style picker -->
   <div class="home-content">
@@ -869,6 +872,12 @@
 // Set this after Azure Function App deploy (see AZURE-SETUP.md)
 const API_BASE = 'https://groovepop-engine-f7ged0hndrbucafm.eastus2-01.azurewebsites.net/api';
 
+let isActiveEvent = true;
+let photosTakenCount = 0;
+let partyDocId = null;
+let dbRef = null;
+let expectedKey = null;
+
 let STYLES = [], STYLES_MULTI = [];
 let uploadedDataUrl = null;
 let selectedStyle = null;
@@ -937,9 +946,6 @@ async function initApp() {
 
   // Party Engine Skinning Logic
   let isLocked = false;
-  let partyDocId = null;
-  let dbRef = null;
-  let expectedKey = null;
 
   try {
       const urlParams = new URLSearchParams(window.location.search);
@@ -956,9 +962,48 @@ async function initApp() {
           if (docSnap.exists) {
               const data = docSnap.data();
               expectedKey = data.pendingKey;
+              isActiveEvent = data.isActive !== false;
+              photosTakenCount = data.photosTaken || 0;
               
               if (data.isActive === false) {
                   isLocked = true;
+              }
+
+              // Update the trial alert banner on load
+              const alertBanner = document.getElementById('home-alert-container');
+              if (alertBanner) {
+                  if (!isActiveEvent) {
+                      alertBanner.style.display = 'block';
+                      if (photosTakenCount >= 10) {
+                          alertBanner.innerHTML = `🔒 TRIAL ENDED: 10/10 photos generated. <a href="#" onclick="goTo('activation'); return false;" style="color:var(--white); text-decoration:underline; font-weight:bold; margin-left:0.5rem;">ENTER KEY TO ACTIVATE</a>`;
+                      } else {
+                          alertBanner.innerHTML = `⚡ TRIAL MODE: ${photosTakenCount}/10 free photos generated. <a href="#" onclick="goTo('activation'); return false;" style="color:var(--white); text-decoration:underline; font-weight:bold; margin-left:0.5rem;">ACTIVATE KEY</a>`;
+                      }
+                  } else {
+                      alertBanner.style.display = 'none';
+                  }
+              }
+
+              // Set the text prompt on the activation screen
+              const promptText = document.getElementById('activation-prompt-text');
+              if (promptText) {
+                  if (photosTakenCount >= 10) {
+                      promptText.textContent = "TRIAL ENDED: You've used all 10 trial generations. Enter your activation key to unlock unlimited photos!";
+                  } else {
+                      promptText.textContent = `TRIAL MODE: You've used ${photosTakenCount} of 10 free trial generations. Enter your activation key to unlock unlimited photos!`;
+                  }
+              }
+
+              // Configure activation screen back button
+              const actBackBtn = document.getElementById('btn-activation-back');
+              if (actBackBtn) {
+                  if (photosTakenCount >= 10) {
+                      actBackBtn.textContent = "VIEW GALLERY";
+                      actBackBtn.setAttribute('onclick', "goTo('gallery'); loadGallery();");
+                  } else {
+                      actBackBtn.textContent = "BACK TO BOOTH";
+                      actBackBtn.setAttribute('onclick', "goTo('home')");
+                  }
               }
 
               // Apply Colors matching app.html variables
@@ -1038,6 +1083,17 @@ async function initApp() {
                   key: val,
                   pendingKey: firebase.firestore.FieldValue.delete()
               });
+              
+              // Transition the global state to live immediately
+              isActiveEvent = true;
+              
+              // Hide alert banner
+              const alertBanner = document.getElementById('home-alert-container');
+              if (alertBanner) alertBanner.style.display = 'none';
+              
+              // Update generate button text/state
+              updateGenerateButton();
+              
               goTo('home');
           } catch(e) {
               console.error(e);
@@ -1065,11 +1121,7 @@ async function initApp() {
   buildPicker();
   initLogo();
   
-  if (isLocked) {
-      goTo('activation');
-  } else {
-      goTo('home');
-  }
+  goTo('home');
 }
 
 // ══════════════════════════════════════════
@@ -1143,13 +1195,25 @@ function resetPhoto() {
   selectedStyle = null;
   const previewZone = document.getElementById('upload-preview-zone');
   if (previewZone) { previewZone.innerHTML = ''; previewZone.style.display = 'none'; }
-  document.getElementById('file-input').value = '';
-  document.getElementById('selfie-input').value = '';
+  
+  const fileInput = document.getElementById('file-input');
+  if (fileInput) fileInput.value = '';
+  
+  const selfieInput = document.getElementById('selfie-input');
+  if (selfieInput) selfieInput.value = '';
+  
   const randomBtn = document.getElementById('btn-randomize');
-  randomBtn.disabled = true;
-  randomBtn.classList.remove('lit');
-  document.getElementById('selected-style-name').textContent = 'No style selected';
-  document.getElementById('selected-style-name').style.opacity = '0.3';
+  if (randomBtn) {
+    randomBtn.disabled = true;
+    randomBtn.classList.remove('lit');
+  }
+  
+  const styleNameEl = document.getElementById('selected-style-name');
+  if (styleNameEl) {
+    styleNameEl.textContent = 'No style selected';
+    styleNameEl.style.opacity = '0.3';
+  }
+  
   setImageZoneState('upload');
   renderGrid();
   updateGenerateButton();
@@ -1211,7 +1275,15 @@ function selectStyle(style) {
 }
 
 function updateGenerateButton() {
-  document.getElementById('btn-generate').disabled = !(uploadedDataUrl && selectedStyle);
+  const btn = document.getElementById('btn-generate');
+  if (!btn) return;
+  if (!isActiveEvent && photosTakenCount >= 10) {
+    btn.disabled = false;
+    btn.innerHTML = '<span>ACTIVATE TO 3 PARTY</span>';
+  } else {
+    btn.disabled = !(uploadedDataUrl && selectedStyle);
+    btn.innerHTML = '<span>3</span><span>PARTY</span>';
+  }
 }
 
 // ══════════════════════════════════════════
@@ -1253,6 +1325,10 @@ async function surpriseFromResult() {
 let generationCancelled = false;
 
 async function startGeneration() {
+  if (!isActiveEvent && photosTakenCount >= 10) {
+    goTo('activation');
+    return;
+  }
   if (!selectedStyle || !uploadedDataUrl) return;
   generationCancelled = false;
 
@@ -1618,6 +1694,44 @@ async function autoUploadToCloudinary(imageDataUrl, style) {
           await dbRef.collection("parties").doc(partyDocId).update({
             photosTaken: firebase.firestore.FieldValue.increment(1)
           });
+          
+          // Update local state in real-time
+          photosTakenCount++;
+          
+          // Update the trial alert banner
+          const alertBanner = document.getElementById('home-alert-container');
+          if (alertBanner && !isActiveEvent) {
+              if (photosTakenCount >= 10) {
+                  alertBanner.innerHTML = `🔒 TRIAL ENDED: 10/10 photos generated. <a href="#" onclick="goTo('activation'); return false;" style="color:var(--white); text-decoration:underline; font-weight:bold; margin-left:0.5rem;">ENTER KEY TO ACTIVATE</a>`;
+              } else {
+                  alertBanner.innerHTML = `⚡ TRIAL MODE: ${photosTakenCount}/10 free photos generated. <a href="#" onclick="goTo('activation'); return false;" style="color:var(--white); text-decoration:underline; font-weight:bold; margin-left:0.5rem;">ACTIVATE KEY</a>`;
+              }
+          }
+          
+          // Update prompt text on activation screen
+          const promptText = document.getElementById('activation-prompt-text');
+          if (promptText) {
+              if (photosTakenCount >= 10) {
+                  promptText.textContent = "TRIAL ENDED: You've used all 10 trial generations. Enter your activation key to unlock unlimited photos!";
+              } else {
+                  promptText.textContent = `TRIAL MODE: You've used ${photosTakenCount} of 10 free trial generations. Enter your activation key to unlock unlimited photos!`;
+              }
+          }
+          
+          // Update the back button visibility on activation screen
+          const actBackBtn = document.getElementById('btn-activation-back');
+          if (actBackBtn) {
+              if (photosTakenCount >= 10) {
+                  actBackBtn.textContent = "VIEW GALLERY";
+                  actBackBtn.setAttribute('onclick', "goTo('gallery'); loadGallery();");
+              } else {
+                  actBackBtn.textContent = "BACK TO BOOTH";
+                  actBackBtn.setAttribute('onclick', "goTo('home')");
+              }
+          }
+          
+          // Update generate button text/state
+          updateGenerateButton();
         } catch(fsErr) {
           console.warn("Firestore photo log failed:", fsErr);
         }
