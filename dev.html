@@ -542,7 +542,7 @@ function saveMuseOrder() {
 }
 
 function addMuse(file) {
-  const id   = 'muse_' + Date.now();
+  const id   = 'muse_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
   const name = 'Muse ' + (muses.length + 1);
   const blob = file;
   const url  = URL.createObjectURL(blob);
@@ -677,7 +677,7 @@ function renderMuseGrid() {
     const addSlot = document.createElement('label');
     addSlot.className = 'muse-add';
     addSlot.title = 'Add muse image';
-    addSlot.innerHTML = `<input type="file" accept="image/*" style="display:none" onchange="handleMuseAdd(event)"><div class="muse-add-inner">+</div>`;
+    addSlot.innerHTML = `<input type="file" accept="image/*" multiple style="display:none" onchange="handleMuseAdd(event)"><div class="muse-add-inner">+</div>`;
     addTarget.appendChild(addSlot);
   }
   // Hide bottom grid if empty
@@ -685,8 +685,10 @@ function renderMuseGrid() {
 }
 
 function handleMuseAdd(e) {
-  const file = e.target.files[0];
-  if (file) addMuse(file);
+  const files = e.target.files;
+  for (let i = 0; i < files.length; i++) {
+    addMuse(files[i]);
+  }
   e.target.value = '';
 }
 
