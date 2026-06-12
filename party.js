@@ -149,7 +149,8 @@ els.btnGenerate.addEventListener('click', async () => {
         }
 
         // 4. Generate Output URL
-        const finalUrl = `https://groovepop.ca/app.html?partyId=${docId}`;
+        const baseUrl = window.location.href.replace('party.html', 'party_booth_template.html');
+        const finalUrl = `${baseUrl}?partyId=${docId}`;
         
         els.shareUrl.value = finalUrl;
         document.getElementById('activation-key').value = randomKey;
