@@ -466,14 +466,14 @@
 
   <!-- APP BAR -->
   <div class="app-bar">
+    <!-- Event logo/name — injected dynamically from Firestore config -->
     <div class="app-bar-logo" id="app-bar-logo-wrap">
-      <img id="app-bar-logo-img" src="/logos/gp-logo-001.jpg" alt="GROOVE POP" style="height:32px;width:auto;max-width:180px;object-fit:contain;display:block;">
+      <img id="app-bar-logo-img" src="" alt="" style="height:32px;width:auto;max-width:180px;object-fit:contain;display:none;">
     </div>
     <div class="app-bar-right" id="app-bar-right" style="flex-shrink:0;margin-left:auto;gap:0.5rem;">
       <button class="pill-btn" id="btn-randomize" disabled onclick="randomizeGeneration()">⚡ SURPRISE ME</button>
       <button class="pill-btn" id="btn-install" onclick="showInstallBanner()" style="display:none;" title="Add to home screen">⊕ INSTALL</button>
-      <button class="pill-btn" onclick="drawerGoGallery()">GALLERY</button>
-      <button class="pill-btn" onclick="handleSignOut()" title="Sign out" style="opacity:0.45;font-size:0.7rem;padding:0.35rem 0.6rem;">EXIT</button>
+      <button class="pill-btn" id="btn-gallery" onclick="drawerGoGallery()">GALLERY</button>
     </div>
     <!-- Generating mode: style label + cancel -->
     <div class="app-bar-generating" id="app-bar-generating">
@@ -488,26 +488,21 @@
     <!-- LEFT: image zone -->
     <div class="home-left" id="home-left">
 
-      <!-- 1. CHOOSE AN IMAGE -->
+      <!-- 1. TAKE A SELFIE -->
       <div class="home-section-heading">
         <span class="home-section-num">1</span>
-        <span class="home-section-text">CHOOSE <span class="accent">AN IMAGE</span></span>
+        <span class="home-section-text">TAKE <span class="accent">A SELFIE</span></span>
       </div>
 
-      <!-- Upload: single unified field -->
+      <!-- Camera only: single selfie tap -->
       <div class="upload-unified" id="upload-state">
-        <div class="upload-opt" onclick="document.getElementById('file-input').click()">
-          <div class="upload-icon"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>
-          <span class="upload-hint">UPLOAD</span>
-        </div>
-        <div class="upload-opt-divider"></div>
         <div class="upload-opt" onclick="document.getElementById('selfie-input').click()">
           <div class="upload-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M6.343 6.343a8 8 0 1011.314 0M12 2v4"/></svg></div>
           <span class="upload-hint">SELFIE</span>
         </div>
       </div>
 
-      <!-- Photo preview (after upload, before generating) -->
+      <!-- Photo preview (after capture, before generating) -->
       <div id="upload-preview-zone"></div>
 
       <!-- Generating state -->
@@ -546,7 +541,6 @@
         <button class="error-card-retry" onclick="startGeneration()">TRY THAT AGAIN</button>
       </div>
 
-      <input type="file" id="file-input" accept="image/*">
       <input type="file" id="selfie-input" accept="image/*" capture="user">
     </div><!-- /.home-left -->
 
@@ -576,7 +570,7 @@
       </div>
       <button class="btn-primary" id="btn-generate" disabled onclick="startGeneration()" style="display:flex;align-items:center;justify-content:center;gap:0.4em;">
         <span style="font-size:1.6rem;line-height:1;opacity:0.75;">3</span>
-        <span style="font-size:1.05rem;letter-spacing:0.15em;">TRANSFORM IMAGE</span>
+        <span style="font-size:1.05rem;letter-spacing:0.15em;">PARTY</span>
       </button>
     </div>
 
@@ -891,11 +885,21 @@ async function initApp() {
                       barImg.style.display = 'block';
                   } else if (data.eventName) {
                       if (barLogo) {
-                          barLogo.innerHTML = `<span style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.05em;color:var(--white);">${data.eventName.toUpperCase()}</span>`;
+                          barLogo.innerHTML = `<span style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.08em;color:var(--white);">${data.eventName.toUpperCase()}</span>`;
                       }
                   }
               }
-              
+
+              // Gallery button label — use custom label, event name, or fallback to GALLERY
+              const galleryBtn = document.getElementById('btn-gallery');
+              if (galleryBtn) {
+                  if (data.galleryLabel) {
+                      galleryBtn.textContent = data.galleryLabel.toUpperCase();
+                  } else if (data.eventName) {
+                      galleryBtn.textContent = data.eventName.toUpperCase();
+                  }
+              }
+
               // Welcome Message
               if (data.welcomeMessage) {
                   const welcomeEl = document.createElement('div');
@@ -920,7 +924,6 @@ async function initApp() {
     STYLES = single; STYLES_MULTI = multi;
   } catch(e) { console.error('Failed to load styles', e); }
 
-  document.getElementById('file-input').addEventListener('change', e => handleFileInput(e.target.files[0]));
   document.getElementById('selfie-input').addEventListener('change', e => handleFileInput(e.target.files[0]));
 
   buildPicker();
