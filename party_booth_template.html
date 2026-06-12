@@ -23,7 +23,7 @@
     --border: rgba(200,168,75,0.2); --border-dim: rgba(200,168,75,0.1);
   }
   html { overflow:hidden; overscroll-behavior:none; }
-  body { background:#111; color:var(--white); font-family:'DM Sans',sans-serif; min-height:100vh; overflow:hidden; overscroll-behavior:none; display:flex; justify-content:center; align-items:flex-start; }
+  body { background:var(--black); color:var(--white); font-family:'DM Sans',sans-serif; min-height:100vh; overflow:hidden; overscroll-behavior:none; display:flex; justify-content:center; align-items:flex-start; }
   #app { width:100%; max-width:480px; background:var(--black); position:relative; min-height:100vh; box-shadow:0 0 60px rgba(0,0,0,0.8); }
   .screen { display:none; flex-direction:column; min-height:100vh; }
   .screen.active { display:flex; }
@@ -1023,7 +1023,11 @@ async function initApp() {
                   }
                   if (data.colors.bg) {
                       root.style.setProperty('--black', data.colors.bg);
+                      document.body.style.background = data.colors.bg;
                       root.style.setProperty('--surface', `rgba(${hexToRgb(data.colors.bg)},0.15)`);
+                  }
+                  if (data.colors.text) {
+                      root.style.setProperty('--white', data.colors.text);
                   }
               }
               // Set custom file
@@ -2822,6 +2826,10 @@ function initLogo() {
   const logoText = document.getElementById('gen-logo-text');
   
   if (customLogoUrl) {
+    if (barImg) {
+      barImg.src = customLogoUrl;
+      barImg.style.display = 'block';
+    }
     if (layerA) { layerA.src = customLogoUrl; layerA.style.display = 'block'; }
     if (layerB) { layerB.src = customLogoUrl; layerB.style.display = 'block'; }
     if (logoText) logoText.style.display = 'none';
