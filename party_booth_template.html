@@ -543,6 +543,23 @@
   <div class="authgate-dots"><span></span><span></span><span></span></div>
 </section>
 
+<!-- ── SCREEN: ACTIVATION LOCK ── -->
+<section class="screen" id="screen-activation" style="align-items:center; justify-content:center; padding:2rem; background:var(--black); text-align:center;">
+  <div class="modal glass-panel" style="width:100%; max-width:400px; padding:2.5rem 2rem; border:1px solid var(--border); border-radius:4px; display:flex; flex-direction:column; gap:1.5rem; background:var(--surface);">
+    <div class="authgate-logo" style="font-size:2.5rem; margin-bottom:0.5rem;"><span class="groove" style="color:var(--white);">GROOVE</span> <span class="pop" style="color:var(--gold);">POP</span><br><span style="font-size:1.2rem; letter-spacing:0.3em; color:var(--muted);">PARTY</span></div>
+    <div>
+      <h2 style="font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:0.1em; color:var(--gold); margin-bottom:0.5rem;">ACTIVATE YOUR BOOTH</h2>
+      <p style="font-size:0.75rem; color:var(--white); opacity:0.8; line-height:1.5;">This photo booth is currently locked. Enter the activation key generated at purchase to start the party!</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:0.5rem; text-align:left;">
+      <label style="font-family:'Bebas Neue',sans-serif; font-size:0.8rem; letter-spacing:0.1em; color:var(--gold);">Activation Key</label>
+      <input type="text" id="activation-input" placeholder="PARTY-XXXX-XXXX" style="width:100%; padding:0.8rem; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:2px; color:var(--white); font-family:monospace; font-size:1rem; letter-spacing:0.1em; text-align:center; text-transform:uppercase;">
+    </div>
+    <button class="btn-primary" id="btn-activate-key" onclick="attemptKeyActivation()" style="margin-top:0.5rem; border-radius:100px;">ACTIVATE NOW</button>
+    <div id="activation-error" style="font-size:0.7rem; color:var(--rust); display:none; margin-top:-0.5rem;">Invalid activation key. Please try again.</div>
+  </div>
+</section>
+
 <!-- ══ SCREEN: HOME — three-state grid ══ -->
 <section class="screen" id="screen-home" data-state="upload">
 
@@ -919,18 +936,31 @@ async function initApp() {
   }
 
   // Party Engine Skinning Logic
+  let isLocked = false;
+  let partyDocId = null;
+  let dbRef = null;
+  let expectedKey = null;
+
   try {
       const urlParams = new URLSearchParams(window.location.search);
       const partyId = urlParams.get('partyId');
       
       if (partyId) {
+          partyDocId = partyId;
           firebase.initializeApp(firebaseConfig);
           const db = firebase.firestore();
+          dbRef = db;
           const docRef = db.collection("parties").doc(partyId);
           const docSnap = await docRef.get();
           
           if (docSnap.exists) {
               const data = docSnap.data();
+              expectedKey = data.pendingKey;
+              
+              if (data.isActive === false) {
+                  isLocked = true;
+              }
+
               // Apply Colors matching app.html variables
               if (data.colors) {
                   const root = document.documentElement;
@@ -989,6 +1019,39 @@ async function initApp() {
       }
   } catch(e) { console.warn('Party skinning failed or missing.', e); }
 
+  // Expose key activation logic globally
+  window.attemptKeyActivation = async function() {
+      const input = document.getElementById('activation-input');
+      const err = document.getElementById('activation-error');
+      const btn = document.getElementById('btn-activate-key');
+      if (!input || !partyDocId || !dbRef) return;
+      
+      const val = input.value.trim().toUpperCase();
+      err.style.display = 'none';
+
+      if (val === expectedKey) {
+          btn.disabled = true;
+          btn.textContent = "ACTIVATING...";
+          try {
+              await dbRef.collection("parties").doc(partyDocId).update({
+                  isActive: true,
+                  key: val,
+                  pendingKey: firebase.firestore.FieldValue.delete()
+              });
+              goTo('home');
+          } catch(e) {
+              console.error(e);
+              err.textContent = "Error communicating with database. Try again.";
+              err.style.display = 'block';
+              btn.disabled = false;
+              btn.textContent = "ACTIVATE NOW";
+          }
+      } else {
+          err.textContent = "Invalid activation key. Please try again.";
+          err.style.display = 'block';
+      }
+  };
+
   try {
     const [single, multi] = await Promise.all([
       fetch(`/${stylesFileName}`).then(r => r.json()).catch(() => []),
@@ -1001,7 +1064,12 @@ async function initApp() {
 
   buildPicker();
   initLogo();
-  goTo('home');
+  
+  if (isLocked) {
+      goTo('activation');
+  } else {
+      goTo('home');
+  }
 }
 
 // ══════════════════════════════════════════
@@ -1516,13 +1584,13 @@ function storeCaptionSnippets(caption) {
 // CLOUDINARY AUTO-UPLOAD
 // ══════════════════════════════════════════
 async function autoUploadToCloudinary(imageDataUrl, style) {
-  if (!currentUser) return;
+  // Try uploading to Netlify Cloudinary Function first
   try {
     const res = await fetch('/.netlify/functions/upload-image', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         base64: imageDataUrl.split(',')[1], mimeType: 'image/jpeg',
-        userId: currentUser.id || currentUser.email,
+        userId: (currentUser && (currentUser.id || currentUser.email)) || 'party-guest',
         styleKey: style.family_key || '',
         styleName: style.family_label || '',
         subtheme: style.subtheme || '',
@@ -1531,7 +1599,30 @@ async function autoUploadToCloudinary(imageDataUrl, style) {
       })
     });
     const data = await res.json();
-    if (res.ok) currentCloudinaryUrl = data.url;
+    if (res.ok) {
+      currentCloudinaryUrl = data.url;
+      
+      // Auto-populate the private Firestore event subcollection
+      if (partyDocId && dbRef) {
+        try {
+          // Add document to subcollection parties/{partyId}/photos
+          await dbRef.collection("parties").doc(partyDocId).collection("photos").add({
+            imageUrl: data.url,
+            styleId: style.family_key || '',
+            styleName: style.family_label || '',
+            caption: generatedCaption ? generatedCaption.slice(0, 200) : '',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          
+          // Increment the total photos taken counter in parent document
+          await dbRef.collection("parties").doc(partyDocId).update({
+            photosTaken: firebase.firestore.FieldValue.increment(1)
+          });
+        } catch(fsErr) {
+          console.warn("Firestore photo log failed:", fsErr);
+        }
+      }
+    }
   } catch(err) { console.warn('Gallery upload failed:', err.message); }
 }
 
@@ -1624,10 +1715,30 @@ async function loadGallery() {
   const grid=document.getElementById('gallery-grid'), countEl=document.getElementById('gallery-count');
   grid.innerHTML='<div class="gallery-loading"><div class="gen-dots"><span></span><span></span><span></span></div></div>';
   try {
-    const res=await fetch('/.netlify/functions/get-gallery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:currentUser.id||currentUser.email})});
-    const data=await res.json();
-    if(!res.ok)throw new Error(data.error||'Failed to load');
-    galleryImages=data.images||[];
+    if (partyDocId && dbRef) {
+      // Fetch from Firestore subcollection parties/{partyId}/photos
+      const snap = await dbRef.collection("parties").doc(partyDocId).collection("photos").orderBy("createdAt", "desc").get();
+      const images = [];
+      snap.forEach(doc => {
+        const docData = doc.data();
+        images.push({
+          url: docData.imageUrl,
+          thumbUrl: docData.imageUrl,
+          styleName: docData.styleName || '',
+          styleKey: docData.styleId || '',
+          caption: docData.caption || '',
+          photoId: doc.id
+        });
+      });
+      galleryImages = images;
+    } else {
+      // Fallback to Netlify personal gallery
+      const res=await fetch('/.netlify/functions/get-gallery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:currentUser.id||currentUser.email})});
+      const data=await res.json();
+      if(!res.ok)throw new Error(data.error||'Failed to load');
+      galleryImages=data.images||[];
+    }
+    
     countEl.textContent=galleryImages.length?`${galleryImages.length} image${galleryImages.length!==1?'s':''}`:'Empty';
     if(!galleryImages.length){grid.innerHTML='<div class="gallery-empty"><div class="gallery-empty-title">NO IMAGES YET</div><div class="gallery-empty-sub">Generate something and it\'ll appear here</div></div>';return;}
     grid.innerHTML=galleryImages.map((img,i)=>`
@@ -1642,10 +1753,10 @@ async function loadGallery() {
             <button class="gallery-item-btn" onclick="shareGalleryItem(${i})" title="Share">
               <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
             </button>
-            <button class="gallery-item-btn" onclick="printGalleryItem(${i})" title="Print">
+            <button class="gallery-item-btn" onclick="printGalleryItem(${i})" title="Print" style="display:none;">
               <svg viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
             </button>
-            <button class="gallery-item-btn delete" onclick="deleteGalleryItem(${i})" title="Delete">
+            <button class="gallery-item-btn delete" onclick="deleteGalleryItem(${i})" title="Delete" style="display:none;">
               <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg>
             </button>
           </div>

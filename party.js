@@ -108,6 +108,14 @@ els.btnGenerate.addEventListener('click', async () => {
             }
         }
 
+        // Generate random activation key
+        const generateKey = () => {
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // readable chars
+            const r = (len) => Array.from({length: len}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+            return `PARTY-${r(4)}-${r(4)}`;
+        };
+        const randomKey = generateKey();
+
         // 2. Gather Configuration
         const partyConfig = {
             eventName: els.eventName.value,
@@ -124,6 +132,8 @@ els.btnGenerate.addEventListener('click', async () => {
                 accent: els.accentColor.value
             },
             logoUrl: uploadedImageUrl,
+            pendingKey: randomKey,
+            isActive: false,
             createdAt: new Date()
         };
 
@@ -143,6 +153,7 @@ els.btnGenerate.addEventListener('click', async () => {
         const finalUrl = `${baseUrl}?partyId=${docId}`;
         
         els.shareUrl.value = finalUrl;
+        document.getElementById('activation-key').value = randomKey;
         
         // 5. Generate QR Code
         els.qrcode.innerHTML = "";
@@ -173,6 +184,15 @@ els.btnCopy.addEventListener('click', () => {
     document.execCommand('copy');
     els.btnCopy.textContent = "✅";
     setTimeout(() => { els.btnCopy.textContent = "📋"; }, 2000);
+});
+
+// Copy Key
+document.getElementById('copy-key-btn').addEventListener('click', () => {
+    const keyInput = document.getElementById('activation-key');
+    keyInput.select();
+    document.execCommand('copy');
+    document.getElementById('copy-key-btn').textContent = "✅";
+    setTimeout(() => { document.getElementById('copy-key-btn').textContent = "📋"; }, 2000);
 });
 
 // Reset & Close Modal
