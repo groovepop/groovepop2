@@ -70,14 +70,14 @@
      SCREEN: HOME — three-state grid
   ══════════════════════════════════════════ */
   #screen-home { flex-direction:column; overflow:hidden; }
-  #screen-home.active { display:grid !important; grid-template-rows:auto 1fr auto; height:100dvh; min-height:0; max-height:100dvh; }
+  #screen-home.active { display:flex !important; flex-direction:column; height:100dvh; min-height:0; max-height:100dvh; }
 
   /* App bar generating overlay */
   .app-bar-generating { display:none; width:100%; align-items:center; justify-content:space-between; }
   .gen-bar-style-label { font-family:'Bebas Neue',sans-serif; font-size:0.85rem; letter-spacing:0.1em; color:var(--gold); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:65%; }
 
   /* Content split */
-  .home-content { display:grid; grid-template-columns:1fr 1fr; min-height:0; overflow:hidden; }
+  .home-content { display:grid; grid-template-columns:1fr 1fr; flex:1; min-height:0; overflow:hidden; }
   .home-left { display:flex; flex-direction:column; overflow:hidden; min-height:0; position:relative; }
   .home-right { display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; min-height:0; overscroll-behavior:contain; }
 
@@ -570,6 +570,8 @@
 <!-- ══ SCREEN: HOME — three-state grid ══ -->
 <section class="screen" id="screen-home" data-state="upload">
 
+  <div id="home-alert-container" onclick="goTo('activation')" style="background: var(--gold); color: var(--black); font-family: 'Bebas Neue', sans-serif; font-size: 0.72rem; font-weight: bold; letter-spacing: 0.15em; text-align: center; padding: 4px 12px; cursor: pointer; display: none; z-index: 10; transition: background 0.2s; line-height: 1.2;">⚡ ACTIVATE YOUR PARTY</div>
+
   <!-- APP BAR -->
   <div class="app-bar">
     <!-- Event logo/name — injected dynamically from Firestore config -->
@@ -588,8 +590,6 @@
       <button class="pill-btn" onclick="cancelGeneration()">CANCEL</button>
     </div>
   </div>
-
-  <div id="home-alert-container" onclick="goTo('activation')" style="background: var(--gold); color: var(--black); font-family: 'Bebas Neue', sans-serif; font-size: 0.72rem; font-weight: bold; letter-spacing: 0.15em; text-align: center; padding: 4px 12px; cursor: pointer; display: none; z-index: 10; transition: background 0.2s; line-height: 1.2;">⚡ ACTIVATE YOUR PARTY</div>
 
   <!-- CONTENT — left: image zone | right: style picker -->
   <div class="home-content">
