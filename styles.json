@@ -280,10 +280,10 @@
     ]
   },
   {
-    "family_key": "action_movies",
+    "family_key": "action",
     "family_label": "Action Movies",
     "subtheme": "Cinema",
-    "file": "action_movies.jpg",
+    "file": "action.jpg",
     "variants": [
       {
         "key": "action_hero",
@@ -490,7 +490,7 @@
     "family_key": "film_noir",
     "family_label": "Film Noir",
     "subtheme": "Cinema",
-    "file": "film_noir.jpg",
+    "file": "brutal_noir.jpg",
     "variants": [
       {
         "key": "film_noir_street",
@@ -502,8 +502,10 @@
           "stark bleached highlights and ink-black shadows sculpting subject into pure dramatic form",
           "single vivid color accent drawn from subject bleeding into the monochrome world",
           "rain-slicked city streets at midnight neon bleeding into wet pavement",
-          "noir movie title and tagline inspired by subject",
-          "dense cinematic billing block",
+          "cigarette smoke dissolving the darkness into threat and beauty",
+          "noir movie title inspired by subject",
+          "tagline inspired by subject",
+          "billing block inspired by subject",
           "ASPECT RATIO 3:4"
         ],
         "size": "1024x1536"
@@ -514,33 +516,17 @@
         "prompt": [
           "cinematic noir movie poster aesthetic",
           "subject re-rendered in high contrast noir cinematography as a legendary figure of shadow and consequence",
-          "subject seated and still  -  cool dangerous composure as facial expression",
-          "mysterious stranger visible in the background",
+          "subject leaning weight shifted looking back  -  guarded knowing and dangerous as facial expression",
           "stark bleached highlights and ink-black shadows sculpting subject into pure dramatic form",
           "single vivid color accent drawn from subject bleeding into the monochrome world",
-          "smoky late-night jazz lounge  -  warm bar light fighting the surrounding darkness",
-          "noir movie title and tagline inspired by subject",
-          "dense cinematic billing block",
+          "smoky jazz bar at closing time low light bourbon the last song fading",
+          "cigarette smoke dissolving the darkness into threat and beauty",
+          "noir movie title inspired by subject",
+          "tagline inspired by subject",
+          "billing block inspired by subject",
           "ASPECT RATIO 3:4"
         ],
         "size": "1024x1536"
-      },
-      {
-        "key": "cyber_noir",
-        "label": "Cyber Noir",
-        "size": "1024x1536",
-        "prompt": [
-          "cyber noir movie poster aesthetic",
-          "subject re-rendered as a hard-boiled cybernetic investigator in a near-future city rotting at the edges",
-          "subject in classic gumshoe stance  -  hat low, collar up, one hand in pocket  -  seen-it-all exhaustion as facial expression",
-          "glowing cybernetic implants — eyes, ports, exposed wiring — as the only colour in an otherwise monochrome world",
-          "implant glow casting the only coloured light source — bleeding onto collar, hands, wet pavement beneath",
-          "stark bleached highlights and ink-black shadows sculpting subject into pure dramatic form",
-          "rain-slicked near-future streets — neon signs dark, infrastructure failing, fog settling low",
-          "noir movie title and tagline inspired by subject",
-          "dense cinematic billing block",
-          "ASPECT RATIO 3:4"
-        ]
       }
     ]
   },
@@ -621,7 +607,7 @@
     "family_key": "superhero",
     "family_label": "Superhero",
     "subtheme": "Cinema",
-    "file": "superhero.jpg",
+    "file": "multiverse.jpg",
     "variants": [
       {
         "key": "superhero_hero",
@@ -762,7 +748,7 @@
           "bold elegant movie title inspired by subject",
           "unsettling tagline inspired by subject",
           "cool desaturated palette with single dangerous color accent",
-          "ominous billing block",
+          "ominous billing block inspired by subject",
           "ASPECT RATIO 3:4"
         ],
         "size": "1024x1536"
@@ -797,7 +783,7 @@
         "label": "Sci-fi Invasion",
         "prompt": [
           "sci-fi invasion movie one-sheet poster aesthetic",
-          "subject transformed into a menacing alien creature — face and eyes retained, expression overridden to cold inhuman menace",
+          "subject fully transformed into a menacing alien creature",
           "creature design and form encoded from subject's world",
           "creature dominant and looming on the deck of alien craft",
           "alien craft architecture and design inspired by setting",
@@ -911,11 +897,12 @@
         "key": "comedy_indie",
         "label": "Indie Comedy",
         "prompt": [
-          "comedy movie one-sheet poster aesthetic",
-          "subject re-rendered in a moment of profound awkwardness",
-          "excruciating discomfort as facial expression",
-          "setting intact yet reimagined as the most painfully mundane environment",
-          "dry understated movie title and tagline inspired by subject",
+          "indie comedy movie one-sheet poster aesthetic",
+          "subject re-rendered in a moment of profound social awkwardness",
+          "standing perfectly still  -  excruciating discomfort as facial expression",
+          "setting rendered as the most painfully mundane environment imaginable inspired by subject",
+          "dry understated movie title inspired by subject",
+          "tagline inspired by subject",
           "flat even lighting with nowhere to hide",
           "satirical billing block inspired by subject",
           "ASPECT RATIO 3:4"
@@ -929,7 +916,7 @@
           "comedy movie one-sheet poster aesthetic",
           "subject multiplied into an ensemble cast of distinct characters",
           "each version of subject caught in a different comedic reaction to the same disaster",
-          "setting intact yet reimagined as a shared scene of collective chaos inspired by subject",
+          "setting transformed into the shared scene of collective chaos inspired by subject",
           "bold playful movie title inspired by subject",
           "tagline inspired by subject",
           "full bleed ensemble key art with maximum comic energy",
@@ -1300,6 +1287,7 @@
           "pristine scrapbook open to a single page — clean spine valley visible at left edge",
           "subject transformed into an impossibly glamorous A-list celebrity — red carpet, flawless, untouchable",
           "high quality press photos and paparazzi shots of subject cut with precision and arranged obsessively",
+          "one small awkward fan selfie tucked among the glamour shots — slightly blurry, too close, deeply treasured",
           "coordinated decorative tape, premium stickers and die-cut elements inspired by subject",
           "color coordinated cardstock and premium scrapbook materials throughout — pristine construction",
           "obsessive handwritten annotations in gel pen inspired by subject — breathless, possessive, unraveling slightly",
@@ -1314,7 +1302,7 @@
           "modern wedding scrapbook spread aesthetic",
           "pristine scrapbook lying open flat — full two page spread in landscape orientation",
           "subject transformed into a radiant bride or groom — formal wedding portrait dominating left page",
-          "attire reimagined as unique formalwear",
+          "unique wedding attire inspired by start image",
           "golden hour photography with soft bokeh and immaculate styling",
           "right page assembled with quirky yet formal wedding ephemera inspired by subject",
           "pressed bouquet flowers and ribbon",
@@ -1359,6 +1347,22 @@
           "absurdly specific and meaningless game statistics in ruled box score inspired by subject",
           "yellowed brittle newsprint clippings overlapping at slight angles throughout",
           "aged cream page with foxing and handling wear throughout",
+          "ASPECT RATIO 3:4"
+        ]
+      },
+      {
+        "key": "scrapbook_silhouette",
+        "label": "Victorian Memorial",
+        "size": "1024x1536",
+        "prompt": [
+          "Victorian memorial scrapbook page aesthetic",
+          "black cloth bound mourning album open to a single page — spine valley visible at left edge",
+          "subject transformed into a cut paper silhouette portrait — pure black profile mounted on aged mourning card",
+          "silhouette mounted at center with black ruled border and memorial inscription in copperplate inspired by subject",
+          "pressed funeral flowers with black ribbon still tied at stem arranged at corners",
+          "carefully placed mourning card with black edge and formal condolence language inspired by start image",
+          "lock of hair pressed into page",
+          "heavy cream page with careful grieving hand throughout — tender, formal, final",
           "ASPECT RATIO 3:4"
         ]
       }
@@ -1709,10 +1713,10 @@
     ]
   },
   {
-    "family_key": "pixel",
+    "family_key": "ascii_terminal",
     "family_label": "Pixel",
     "subtheme": "Darkroom",
-    "file": "pixel.jpg",
+    "file": "ascii_terminal.jpg",
     "variants": [
       {
         "key": "ascii_terminal",
@@ -1800,10 +1804,10 @@
     ]
   },
   {
-    "family_key": "surveillance",
+    "family_key": "cctv",
     "family_label": "Surveillance",
     "subtheme": "Darkroom",
-    "file": "surveillance.jpg",
+    "file": "cctv.jpg",
     "variants": [
       {
         "key": "cctv",
@@ -1875,10 +1879,10 @@
     ]
   },
   {
-    "family_key": "expressions",
+    "family_key": "expressions_happy",
     "family_label": "Expressions",
     "subtheme": "Darkroom",
-    "file": "expressions.jpg",
+    "file": "expressions_happy.jpg",
     "variants": [
       {
         "key": "expressions_happy",
@@ -2018,10 +2022,10 @@
     ]
   },
   {
-    "family_key": "photo",
+    "family_key": "polaroid",
     "family_label": "Photo",
     "subtheme": "Darkroom",
-    "file": "photo.jpg",
+    "file": "polaroid.jpg",
     "variants": [
       {
         "key": "polaroid",
@@ -2077,6 +2081,21 @@
         ]
       },
       {
+        "key": "photobooth_naughty",
+        "label": "Naughty Photo Booth",
+        "size": "1024x1536",
+        "prompt": [
+          "photo booth strip style",
+          "vertical sequence of 4 small portraits",
+          "subject in playful poses progressing through strip from innocent to naughty",
+          "harsh flash contained inside booth",
+          "thick white border between each frame on dark strip backing",
+          "cramped booth framing with bright red velvet curtain backdrop only",
+          "chemical processing marks on strip surface",
+          "ASPECT RATIO 3:4"
+        ]
+      },
+      {
         "key": "double_exposure",
         "label": "Double Exposure",
         "size": "1024x1536",
@@ -2090,25 +2109,7 @@
           "seamless tonal blending where both exposures occupy the same film plane",
           "soft halo at silhouette edge where exposures meet and separate",
           "matte black or deep gradient background isolating the merged composition",
-          "fine grain film texture unifying both exposures into single photographic surface",
-          "ASPECT RATIO 3:4"
-        ]
-      },
-      {
-        "key": "pinhole_camera",
-        "label": "Pinhole Camera",
-        "size": "1024x1536",
-        "prompt": [
-          "pinhole camera photography style",
-          "extreme soft focus with dreamy atmospheric blur",
-          "infinite depth of field with everything softly rendered",
-          "vignetting with light falloff at edges",
-          "long exposure time creating ghostly motion",
-          "handmade camera aesthetic with lo-fi optics",
-          "ethereal otherworldly quality with gentle luminosity",
-          "no lens sharpness, pure light aperture rendering",
-          "meditative contemplative photographic purity",
-          "ASPECT RATIO 3:4"
+          "fine grain film texture unifying both exposures into single photographic surface"
         ]
       },
       {
@@ -2155,7 +2156,7 @@
       {
         "key": "infomercial",
         "label": "Late Night Infomercial",
-        "size": "1536x1024",
+        "size": "1024x1536",
         "prompt": [
           "1990s late-night infomercial aesthetic",
           "subject as manic host mid-demonstration with frantic energy  -  wide-eyed and urgent as facial expression",
@@ -2250,10 +2251,10 @@
     ]
   },
   {
-    "family_key": "comic_book",
+    "family_key": "comic",
     "family_label": "Comic Book",
     "subtheme": "Newsstand",
-    "file": "comic_book.jpg",
+    "file": "comic.jpg",
     "variants": [
       {
         "key": "comic",
@@ -2299,8 +2300,8 @@
           "experimental manga panel layout with cinematic storytelling",
           "subject rendered in expressive manga linework with psychological depth and color",
           "full figure anchor panel with dynamic editorial presence",
-          "close-up detail panels cropping face",
-          "dialogue or caption text inspired by start image",
+          "close-up detail panels cropping face accessories and garment",
+          "dialogue or caption text inspired by subject and setting",
           "varied panel scale with sequential narrative momentum",
           "bold graphic ink lines with hand-drawn manga draftsmanship",
           "atmospheric manga backgrounds with moody environmental detail",
@@ -2351,7 +2352,7 @@
     "family_key": "magazine",
     "family_label": "Magazine",
     "subtheme": "Newsstand",
-    "file": "magazine.jpg",
+    "file": "time.jpg",
     "variants": [
       {
         "key": "magazine",
@@ -2363,7 +2364,7 @@
           "Icon of the Year gravitas applied to styled subject",
           "close up portrait of subject with dignified expression filling the frame with gravitas and direct eye contact",
           "power broker aesthetic meets fashion significance",
-          "written-through coverlines with journalistic weight inspired by start image",
+          "written-through coverlines with journalistic weight",
           "American establishment credibility with global reach",
           "ASPECT RATIO 3:4"
         ]
@@ -2466,10 +2467,10 @@
     ]
   },
   {
-    "family_key": "book",
+    "family_key": "your_story",
     "family_label": "Book",
     "subtheme": "Newsstand",
-    "file": "book.jpg",
+    "file": "your_story.jpg",
     "variants": [
       {
         "key": "your_story",
@@ -2509,7 +2510,7 @@
       {
         "key": "fairy_tale",
         "label": "Children's Fairy Tale",
-        "size": "1536x1024",
+        "size": "1024x1536",
         "prompt": [
           "oversized children’s fairy tale book open and presented at a slight angle",
           "fully illustrated double page spread visible",
@@ -2520,7 +2521,7 @@
           "warm golden palette with soft painterly light and storybook depth",
           "rich detailed gouache illustration style",
           "cozy child’s bedroom in warm soft bokeh behind  -  soft lamp, stuffed animals, warm light identifiable at edges",
-          "ASPECT RATIO 4:3"
+          "ASPECT RATIO 3:4"
         ]
       },
       {
@@ -2545,10 +2546,10 @@
     ]
   },
   {
-    "family_key": "vintage_poster",
+    "family_key": "circus",
     "family_label": "Vintage Poster",
     "subtheme": "Poster",
-    "file": "vintage_poster.jpg",
+    "file": "circus.jpg",
     "variants": [
       {
         "key": "circus",
@@ -2716,28 +2717,14 @@
           "brushed metal frame with precise machined compartments organizing the obsession",
           "ASPECT RATIO 3:4"
         ]
-      },
-      {
-        "key": "collage_art_deco",
-        "label": "Art Deco Collage",
-        "size": "1536x1024",
-        "prompt": [
-          "introspective layered paper collage aesthetic",
-          "subject reimagined as art deco fashion figure",
-          "subject composed of torn and overlapping textures of found papers",
-          "setting rearranged and juxtaposed with precisely cut glamorous 1920s art deco figures and silhouettes from graphic prints",
-          "translucent vellum, textured cardstock, and delicate shaded paper",
-          "embodies a dreamscape built from fragmented surfaces",
-          "ASPECT RATIO 4:3"
-        ]
       }
     ]
   },
   {
-    "family_key": "propaganda",
+    "family_key": "constuctivist",
     "family_label": "Propaganda",
     "subtheme": "Poster",
-    "file": "propaganda.jpg",
+    "file": "constuctivist.jpg",
     "variants": [
       {
         "key": "constuctivist",
@@ -2828,7 +2815,7 @@
     ]
   },
   {
-    "family_key": "psychedelic",
+    "family_key": "groovy_psychedelic",
     "family_label": "Psychedelic",
     "subtheme": "Poster",
     "file": "psychedelic.jpg",
@@ -2861,63 +2848,6 @@
           "ASPECT RATIO 3:4"
         ]
       },
-      {
-        "key": "op_art",
-        "label": "Op Art",
-        "size": "1024x1536",
-        "prompt": [
-          "op art optical illusion poster aesthetic",
-          "entire image transformed into a field of warping black and white repeating geometric patterns",
-          "subject and setting equally consumed by the optical field — no element escapes the pattern",
-          "subject identifiable within the vibration — face and form readable but destabilised by the geometry",
-          "patterns bending and warping around contours of subject and every element of the scene",
-          "the eye cannot rest — the image vibrates and refuses to resolve into stillness",
-          "ASPECT RATIO 3:4"
-        ]
-      },
-      {
-        "key": "op_art_color",
-        "label": "Op Art Color",
-        "size": "1024x1536",
-        "prompt": [
-          "op art optical illusion poster aesthetic",
-          "entire image transformed into a field of warping high contrast colors repeating geometric patterns and psychedelic infinite dots",
-          "subject and setting equally consumed by the optical field — no element escapes the pattern",
-          "subject identifiable within the vibration — face and form readable but destabilised by the geometry",
-          "bold chromatic palette with clashing colors inspired by subject",
-          "circular dot patterns bending and warping around contours of subject and every element of the scene",
-          "the eye cannot rest — the image vibrates and refuses to resolve into stillness",
-          "ASPECT RATIO 3:4"
-        ]
-      },
-      {
-        "key": "yellow_submarine",
-        "label": "Yellow Submarine",
-        "size": "1024x1536",
-        "prompt": [
-          "Yellow Submarine psychedelic animation aesthetic, Heinz Edelmann illustration style",
-          "subject redrawn as a flat graphic cutout figure — wide-eyed and mid-flee, arms pumping, legs a blur of motion",
-          "expression of pure baffled alarm — not quite terror, not quite delight, somewhere impossible between both",
-          "Blue Meanies in hot pursuit — a chaotic mob of flat graphic menace spilling in from behind and above",
-          "subject and creatures equally consumed by the collage logic — no hierarchy between figure and world",
-          "the Yellow Submarine appears somewhere in the composition obeying no spatial logic — simply present",
-          "The Beatles visible as flat graphic figures in matching mod suits somewhere aboard or alongside it",
-          "the landscape itself fleeing and reforming around the chase — patterns exploding outward from footfalls",
-          "kaleidoscopic ground tiles warping under running feet, optical illusion sky fracturing overhead",
-          "surreal cutout flora, floating letterforms and pattern bursts filling every gap in the composition",
-          "flat mod color planes with hard graphic edges and zero shadow or depth throughout",
-          "lysergic dreamscape with maximum playful chaos and zero breathing room",
-          "ASPECT RATIO 3:4"
-        ]
-      }
-    ]
-  },
-  {
-    "family_key": "blacklight",
-    "family_label": "Blacklight",
-    "subtheme": "Poster",
-    "file": "blacklight.jpg",
-    "variants": [
       {
         "key": "ascension",
         "label": "Cosmic Ascension",
@@ -2985,10 +2915,10 @@
     ]
   },
   {
-    "family_key": "motivational",
+    "family_key": "motivational_poster",
     "family_label": "Motivational",
     "subtheme": "Poster",
-    "file": "motivational.jpg",
+    "file": "motivational_poster.jpg",
     "variants": [
       {
         "key": "motivational_poster",
@@ -3036,7 +2966,7 @@
     ]
   },
   {
-    "family_key": "art_nouveau",
+    "family_key": "nouveau",
     "family_label": "Art Nouveau",
     "subtheme": "Poster",
     "file": "art_nouveau.jpg",
@@ -3225,10 +3155,10 @@
     ]
   },
   {
-    "family_key": "sports",
+    "family_key": "sports_poster_football",
     "family_label": "Sports",
     "subtheme": "Poster",
-    "file": "sports.jpg",
+    "file": "sports_poster_football.jpg",
     "variants": [
       {
         "key": "sports_poster_football",
@@ -3278,30 +3208,6 @@
           "ASPECT RATIO 3:4"
         ]
       },
-      {
-        "key": "boxing_championship",
-        "label": "PPV Boxing",
-        "size": "1024x1536",
-        "prompt": [
-          "modern championship boxing fight poster aesthetic",
-          "subject as headlining fighter in full-length confrontational stance  -  steely and predatory as facial expression",
-          "boxing robe and gloves transformed from subject's clothes and accessories",
-          "face to face against a generated opponent with intense eye contact and electric tension",
-          "fighter names and nickname in massive bold typeface dominating the poster",
-          "dramatic spotlight with stark limited palette illustration",
-          "fictional promoter name and sanctioning body inspired by setting",
-          "arena venue, date, and PPV information at bottom",
-          "ASPECT RATIO 3:4"
-        ]
-      }
-    ]
-  },
-  {
-    "family_key": "vintage_sports",
-    "family_label": "Vintage Sports",
-    "subtheme": "Poster",
-    "file": "vintage_sports.jpg",
-    "variants": [
       {
         "key": "baseball_vintage",
         "label": "Vintage Baseball",
@@ -3364,15 +3270,7 @@
           "clean modernist typography with event and date details at bottom",
           "ASPECT RATIO 3:4"
         ]
-      }
-    ]
-  },
-  {
-    "family_key": "retro_sports",
-    "family_label": "Retro Sports",
-    "subtheme": "Poster",
-    "file": "retro_sports.jpg",
-    "variants": [
+      },
       {
         "key": "action_80s",
         "label": "80s Action Sports",
@@ -3402,6 +3300,22 @@
         ]
       },
       {
+        "key": "boxing_championship",
+        "label": "PPV Boxing",
+        "size": "1024x1536",
+        "prompt": [
+          "modern championship boxing fight poster aesthetic",
+          "subject as headlining fighter in full-length confrontational stance  -  steely and predatory as facial expression",
+          "boxing robe and gloves transformed from subject's clothes and accessories",
+          "face to face against a generated opponent with intense eye contact and electric tension",
+          "fighter names and nickname in massive bold typeface dominating the poster",
+          "dramatic spotlight with stark limited palette illustration",
+          "fictional promoter name and sanctioning body inspired by setting",
+          "arena venue, date, and PPV information at bottom",
+          "ASPECT RATIO 3:4"
+        ]
+      },
+      {
         "key": "wrestling_championship",
         "label": "Wrestling Card",
         "size": "1024x1536",
@@ -3421,10 +3335,10 @@
     ]
   },
   {
-    "family_key": "travel_poster",
+    "family_key": "vintage_travel_poster",
     "family_label": "Travel Poster",
     "subtheme": "Poster",
-    "file": "travel_poster.jpg",
+    "file": "vintage_travel_poster.jpg",
     "variants": [
       {
         "key": "vintage_travel_poster",
@@ -3510,10 +3424,10 @@
     ]
   },
   {
-    "family_key": "vessel",
+    "family_key": "apothecary_label",
     "family_label": "Vessel",
     "subtheme": "Relic",
-    "file": "vessel.jpg",
+    "file": "apothecary_label.jpg",
     "variants": [
       {
         "key": "apothecary_label",
@@ -3604,10 +3518,10 @@
     ]
   },
   {
-    "family_key": "memorabilia",
+    "family_key": "award_plaque",
     "family_label": "Memorabilia",
     "subtheme": "Relic",
-    "file": "memorabilia.jpg",
+    "file": "award_plaque.jpg",
     "variants": [
       {
         "key": "award_plaque",
@@ -3698,7 +3612,7 @@
         "prompt": [
           "Victorian calling card object aesthetic",
           "small figure presented as engraved portrait vignette with small title logo on formal card stock",
-          "attire reinterpreted as fine copperplate engraving detail within the portrait vignette",
+          "dress reinterpreted as fine copperplate engraving detail within the portrait vignette",
           "cream or ivory card stock with deckled or gilt edges",
           "ornate copperplate typography announcing subject’s full name in formal visiting card tradition",
           "decorative flourishes, scrollwork, and floral engraving surrounding the portrait vignette",
@@ -3846,10 +3760,10 @@
     ]
   },
   {
-    "family_key": "heirloom",
+    "family_key": "pocket_watch",
     "family_label": "Heirloom",
     "subtheme": "Relic",
-    "file": "heirloom.jpg",
+    "file": "pocket_watch.jpg",
     "variants": [
       {
         "key": "pocket_watch",
@@ -3874,7 +3788,7 @@
         "prompt": [
           "antique cameo brooch object aesthetic",
           "figure carved in raised relief against contrasting background layer",
-          "attire reinterpreted as intricately carved shell or stone surface detail within the relief portrait",
+          "dress reinterpreted as intricately carved shell or stone surface detail within the relief portrait",
           "classical oval or round brooch format with ornate gilt or pinchbeck frame",
           "layered sardonyx, agate, or shell material creating natural color contrast between figure and ground",
           "fine intaglio carving detail in hair, fabric folds, and facial features",
@@ -3922,10 +3836,10 @@
     ]
   },
   {
-    "family_key": "collection",
+    "family_key": "postage_stamp",
     "family_label": "Collection",
     "subtheme": "Relic",
-    "file": "collection.jpg",
+    "file": "postage_stamp.jpg",
     "variants": [
       {
         "key": "postage_stamp",
@@ -3948,15 +3862,13 @@
         "label": "Paper Currency",
         "size": "1536x1024",
         "prompt": [
-          "open duffel bag on luxury hotel bed aesthetic",
-          "revealing interior of duffel bag packed with authentic bank notes",
-          "subject rendered as central portrait vignette engraved on the face of each visible bill",
-          "ornate engraved scrollwork borders and fine cross-hatching on each note face",
-          "impossible denomination, playful currency name and absurd issuing authority inspired by subject",
-          "rumpled high thread-count bedding surrounding the duffel bag with small pistol and the subject’s passport laying nearby",
-          "subject visible in soft bokeh behind — formal evening attire, standing at floor-to-ceiling windows",
-          "luxury hotel suite atmosphere with warm lamp light dissolving into background blur",
-          "dramatic directional light picking out the bills and suitcase interior",
+          "paper currency banknote aesthetic",
+          "intricate engraved line work with fine cross-hatching",
+          "subject line drawn as central portrait vignette on note face",
+          "ornate scrollwork borders and decorative filigree",
+          "denomination, currency name and issuing authority inspired by subject",
+          "serial number, watermark and fine print text inspired by setting",
+          "worn cotton-linen paper with fold lines and circulation damage",
           "ASPECT RATIO 4:3"
         ]
       },
@@ -3965,15 +3877,16 @@
         "label": "Commemorative Coin",
         "size": "1024x1536",
         "prompt": [
-          "vintage coin collection album page aesthetic",
-          "open album page filled with coins in clear plastic pockets — subject coin as the hero centre piece",
-          "subject portrait engraved in relief on hero coin face — profile view in classic mint tradition",
-          "surrounding coins partially visible at edges in adjacent pockets — aged and varied denominations",
-          "playful inscriptions and impossible denomination on hero coin inspired by subject",
-          "worn album page with printed grid labels and handwritten collector annotations",
-          "spiral spine valley visible at left edge — page curving slightly into the binding",
-          "aged patina and polished metal finish on hero coin",
-          "soft directional light picking out coin relief and album page texture",
+          "silver dollar engraving portrait style with geographically appropriate denomination",
+          "profile engraved in metal surface",
+          "circular composition with raised edge",
+          "playful inscriptions around border should be influenced by the subject",
+          "presented in 3D floating frame shadow box display case",
+          "aged patina or polished metal finish",
+          "symbol of authority and value",
+          "portrait simplified into relief form",
+          "appropriate historical currency design language",
+          "subject immortalized in metal",
           "ASPECT RATIO 3:4"
         ]
       },
@@ -3984,6 +3897,7 @@
         "prompt": [
           "Imperial Fabergé egg display case aesthetic",
           "subject presented as miniature hand-painted portrait medallion set into the egg surface",
+          "dress reinterpreted as guilloche enamel pattern across the egg’s curved surface panels",
           "egg form constructed in jeweled gold with translucent enamel over engine-turned ground",
           "hinged opening at egg equator revealing miniature surprise element inspired by subject",
           "rose-cut diamond, ruby, and sapphire encrustation along panel borders and seam lines",
@@ -3998,10 +3912,10 @@
     ]
   },
   {
-    "family_key": "sculpture",
+    "family_key": "sculpt",
     "family_label": "Sculpture",
     "subtheme": "Relic",
-    "file": "sculpture.jpg",
+    "file": "sculpt.jpg",
     "variants": [
       {
         "key": "sculpt",
@@ -4066,10 +3980,10 @@
     ]
   },
   {
-    "family_key": "playtime",
+    "family_key": "brick",
     "family_label": "Playtime",
     "subtheme": "Toybox",
-    "file": "playtime.jpg",
+    "file": "brick.jpg",
     "variants": [
       {
         "key": "brick",
@@ -4169,23 +4083,23 @@
     ]
   },
   {
-    "family_key": "trading_card",
+    "family_key": "holographic",
     "family_label": "Trading Card",
     "subtheme": "Toybox",
-    "file": "trading_card.jpg",
+    "file": "holographic.jpg",
     "variants": [
       {
-        "key": "trading_card_football",
+        "key": "holographic",
         "label": "Football Card",
         "size": "1024x1536",
         "prompt": [
           "modern holographic professional football trading card style",
           "subject reimagined as a star player in full football uniform and helmet  -  intense and focused",
           "team name, jersey number and logo inspired by subject",
-          "dynamic mid-play action poses",
+          "dynamic mid-play action pose",
           "rainbow prism holographic foil treatment rippling across entire card surface",
           "sharp corner mint condition card with gloss finish and prismatic refraction",
-          "player nickname and silly stats grid at card base inspired by subject",
+          "player name, position and stats grid at card base inspired by subject",
           "rare parallel chase insert with foil stamped series numbering",
           "ASPECT RATIO 3:4"
         ]
@@ -4196,13 +4110,12 @@
         "size": "1024x1536",
         "prompt": [
           "modern holographic professional basketball trading card style",
-          "subject reimagined as a star player in full basketball uniform  -  intense and focused",
+          "subject reimagined as a star player in full basketball uniform  -  driven and game focused",
           "team name, jersey number and logo inspired by subject",
-          "dynamic mid-play action poses",
+          "dynamic mid-play action pose",
           "rainbow prism holographic foil treatment rippling across entire card surface",
           "sharp corner mint condition card with gloss finish and prismatic refraction",
-          "player nickname and silly stats grid at card base inspired by subject",
-          "rare parallel chase insert with foil stamped series numbering",
+          "player name, position and stats grid at card base inspired by subject",
           "ASPECT RATIO 3:4"
         ]
       },
@@ -4212,7 +4125,7 @@
         "size": "1024x1536",
         "prompt": [
           "1980s hockey trading card style aesthetic",
-          "subject reimagined as a star player in full hockey uniform and helmet off  -  feathered or flowing 80s hairstyle",
+          "subject reimagined as a star player in full hockey uniform and helmet off  -  feathered or flowing 80s hair",
           "team name, jersey number and logo inspired by subject",
           "playful center ice face off pose",
           "bold team-colored border with player name in solid color bar at bottom",
@@ -4224,7 +4137,7 @@
       {
         "key": "trading_card_baseball",
         "label": "Tobacco Card",
-        "size": "1536x1024",
+        "size": "1024x768",
         "prompt": [
           "1880s tobacco trading card style",
           "subject reimagined as a old timey baseball player",
@@ -4285,10 +4198,10 @@
     ]
   },
   {
-    "family_key": "doll",
+    "family_key": "pink_box",
     "family_label": "Doll",
     "subtheme": "Toybox",
-    "file": "doll.jpg",
+    "file": "barbie.jpg",
     "variants": [
       {
         "key": "pink_box",
@@ -4419,10 +4332,34 @@
     ]
   },
   {
-    "family_key": "toon",
+    "family_key": "puppet_shadow",
+    "family_label": "Shadow Puppet",
+    "subtheme": "Toybox",
+    "file": "puppet_shadow.jpg",
+    "variants": [
+      {
+        "key": "puppet_shadow",
+        "label": "Shadow Puppet",
+        "size": "1536x1024",
+        "prompt": [
+          "shadow puppet theater aesthetic",
+          "subject rendered as pure black articulated silhouette puppet in motion",
+          "intricate cut edge detail and negative space throughout",
+          "white illuminated backlit cloth screen as image ground",
+          "dramatic high contrast black against glowing screen",
+          "shadow puppet scene inspired by start image",
+          "jointed articulated figure construction throughout",
+          "wayang kulit tradition with ornate edge detail",
+          "ASPECT RATIO 4:3"
+        ]
+      }
+    ]
+  },
+  {
+    "family_key": "springfield",
     "family_label": "Toon",
     "subtheme": "Toybox",
-    "file": "toon.jpg",
+    "file": "springfield.jpg",
     "variants": [
       {
         "key": "springfield",
@@ -4434,8 +4371,7 @@
           "small perfectly round ears on side of head",
           "four-fingered hands with rounded tips",
           "flat 2D character design with bold black outlines",
-          "skin tone and hair inspired by subject",
-          "ASPECT RATIO 3:4"
+          "skin tone and hair inspired by subject"
         ]
       },
       {
@@ -4450,8 +4386,7 @@
           "hand-inked outlines with thick consistent weight",
           "black and white animation cell with stark contrast",
           "Art Deco background geometry with theatrical stage depth",
-          "exaggerated squash and stretch with musical timing",
-          "ASPECT RATIO 3:4"
+          "exaggerated squash and stretch with musical timing"
         ]
       },
       {
@@ -4466,8 +4401,7 @@
           "impact stars, speed lines and action smear as physical marks",
           "thick expressive ink outlines varying with motion intensity",
           "flat painted watercolor backgrounds with simplified geometry",
-          "dust clouds and motion blur as comedic physical events",
-          "ASPECT RATIO 3:4"
+          "dust clouds and motion blur as comedic physical events"
         ]
       },
       {
@@ -4483,8 +4417,7 @@
           "flat color areas with single shadow tone  -  no gradients",
           "speed lines radiating outward from subject as physical drawing elements",
           "dramatic sunset or charged sky background with layered cel construction",
-          "slight registration imperfection between cel and background",
-          "ASPECT RATIO 3:4"
+          "slight registration imperfection between cel and background"
         ]
       },
       {
@@ -4493,15 +4426,14 @@
         "size": "1024x1536",
         "prompt": [
           "modern digital anime illustration style",
-          "subject transported into an iconic anime scene moment inspired by setting",
+          "subject transported into an iconic anime scene moment  -  rain soaked street at night or convenience store glow or rooftop at golden hour",
           "soft gradient shading on skin and fabric with radial glow",
           "fine tapered linework with variable weight fading into color",
           "hair rendered in luminous strand clusters with specular highlights",
           "hard-edged anime shadows with subtle gradient fill inside",
           "lens bloom and chromatic aberration on light sources",
           "particle effects and atmospheric light scatter",
-          "semi-photorealistic background behind stylized character",
-          "ASPECT RATIO 3:4"
+          "semi-photorealistic background behind stylized character"
         ]
       },
       {
@@ -4516,8 +4448,7 @@
           "pristine digital lighting with bounce light and ambient occlusion",
           "cloth simulation with physical fabric weight and fold behavior",
           "hair and fur strand simulation with individual fiber detail",
-          "polished render quality with cinematic depth of field",
-          "ASPECT RATIO 3:4"
+          "polished render quality with cinematic depth of field"
         ]
       },
       {
@@ -4531,8 +4462,7 @@
           "minimal facial features  -  dot eyes and simple line mouth",
           "visible construction paper grain and texture on every shape",
           "crude cardboard cutout edges with deliberate imprecision",
-          "static poses with no articulation between body parts",
-          "ASPECT RATIO 3:4"
+          "static poses with no articulation between body parts"
         ]
       },
       {
@@ -4544,20 +4474,19 @@
           "subject sculpted in smooth plasticine with handcrafted charm",
           "visible fingerprints and tool marks pressed with loving craft",
           "rounded appealing proportions with expressive clay features",
-          "attire sculpted in bright tactile clay folds",
+          "fashion garment sculpted in bright tactile clay folds",
           "environment and setting built from same warm clay material throughout",
           "cheerful dimensional world with cozy handmade physicality",
-          "labor-intensive stop-motion craft with organic warmth",
-          "ASPECT RATIO 3:4"
+          "labor-intensive stop-motion craft with organic warmth"
         ]
       }
     ]
   },
   {
-    "family_key": "puppet",
+    "family_key": "trnka",
     "family_label": "Puppet",
     "subtheme": "Toybox",
-    "file": "puppet.jpg",
+    "file": "trnka.jpg",
     "variants": [
       {
         "key": "trnka",
@@ -4582,7 +4511,7 @@
         "prompt": [
           "ventriloquist dummy style",
           "subject reimagined as an authentic ventriloquist dummy with carved wooden head, uncanny glass eyes and hinged jaw",
-          "exaggerated painted features with fixed unsettling stare on viewer",
+          "exaggerated painted features with fixed unsettling stare fixed on viewer",
           "soft cloth body with fabric limbs",
           "slumped awkwardly inside vintage wooden travel case lined with worn velvet",
           "aged brass hardware and leather handle on exterior of case",
@@ -4603,22 +4532,6 @@
           "painted theatrical backdrop inspired by setting",
           "warm stage lighting with footlight glow",
           "ASPECT RATIO 3:4"
-        ]
-      },
-      {
-        "key": "shadow_puppet",
-        "label": "Shadow Puppet",
-        "size": "1536x1024",
-        "prompt": [
-          "shadow puppet theater aesthetic",
-          "subject rendered as pure black articulated silhouette puppet in motion",
-          "intricate cut edge detail and negative space throughout",
-          "white illuminated backlit cloth screen as image ground",
-          "dramatic high contrast black against glowing screen",
-          "shadow puppet scene inspired by start image",
-          "jointed articulated figure construction throughout",
-          "wayang kulit tradition with ornate edge detail",
-          "ASPECT RATIO 4:3"
         ]
       }
     ]
@@ -4786,7 +4699,7 @@
         "prompt": [
           "Persian Safavid miniature painting style",
           "figure rendered in flat jewel-toned gouache on aged paper or vellum",
-          "attire reinterpreted as layered court textile with intricate geometric and floral arabesque pattern in lapis, vermillion, and gold",
+          "dress reinterpreted as layered court textile with intricate geometric and floral arabesque pattern in lapis, vermillion, and gold",
           "non-perspectival composition with tilted ground plane and elevated viewpoint",
           "negative space filled with dense arabesque foliage, flowering branches, and scattered blossoms",
           "face rendered with Safavid feminine ideal - almond eyes, arched brows, small rosebud mouth",
@@ -4888,32 +4801,14 @@
           "paint applied with deliberate harshness — no blending, no softness, no relief",
           "ASPECT RATIO 3:4"
         ]
-      },
-      {
-        "key": "expressionism_seussian",
-        "label": "Seussian Expressionist",
-        "size": "1024x1536",
-        "prompt": [
-          "psychedelic expressionist painting aesthetic — Van Gogh turbulence meets Seussian grotesque",
-          "subject redrawn in rubbery elongated proportions — body and setting made of the same molten neon substance",
-          "subject's expression locked between ecstatic grin and existential horror — neither resolving",
-          "figure dissolving at edges into the surrounding world — no boundary between flesh and environment",
-          "setting transformed into impossible warped architecture of candy-colored melting forms",
-          "swirling spiral geometry consuming every surface — floor, walls, sky obeying the same vortex logic",
-          "paint dripping, oozing and smearing across every element as if the image itself is melting",
-          "faces and eyes hidden within landscape forms — emerging from terrain, walls and furniture",
-          "maximum chromatic saturation — hot magenta, acid orange, poison purple, radioactive chartreuse, turquoise",
-          "thick impasto brushwork throughout — every stroke turbulent, no surface at rest",
-          "ASPECT RATIO 3:4"
-        ]
       }
     ]
   },
   {
-    "family_key": "spectre",
+    "family_key": "ghost",
     "family_label": "Spectre",
     "subtheme": "Uncanny",
-    "file": "spectre.jpg",
+    "file": "ghost.jpg",
     "variants": [
       {
         "key": "ghost",
@@ -4939,7 +4834,7 @@
         "size": "1024x1536",
         "prompt": [
           "darkroom solarization Sabattier effect aesthetic",
-          "subject reimagined as a malevolent spectre caught mid-eruption  -  lunging forward directly at camera, eyes locked on viewer with furious expression",
+          "subject reimagined as a malevolent spectre caught mid-eruption  -  lunging forward with furious expression",
           "Mackie lines of bright halation tracing the figure's edges like burning electricity",
           "partial tone reversal radiating outward from the figure  -  the subject is the source of the inversion",
           "skin tones partially inverted creating an otherworldly burning luminosity",
@@ -5050,10 +4945,8 @@
         "prompt": [
           "black demotivational poster aesthetic",
           "vertical format with small professional illustration quality portrait centered",
-          "single devastating one-word adjective in bold serif type at top  -  chosen to land with surgical precision on the specific subject",
-          "brutal deflating tagline below that identifies exactly what is wrong with the subject's situation, choices or worldview",
-          "punchline feels personally researched not generically applied",
-          "awful insulting logo at bottom",
+          "single moderately self-deprecating word in bold serif type at top  -  inspired by subject",
+          "awful deflating tagline across bottom with insulting logo",
           "glossy laminated finish with professional framing",
           "ASPECT RATIO 3:4"
         ]
@@ -5109,22 +5002,6 @@
           "absurd investigation notes",
           "forensic case file format with deadpan institutional register",
           "ASPECT RATIO 4:3"
-        ]
-      },
-      {
-        "key": "memorial_silhouette",
-        "label": "Victorian Memorial",
-        "size": "1024x1536",
-        "prompt": [
-          "Victorian memorial scrapbook page aesthetic",
-          "black cloth bound mourning album open to a single page — spine valley visible at left edge",
-          "subject transformed into a cut paper silhouette portrait — pure black profile mounted on aged mourning card",
-          "silhouette mounted at center with black ruled border and memorial inscription in copperplate inspired by subject",
-          "pressed funeral flowers with black ribbon still tied at stem arranged at corners",
-          "carefully placed mourning card with black edge and formal condolence language inspired by start image",
-          "lock of hair pressed into page",
-          "heavy cream page with careful grieving hand throughout — tender, formal, final",
-          "ASPECT RATIO 3:4"
         ]
       }
     ]
@@ -5201,19 +5078,19 @@
       {
         "key": "mystical_grimoire",
         "label": "Witch's Grimoire",
-        "size": "1536x1024",
+        "size": "1024x1536",
         "prompt": [
-          "witch's obsession scrapbook spread aesthetic",
-          "ancient grimoire lying open in a candlelit witch's lair — full two page spread visible in landscape orientation",
-          "dark aged pages with wax drips, ink bleed and urgent assembly throughout",
-          "witch's silhouette looming in background darkness — cauldron, hanging dried herbs, candlelight",
-          "left page: obsessive surveillance of subject — hasty sketches, pressed botanicals keyed to subject's qualities, physical observations in cramped handwriting growing increasingly large and unhinged",
-          "things circled and underlined with escalating urgency inspired by subject",
-          "right page: the recipe and ritual instructions for becoming the subject",
-          "ingredients with absurd quantities and steps numbered in spidery handwriting inspired by subject",
-          "something crossed out and rewritten three times — a warning underlined so hard it tore the page",
-          "theatrical operatic obsession throughout — totally committed, completely over the top",
-          "ASPECT RATIO 4:3"
+"witch's obsession scrapbook spread aesthetic",
+"ancient grimoire lying open in a candlelit witch's lair — full two page spread visible in landscape orientation",
+"dark aged pages with wax drips, ink bleed and urgent assembly throughout",
+"witch's silhouette looming in background darkness — cauldron, hanging dried herbs, candlelight",
+"left page: obsessive surveillance of subject — hasty sketches, pressed botanicals keyed to subject's qualities, physical observations in cramped handwriting growing increasingly large and unhinged",
+"things circled and underlined with escalating urgency inspired by subject",
+"right page: the recipe and ritual instructions for becoming the subject",
+"ingredients with absurd quantities and steps numbered in spidery handwriting inspired by subject",
+"something crossed out and rewritten three times — a warning underlined so hard it tore the page",
+"theatrical operatic obsession throughout — totally committed, completely over the top",
+"ASPECT RATIO 4:3"
         ]
       },
       {
@@ -5288,21 +5165,6 @@
           "playful two word character name inspired by subject in chunky rounded typeface at bottom",
           "ASPECT RATIO 3:4"
         ]
-      },
-      {
-        "key": "photobooth_subversive",
-        "label": "Subversive Photo Booth",
-        "size": "1024x1536",
-        "prompt": [
-          "photo booth strip style",
-          "vertical sequence of 4 small portraits",
-          "subject in playful poses progressing through strip from innocent to subversive",
-          "harsh flash contained inside booth",
-          "thick white border between each frame on dark strip backing",
-          "cramped booth framing with bright red velvet curtain backdrop only",
-          "chemical processing marks on strip surface",
-          "ASPECT RATIO 3:4"
-        ]
       }
     ]
   },
@@ -5360,60 +5222,6 @@
           "carnival sideshow aesthetic with unsettling whimsy",
           "liquid reality bending with impossible geometry",
           "ASPECT RATIO 4:3"
-        ]
-      },
-      {
-        "key": "surreal_botanical",
-        "label": "Surrealist Botanical",
-        "size": "1024x1536",
-        "prompt": [
-          "Retro-futuristic mixed media collage",
-          "subject emerging from a dark field as a halftone photographic cut-out",
-          "botanical explosion erupting from and replacing head while fully consuming subject and setting",
-          "wild psychedelic plants with tiny faces of the subject with different expressions fills the frame",
-          "1970s album art and pop surrealism and obsessive infinite dots",
-          "bold contrasts of black, pale color tones, and bright neon colors inspired by start image",
-          "combines photographic cut-outs, halftone noise, and block-printed patterns from the start image",
-          "abstract shapes and celestial diagrams",
-          "moody, layered, and richly textured with a dreamy yet analog tone",
-          "chiaroscuro lighting with deep shadows and ethereal highlights",
-          "ASPECT RATIO 3:4"
-        ]
-      },
-      {
-        "key": "salon_macabre",
-        "label": "Salon Macabre",
-        "size": "1024x1536",
-        "prompt": [
-          "gothic fairytale surrealism aesthetic",
-          "subject reimagined as a creepy salonist with exaggerated and elongated character design",
-          "dark yet whimsical atmosphere with eerie and playful mood",
-          "high-contrast monochromatic tones with pops of vivid color",
-          "setting intact yet reimagined as a fantastical salon",
-          "gothic Victorian influences, surreal and theatrical set designs",
-          "twisted and fantastical storytelling",
-          "melancholic yet charming expressions, haunting yet endearing aesthetic",
-          "abstract shapes, primary colors, playful energy, minimalist layout, whimsical forms, organic curves, bold lines, dreamlike quality, floating elements, non-representational imagery, intuitive design, spontaneous expression, vivid contrasts, surreal atmosphere, joyful abstraction",
-          "The Most Wonderful and Colorful Hair Salon and also Monsters. This is Salon Macabre!",
-          "ASPECT RATIO 3:4"
-        ]
-      },
-      {
-        "key": "hosercore",
-        "label": "Hosercore",
-        "size": "1024x1536",
-        "prompt": [
-          "hosercore aesthetic — Hieronymus Bosch surrealism collides with Canadian cultural kitsch",
-          "subject reimagined as a Boschian flannel-clad hoser — plaid shirt, ruddy cheeks, beer in hand, wide-eyed reverence or rowdy chaos",
-          "setting intact yet reimagined as frozen and snow-covered",
-          "northern lights rendered as green maple-leaf-shaped auroras writhing across the sky",
-          "a glowing Timbit hangs where the moon should be",
-          "Boschian Canadian animals inhabiting the scene",
-          "iconic Canadian landmarks visible in far background and slightly wrong at intentionally jarring angles",
-          "logos of major Canadian companies are crisp and legible amid the surreal carnage",
-          "oil-painted painterly texture throughout — antique and tactile, never hyperdigital",
-          "composition of cheerful folk horror nationalism — hilarious and heartfelt and deeply unsettling in equal measure",
-          "ASPECT RATIO 3:4"
         ]
       }
     ]
@@ -5488,12 +5296,10 @@
         "prompt": [
           "D&D trading card aesthetic",
           "pen and ink with watercolor wash in classic tabletop roleplaying illustration tradition",
-          "subject fully reimagined as legendary orc warchief",
-          "face retained with green skin and prominent tusks protruding from inside corners of wide mouth",
-          "battle-worn crown and ceremonial war armor",
+          "subject fully reimagined as legendary orc warchief, face retained with green skin and prominent tusks beneath battle-worn crown and ceremonial war armor",
           "commanding frontal pose with intense eye contact of someone who did not ask for your opinion and will not be taking questions",
           "simple atmospheric background suggestion of a brutal throne room or conquered fortress",
-          "ornate fantasy card border with orc-ish tribal motifs inspired by start image",
+          "ornate fantasy card border with tusks skulls war trophies and tribal motifs inspired by start image",
           "character name banner below illustration in hand-lettered period fantasy typography inspired by subject",
           "four silly stat blocks relating to subject in start image with a fantasy vibe",
           "one line of blunt magnificent flavour text inspired by subject with maximum orc authority",
