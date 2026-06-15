@@ -16,7 +16,8 @@ exports.handler = async function(event) {
   }
 
   try {
-    const { base64, mimeType } = JSON.parse(event.body);
+    const { base64, mimeType, fofMode } = JSON.parse(event.body);
+    const isFof = !!fofMode;
 
     const endpoint   = process.env.AZURE_OPENAI_ENDPOINT || 'https://green-mos1tune-eastus2.openai.azure.com';
     const deployment = process.env.AZURE_CAPTION_DEPLOYMENT || 'groovepop-vision';
@@ -26,7 +27,7 @@ exports.handler = async function(event) {
       type: 'image_url',
       image_url: {
         url: `data:${mimeType};base64,${base64}`,
-        detail: 'low'
+        detail: 'auto'
       }
     };
 
@@ -67,10 +68,13 @@ Respond with only the single word. Nothing else.`
     const subjectCount = classifyRaw === 'MULTIPLE' ? 'multiple' : 'single';
 
     // ── CALL 2: TARGETED CAPTION ────────────────────────────────────────────
-    const captionInstruction = subjectCount === 'multiple'
-      ? `Write a brief poetic story (3-5 sentences) describing what is happening in this photo. All subjects are of equal importance — identify them clearly and give each one genuine presence throughout. Focus on: the energy and dynamic between them, how they connect or contrast with each other, the way they share the space, the setting and atmosphere that frames them, and the mood of the moment. Write in present tense, third person. Be specific and sensory — describe what you see with evocative, grounded language. This story will guide an artistic transformation of the image, so capture the soul of what exists between them, not just the facts.`
-
-      : `Write a brief poetic story (3-5 sentences) describing what is happening in this photo. Focus on: the subject's presence and energy, their outfit and accessories, the setting and atmosphere, and the mood or feeling of the moment. Write in present tense, third person. Be specific and sensory — describe what you see with evocative, grounded language. This story will guide an artistic transformation of the image, so capture the soul of the moment, not just the facts.`;
+    const captionInstruction = isFof
+      ? (subjectCount === 'multiple'
+        ? `Write a brief poetic story (3-5 sentences) describing what is happening in this photo at Festival of Friends. All subjects are of equal importance — identify them clearly and give each one genuine presence throughout. Focus on: the energy and dynamic between them, how they connect or contrast with each other, the way they share the space, the setting and atmosphere that frames them, and the mood of the moment. It is Gage Park, Hamilton, ON, Toronto on August 1, 2026, State the date and write in present tense, third person. Be specific and sensory — describe what you see with evocative, grounded language. This story will guide an artistic transformation of the image, so capture the soul of what exists between them, not just the facts.`
+        : `Write a brief poetic story (3-5 sentences) describing what is happening in this photo at Festival of Friends. Focus on: the subject's presence and energy, their outfit and accessories, the setting and atmosphere, and the mood or feeling of the moment. It is Gage Park, Hamilton, ON, Toronto on August 1, 2026. State the date and write in present tense, third person. Be specific and sensory — describe what you see with evocative, grounded language. This story will guide an artistic transformation of the image, so capture the soul of the moment, not just the facts.`)
+      : (subjectCount === 'multiple'
+        ? `Write a brief poetic story (3-5 sentences) describing what is happening in this photo. All subjects are of equal importance — identify them clearly and give each one genuine presence throughout. Focus on: the energy and dynamic between them, how they connect or contrast with each other, the way they share the space, the setting and atmosphere that frames them, and the mood of the moment. Write in present tense, third person. Be specific and sensory — describe what you see with evocative, grounded language. This story will guide an artistic transformation of the image, so capture the soul of what exists between them, not just the facts.`
+        : `Write a brief poetic story (3-5 sentences) describing what is happening in this photo. Focus on: the subject's presence and energy, their outfit and accessories, the setting and atmosphere, and the mood or feeling of the moment. Write in present tense, third person. Be specific and sensory — describe what you see with evocative, grounded language. This story will guide an artistic transformation of the image, so capture the soul of the moment, not just the facts.`);
 
     const captionRes = await fetch(url, {
       method: 'POST',
