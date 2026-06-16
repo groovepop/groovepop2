@@ -77,8 +77,8 @@
   .gen-bar-style-label { font-family:'Bebas Neue',sans-serif; font-size:0.85rem; letter-spacing:0.1em; color:var(--gold); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:65%; }
 
   /* Content split */
-  .home-content { display:grid; grid-template-columns:1fr 1fr; flex:1; min-height:0; overflow:hidden; }
-  .home-left { display:flex; flex-direction:column; overflow:hidden; min-height:0; position:relative; }
+  .home-content { display:flex; flex-direction:column; flex:1; min-height:0; overflow:hidden; }
+  .home-left { display:flex; flex-direction:column; overflow:hidden; min-height:0; position:relative; flex:1; }
   .home-right { display:flex; flex-direction:column; overflow-y:auto; -webkit-overflow-scrolling:touch; min-height:0; overscroll-behavior:contain; }
 
   /* Upload zone — natural height from content */
@@ -162,7 +162,9 @@
   .style-card-check svg { width:7px; height:7px; stroke:var(--black); fill:none; stroke-width:2.5; }
 
   /* Bottom bar */
-  .home-bottom { background:var(--black); flex-shrink:0; }
+  .home-bottom { background:var(--black); flex-shrink:0; display:none; }
+  #screen-home[data-state="generating"] .home-bottom { display:block; }
+  #screen-home[data-state="result"] .home-bottom { display:block; }
   .bottom-home { display:flex; flex-direction:column; gap:0.45rem; padding:0.65rem 1rem 0.875rem; }
   .selected-style-name { font-family:'Bebas Neue',sans-serif; font-size:0.8rem; letter-spacing:0.08em; color:var(--gold); min-height:1rem; }
   .bottom-generating { display:none; height:80px; overflow:hidden; }
@@ -903,13 +905,7 @@
     width: 100%;
   }
 
-  /* Lane-specific column hiding */
-  #screen-home.lane-filters .home-content {
-    grid-template-columns: 1fr;
-  }
-  #screen-home.lane-filters .home-right {
-    display: none !important;
-  }
+  /* Lane-specific column hiding - obsolete in single-column flex */
 </style>
 </head>
 <body>
@@ -982,7 +978,7 @@
   <div class="home-content">
 
     <!-- LEFT: image zone -->
-    <div class="home-left" id="home-left" style="display: flex; flex-direction: column; overflow: hidden; min-height: 0;">
+    <div class="home-left" id="home-left" style="display: flex; flex-direction: column; overflow: hidden; min-height: 0; flex: 1; width: 100%;">
 
       <!-- Unified Square Viewfinder (1:1 aspect ratio) at the Top -->
       <div class="viewfinder-container">
@@ -1022,7 +1018,7 @@
           <!-- Camera Flip Button (common) -->
           <button class="flip-btn" id="unified-flip-btn" onclick="flipCameraDevice()" title="Flip camera">⟳</button>
 
-          <!-- GP "CHANGE PHOTO" Pill Button Overlay -->
+          <!-- GP "CHANGE PHOTO" Pill Button Overlay - Obsolete now, replaced by inline Retake buttons, but keeping hidden just in case of JS refs -->
           <button class="photo-change-btn" id="gp-change-photo-btn" onclick="resetPhoto()" style="display: none;">
             <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
@@ -1032,70 +1028,103 @@
         </div>
       </div>
 
-      <!-- Camera Lane Selector (Tabs Switcher) BELOW the Viewfinder -->
-      <div class="camera-tabs">
+      <!-- Unified Capture Controls (Only shown in 'capture' state) -->
+      <div id="unified-capture-controls" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 12px 1.25rem 20px; width: 100%;">
+        <button class="btn-capture" id="unified-btn-capture" onclick="capturePhoto()" style="width: 76px; height: 76px; border: 4px solid var(--white); border-radius: 50%; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.1s; outline: none;">
+          <div style="width: 58px; height: 58px; background: var(--white); border-radius: 50%;"></div>
+        </button>
+        
+        <!-- Camera only fallback / file upload option -->
+        <div class="upload-unified" id="upload-state" style="display: flex; margin: 6px 0; width: 100%; border-radius: 4px; border: 1px dashed var(--border); background: var(--surface);">
+          <div class="upload-opt" onclick="document.getElementById('selfie-input').click()" style="width: 100%; display: flex; flex-direction: row; gap: 8px; justify-content: center; align-items: center; padding: 10px 0;">
+            <div class="upload-icon" style="width:24px; height:24px; border:none; display:flex; align-items:center; justify-content:center;"><svg viewBox="0 0 24 24" style="width:14px; height:14px;"><circle cx="12" cy="12" r="3"/><path d="M6.343 6.343a8 8 0 1011.314 0M12 2v4"/></svg></div>
+            <span class="upload-hint" style="font-size:0.65rem; color:var(--muted); font-weight:600; letter-spacing:0.08em; text-transform:uppercase;">OR CHOOSE PHOTO FILE</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Camera Lane Selector (Tabs Switcher) BELOW the Viewfinder (shown in 'edit' state) -->
+      <div class="camera-tabs" id="camera-tabs" style="display: none;">
         <button class="camera-tab active" id="tab-filters-btn" onclick="switchCameraTab('filters')">📸 FILTERS</button>
         <button class="camera-tab" id="tab-groovepop-btn" onclick="switchCameraTab('groovepop')">🎨 TRANSFORM</button>
       </div>
 
       <!-- Controls & Panels below Viewfinder/Tabs -->
-      <div class="camera-controls-container" style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;">
+      <div class="camera-controls-container" style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; width: 100%;">
         
         <!-- ── LANE 1: FILTERS CONTROLS ── -->
-        <div class="lane-controls-panel" id="panel-filters" style="display: flex; flex-direction: column; gap: 8px; padding: 0 1.25rem 20px;">
-          <!-- Button controls: Retake (left), Capture (center), Cycle Frame (right) -->
-          <div class="camera-controls">
-            <button class="btn-retake" id="filters-btn-retake" onclick="retakeFiltersPhoto()" title="Retake">✕</button>
-            <button class="btn-capture" id="filters-btn-capture" onclick="captureFiltersPhoto()">
-              <div class="btn-capture-inner"></div>
-            </button>
-            <button class="btn-action" id="filters-btn-action" onclick="cycleFiltersFrame()" title="Next frame">⧉</button>
+        <div class="lane-controls-panel" id="panel-filters" style="display: none; flex-direction: column; gap: 8px; padding: 0 1.25rem 20px;">
+          <!-- Obsolete duplicate buttons, keeping hidden just in case of JS references -->
+          <div class="camera-controls" style="display: none;">
+            <button class="btn-retake" id="filters-btn-retake" onclick="resetPhoto()" title="Retake">✕</button>
+            <button class="btn-capture" id="filters-btn-capture" style="display: none;"><div class="btn-capture-inner"></div></button>
+            <button class="btn-action" id="filters-btn-action" style="display: none;">⧉</button>
           </div>
 
-          <div class="filter-strip-label">Choose a Filter</div>
+          <div class="filter-strip-label" style="font-size:0.65rem; letter-spacing:0.12em; color:var(--muted); font-family:'Bebas Neue',sans-serif; margin-top:4px;">Choose a Filter</div>
           <div class="filter-strip" id="filter-strip">
             <!-- Populated via Javascript -->
           </div>
 
-          <div class="filter-strip-label">Choose a Frame</div>
+          <div class="filter-strip-label" style="font-size:0.65rem; letter-spacing:0.12em; color:var(--muted); font-family:'Bebas Neue',sans-serif;">Choose a Frame</div>
           <div class="frame-strip" id="filters-frame-strip">
             <!-- Populated via Javascript -->
           </div>
 
           <!-- Actions Grid for Filters snapshot -->
-          <div class="result-actions-grid" id="filters-result-actions" style="display: none; margin-top: 8px; gap: 10px;">
-            <button class="btn-primary" onclick="downloadFiltersPhoto()" style="padding: 12px; border-radius: 4px;">⬇ Save Photo</button>
-            <button class="btn-ghost" onclick="shareFiltersPhoto()" style="padding: 12px; border-radius: 4px;">✦ Share to Gallery</button>
+          <div class="result-actions-grid" id="filters-result-actions" style="display: flex; margin-top: 8px; gap: 10px; width: 100%;">
+            <button class="btn-ghost" onclick="resetPhoto()" style="flex: 1; padding: 12px; border-radius: 4px; font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 0.1em;">✕ Retake</button>
+            <button class="btn-primary" onclick="downloadFiltersPhoto()" style="flex: 1.5; padding: 12px; border-radius: 4px; font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 0.1em; display: flex; align-items: center; justify-content: center; gap: 4px;">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:2px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              Save
+            </button>
+            <button class="btn-primary" onclick="shareFiltersPhoto()" style="flex: 2; padding: 12px; border-radius: 4px; font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 0.1em; display: flex; align-items: center; justify-content: center; gap: 4px;">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:2px;"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+              Share Gallery
+            </button>
           </div>
         </div>
 
         <!-- ── LANE 2: GROOVE POP AI CONTROLS ── -->
         <div class="lane-controls-panel" id="panel-groovepop" style="display: none; flex-direction: column; gap: 8px; padding: 0 1.25rem 20px;">
-          <!-- Step 1 Heading (Only show when webcam is active & no capture yet) -->
-          <div class="home-section-heading" id="gp-step-heading" style="margin-bottom: 0.25rem;">
-            <span class="home-section-num">1</span>
-            <span class="home-section-text">TAKE <span class="accent">A SELFIE</span></span>
+          
+          <!-- Obsolete step headings, keeping hidden just in case of JS references -->
+          <div class="home-section-heading" id="gp-step-heading" style="display: none;"></div>
+          <div class="camera-controls" id="gp-capture-controls" style="display: none;"></div>
+
+          <!-- Inline Style Picker -->
+          <div class="home-right-inline" id="home-right-inline" style="display: flex; flex-direction: column; min-height: 0; flex-shrink: 0; margin-bottom: 8px; width: 100%;">
+            <div class="home-section-heading" style="padding: 0.35rem 0 0.2rem; display: flex; align-items: baseline; gap: 0.3em; flex-shrink: 0;">
+              <span class="home-section-num" style="font-family:'Bebas Neue',sans-serif; font-size:1.2rem; color:var(--white); line-height:1;">2</span>
+              <span class="home-section-text" style="font-family:'Bebas Neue',sans-serif; font-size:0.7rem; letter-spacing:0.12em; color:var(--white); line-height:1;">CHOOSE <span class="accent" style="color:var(--gold);">A STYLE</span></span>
+            </div>
+            <div class="subtheme-scroll" id="subtheme-tabs" style="display: flex; flex-wrap: wrap; gap: 0.3rem; padding: 0.4rem 0; background: var(--black); flex-shrink: 0;"></div>
+            <div class="style-grid-wrap" style="max-height: 260px; border: 1px solid var(--border); border-radius: 4px; overflow-y: auto; -webkit-overflow-scrolling: touch;">
+              <div class="styles-grid" id="styles-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); padding: 1px;"></div>
+            </div>
           </div>
 
-          <!-- Capture button (centered) - hidden when photo is captured/generating/result -->
-          <div class="camera-controls" id="gp-capture-controls">
-            <div style="width: 48px;"></div>
-            <button class="btn-capture" id="gp-btn-capture" onclick="captureGPPhoto()">
-              <div class="btn-capture-inner"></div>
-            </button>
-            <div style="width: 48px;"></div>
-          </div>
-
-          <!-- Camera only fallback / file upload option if webcam fails -->
-          <div class="upload-unified" id="upload-state" style="display: none; margin: 10px 0;">
-            <div class="upload-opt" onclick="document.getElementById('selfie-input').click()">
-              <div class="upload-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M6.343 6.343a8 8 0 1011.314 0M12 2v4"/></svg></div>
-              <span class="upload-hint">CHOOSE SELFIE PHOTO</span>
+          <!-- Inline Transform control -->
+          <div class="gp-transform-inline" style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px; width: 100%;">
+            <div class="selected-style-info" style="display: flex; align-items: center; justify-content: space-between;">
+              <span id="selected-style-name-inline" style="font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.08em; color: var(--gold);">No style selected</span>
+              <span style="font-size: 0.6rem; color: var(--muted); opacity: 0.5;">Step 3</span>
+            </div>
+            
+            <div style="display: flex; gap: 10px; width: 100%;">
+              <button class="btn-ghost" onclick="resetPhoto()" style="flex: 1; padding: 12px; border-radius: 4px; font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 0.1em;">✕ Retake</button>
+              <button class="btn-primary" id="btn-generate-inline" disabled onclick="startGeneration()" style="flex: 2; padding: 12px; border-radius: 4px; font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.1em; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 2px;">
+                  <circle cx="12" cy="12" r="10" />
+                  <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                </svg>
+                3 PARTY
+              </button>
             </div>
           </div>
 
           <!-- Status Bar (shows when generating) -->
-          <div class="gen-status-bar" id="gen-status-bar" style="display: none; margin: 8px 0;">
+          <div class="gen-status-bar" id="gen-status-bar" style="display: none; margin: 8px 0; width: 100%;">
             <div class="gen-status-top">
               <div class="gen-phase-label" id="gen-phase-label">PROCESSING</div>
               <div class="gen-dots" id="gen-dots"><span></span><span></span><span></span></div>
@@ -1105,7 +1134,7 @@
           </div>
 
           <!-- Error Card -->
-          <div class="error-card" id="error-card" style="display: none; margin: 8px 0;">
+          <div class="error-card" id="error-card" style="display: none; margin: 8px 0; width: 100%;">
             <div class="error-card-icon">
               <svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
             </div>
@@ -1121,34 +1150,15 @@
       <input type="file" id="selfie-input" accept="image/*" capture="user">
     </div><!-- /.home-left -->
 
-    <!-- RIGHT: style picker -->
-    <div class="home-right" id="home-right">
-      <!-- 2. CHOOSE A STYLE -->
-      <div class="home-section-heading">
-        <span class="home-section-num">2</span>
-        <span class="home-section-text">CHOOSE <span class="accent">A STYLE</span></span>
-      </div>
-      <div class="subtheme-scroll" id="subtheme-tabs"></div>
-      <div class="style-grid-wrap">
-        <div class="styles-grid" id="styles-grid"></div>
-      </div>
-    </div>
-
   </div><!-- /.home-content -->
 
   <!-- BOTTOM BAR — state-aware -->
   <div class="home-bottom">
 
-    <!-- Home: style label + transform button -->
-    <div class="bottom-home" id="bottom-home" style="display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:0.65rem 1.25rem 0.875rem;">
-      <div style="display:flex; flex-direction:column; flex:1; min-width:0; gap:0.2rem;">
-        <span class="selected-style-name" id="selected-style-name" style="opacity:0.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-bottom:0;">No style selected</span>
-        <span class="version-tag" style="padding:0; opacity:0.25; font-size:0.48rem; text-align:left;">v0530</span>
-      </div>
-      <button class="btn-primary" id="btn-generate" disabled onclick="startGeneration()" style="width:68px; height:68px; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0; padding:0; line-height:1.05; box-shadow:0 4px 12px rgba(0,0,0,0.3); flex-shrink:0;">
-        <span style="font-size:1.8rem; font-weight:bold;">3</span>
-        <span style="font-size:0.68rem; letter-spacing:0.1em; font-family:'Bebas Neue',sans-serif; margin-top:-2px;">PARTY</span>
-      </button>
+    <!-- Obsolete bottom-home, keeping hidden just in case of JS references -->
+    <div class="bottom-home" id="bottom-home" style="display: none;">
+      <span class="selected-style-name" id="selected-style-name"></span>
+      <button class="btn-primary" id="btn-generate" disabled></button>
     </div>
 
     <!-- Generating: logo animation -->
@@ -1748,47 +1758,72 @@ function goTo(id) {
 function setImageZoneState(state) {
   imageZoneState = state;
   const screenHome = document.getElementById('screen-home');
-  if (screenHome) screenHome.dataset.state = state;
+  if (screenHome) {
+    // Map our internal states to the DOM dataset state for backward compatibility
+    if (state === 'capture' || state === 'edit') {
+      screenHome.dataset.state = 'upload';
+    } else {
+      screenHome.dataset.state = state;
+    }
+    screenHome.dataset.substate = state; // Add a custom substate
+  }
 
   const uploadState = document.getElementById('upload-state');
   const previewImg = document.getElementById('unified-preview-img');
-  const changeBtn = document.getElementById('gp-change-photo-btn');
   const videoEl = document.getElementById('filters-video');
-  const stepHeading = document.getElementById('gp-step-heading');
-  const captureControls = document.getElementById('gp-capture-controls');
-
-  if (state === 'upload') {
-    if (uploadState) uploadState.style.display = uploadedDataUrl ? 'none' : 'flex';
+  const canvasEl = document.getElementById('filters-canvas-preview');
+  
+  // Capture Controls & Tabs
+  const captureControls = document.getElementById('unified-capture-controls');
+  const cameraTabs = document.getElementById('camera-tabs');
+  const panelFilters = document.getElementById('panel-filters');
+  const panelGroovepop = document.getElementById('panel-groovepop');
+  
+  // Show / hide based on state
+  if (state === 'capture') {
+    if (videoEl) videoEl.style.display = 'block';
+    if (canvasEl) canvasEl.style.display = 'none';
+    if (previewImg) previewImg.style.display = 'none';
+    if (uploadState) uploadState.style.display = 'flex';
+    
+    if (captureControls) captureControls.style.display = 'flex';
+    if (cameraTabs) cameraTabs.style.display = 'none';
+    if (panelFilters) panelFilters.style.display = 'none';
+    if (panelGroovepop) panelGroovepop.style.display = 'none';
+  } 
+  else if (state === 'edit') {
+    if (videoEl) videoEl.style.display = 'none';
     if (previewImg) {
       previewImg.src = uploadedDataUrl || '';
-      previewImg.style.display = uploadedDataUrl ? 'block' : 'none';
+      previewImg.style.display = 'block';
     }
-    if (changeBtn) {
-      changeBtn.style.display = uploadedDataUrl ? 'flex' : 'none';
+    if (uploadState) uploadState.style.display = 'none';
+    
+    if (captureControls) captureControls.style.display = 'none';
+    if (cameraTabs) cameraTabs.style.display = 'flex';
+    
+    // Toggle active tab panel
+    if (panelFilters) panelFilters.style.display = activeCameraLane === 'filters' ? 'flex' : 'none';
+    if (panelGroovepop) panelGroovepop.style.display = activeCameraLane === 'groovepop' ? 'flex' : 'none';
+    
+    // Show/hide canvas vs image based on Filters composite rendering
+    if (activeCameraLane === 'filters') {
+      if (canvasEl) canvasEl.style.display = 'block';
+      if (previewImg) previewImg.style.display = 'none';
+    } else {
+      if (canvasEl) canvasEl.style.display = 'none';
+      if (previewImg) previewImg.style.display = 'block';
     }
-    if (videoEl) {
-      videoEl.style.display = uploadedDataUrl ? 'none' : 'block';
-    }
-    if (stepHeading) {
-      stepHeading.style.display = uploadedDataUrl ? 'none' : 'flex';
-    }
-    if (captureControls) {
-      captureControls.style.display = uploadedDataUrl ? 'none' : 'flex';
-    }
-  } else {
+  } 
+  else { // generating or result
     if (uploadState) uploadState.style.display = 'none';
     if (previewImg && state !== 'generating' && state !== 'result') {
       previewImg.style.display = 'none';
     }
-    if (changeBtn) {
-      changeBtn.style.display = 'none';
-    }
-    if (stepHeading) {
-      stepHeading.style.display = 'none';
-    }
-    if (captureControls) {
-      captureControls.style.display = 'none';
-    }
+    if (captureControls) captureControls.style.display = 'none';
+    if (cameraTabs) cameraTabs.style.display = 'none';
+    if (panelFilters) panelFilters.style.display = 'none';
+    if (panelGroovepop) panelGroovepop.style.display = 'none';
   }
 
   document.getElementById('generating-state').classList.toggle('active', state === 'generating');
@@ -1796,21 +1831,21 @@ function setImageZoneState(state) {
   document.getElementById('gen-status-bar').classList.toggle('active', state === 'generating');
   if (state !== 'result') document.getElementById('error-card').classList.remove('visible');
 
-  // Hide sticky footer completely in Filters lane, show in Groove Pop lane
+  // Sticky bottom bar display logic
   const homeBottom = document.querySelector('.home-bottom');
   if (homeBottom) {
-    if (activeCameraLane === 'filters') {
-      homeBottom.style.setProperty('display', 'none', 'important');
+    if (state === 'generating' || state === 'result') {
+      homeBottom.style.display = 'block';
     } else {
-      homeBottom.style.display = '';
+      homeBottom.style.setProperty('display', 'none', 'important');
     }
   }
 
-  // Explicitly manage bottom bar display to guarantee "3 PARTY" disappears
+  // Explicitly manage bottom bar display
   const bottomHome = document.getElementById('bottom-home');
   const bottomGenerating = document.getElementById('bottom-generating');
   const bottomResult = document.getElementById('bottom-result');
-  if (bottomHome) bottomHome.style.display = (state === 'upload') ? 'flex' : 'none';
+  if (bottomHome) bottomHome.style.display = 'none'; // Obsolete, always hide
   if (bottomGenerating) bottomGenerating.style.display = (state === 'generating') ? 'block' : 'none';
   if (bottomResult) bottomResult.style.display = (state === 'result') ? 'flex' : 'none';
 }
@@ -1823,8 +1858,12 @@ function handleFileInput(file) {
   const reader = new FileReader();
   reader.onload = function(ev) {
     uploadedDataUrl = ev.target.result;
-    setImageZoneState('upload');
-    showUploadedPreview();
+    filtersCapturedUrl = ev.target.result;
+    filtersHasCaptured = true;
+    
+    setImageZoneState('edit');
+    renderFiltersComposite();
+
     const randomBtn = document.getElementById('btn-randomize');
     if (randomBtn) {
       randomBtn.disabled = false;
@@ -1843,19 +1882,12 @@ function showUploadedPreview() {
   }
   const videoEl = document.getElementById('filters-video');
   if (videoEl) videoEl.style.display = 'none';
-  
-  const changeBtn = document.getElementById('gp-change-photo-btn');
-  if (changeBtn) changeBtn.style.display = 'flex';
-  
-  const stepHeading = document.getElementById('gp-step-heading');
-  if (stepHeading) stepHeading.style.display = 'none';
-  
-  const captureControls = document.getElementById('gp-capture-controls');
-  if (captureControls) captureControls.style.display = 'none';
 }
 
 function resetPhoto() {
   uploadedDataUrl = null;
+  filtersCapturedUrl = null;
+  filtersHasCaptured = false;
   currentCloudinaryUrl = null;
   chosenVariant = null;
   selectedStyle = null;
@@ -1865,9 +1897,6 @@ function resetPhoto() {
     previewImg.src = '';
     previewImg.style.display = 'none';
   }
-  
-  const changeBtn = document.getElementById('gp-change-photo-btn');
-  if (changeBtn) changeBtn.style.display = 'none';
   
   const fileInput = document.getElementById('file-input');
   if (fileInput) fileInput.value = '';
@@ -1881,20 +1910,17 @@ function resetPhoto() {
     randomBtn.classList.remove('lit');
   }
   
-  const styleNameEl = document.getElementById('selected-style-name');
+  const styleNameEl = document.getElementById('selected-style-name-inline') || document.getElementById('selected-style-name');
   if (styleNameEl) {
     styleNameEl.textContent = 'No style selected';
     styleNameEl.style.opacity = '0.3';
   }
   
-  setImageZoneState('upload');
+  setImageZoneState('capture');
   renderGrid();
   updateGenerateButton();
 
-  // Re-start camera for live viewfinder
-  if (activeCameraLane === 'groovepop') {
-    startCamera();
-  }
+  startCamera();
 }
 
 // ══════════════════════════════════════════
@@ -1957,7 +1983,7 @@ function selectStyle(style) {
     buildPicker(); // rebuild tabs
   }
 
-  const nameEl = document.getElementById('selected-style-name');
+  const nameEl = document.getElementById('selected-style-name-inline') || document.getElementById('selected-style-name');
   if (nameEl) {
     nameEl.textContent = `${style.family_label} · ${style.subtheme}`;
     nameEl.style.opacity = '1';
@@ -1975,14 +2001,20 @@ function selectStyle(style) {
 }
 
 function updateGenerateButton() {
-  const btn = document.getElementById('btn-generate');
+  const btn = document.getElementById('btn-generate-inline') || document.getElementById('btn-generate');
   if (!btn) return;
   if (!isActiveEvent && photosTakenCount >= 10) {
     btn.disabled = false;
-    btn.innerHTML = '<span style="font-size:1.4rem; line-height:1;">🔒</span><span style="font-size:0.55rem; letter-spacing:0.05em; margin-top:-2px; line-height:1; font-family:\'Bebas Neue\',sans-serif;">ACTIVATE</span>';
+    btn.innerHTML = '<span style="font-size:1.1rem; line-height:1; margin-right:4px;">🔒</span><span style="font-size:0.95rem; letter-spacing:0.05em; font-family:\'Bebas Neue\',sans-serif;">ACTIVATE</span>';
   } else {
     btn.disabled = !(uploadedDataUrl && selectedStyle);
-    btn.innerHTML = '<span style="font-size:1.8rem; font-weight:bold; line-height:1;">3</span><span style="font-size:0.68rem; letter-spacing:0.1em; font-family:\'Bebas Neue\',sans-serif; margin-top:-2px; line-height:1;">PARTY</span>';
+    btn.innerHTML = `
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 2px;">
+        <circle cx="12" cy="12" r="10" />
+        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+      </svg>
+      3 PARTY
+    `;
   }
 }
 
@@ -2112,8 +2144,7 @@ function cancelGeneration() {
   if (zone) zone.classList.remove('active', 'logo-final', 'fx-hue','fx-holo','fx-glitch','fx-pixel','fx-heat','fx-glow','fx-grain');
   const barLogo = document.getElementById('app-bar-logo-wrap');
   if (barLogo) barLogo.classList.remove('hidden');
-  setImageZoneState('upload');
-  if (uploadedDataUrl) showUploadedPreview();
+  setImageZoneState(uploadedDataUrl ? 'edit' : 'capture');
   updateGenerateButton();
   
   const debugEl = document.getElementById('error-card-debug');
@@ -4178,15 +4209,11 @@ function flipCameraDevice() {
 function switchCameraTab(lane) {
   if (activeCameraLane === lane) return;
   
-  stopCamera();
   activeCameraLane = lane;
   
   document.getElementById('tab-filters-btn').classList.toggle('active', lane === 'filters');
   document.getElementById('tab-groovepop-btn').classList.toggle('active', lane === 'groovepop');
   
-  document.getElementById('panel-filters').style.display = lane === 'filters' ? 'flex' : 'none';
-  document.getElementById('panel-groovepop').style.display = lane === 'groovepop' ? 'flex' : 'none';
-
   const screenHome = document.getElementById('screen-home');
   if (screenHome) {
     if (lane === 'filters') {
@@ -4202,10 +4229,12 @@ function switchCameraTab(lane) {
     frameOverlay.style.display = (lane === 'filters' && filtersSelectedFrame !== null) ? 'block' : 'none';
   }
 
-  // Ensure generating/result elements inside the viewfinder align with state
-  setImageZoneState(imageZoneState);
+  // Trigger composite render if in filters mode and photo is taken
+  if (lane === 'filters' && filtersHasCaptured) {
+    renderFiltersComposite();
+  }
 
-  startCamera();
+  setImageZoneState(imageZoneState);
 }
 
 // Filters Strip Builder (12 filters)
@@ -4401,139 +4430,9 @@ function getFiltersFinalCanvas() {
   });
 }
 
-function captureFiltersPhoto() {
+function capturePhoto() {
   const videoEl = document.getElementById('filters-video');
   const canvasEl = document.getElementById('filters-canvas-preview');
-  if (!canvasEl || !videoEl) return;
-
-  const vw = videoEl.videoWidth || 480;
-  const vh = videoEl.videoHeight || 640;
-  const minDim = Math.min(vw, vh);
-  const sx = (vw - minDim) / 2;
-  const sy = (vh - minDim) / 2;
-
-  filtersCapturedUrl = null;
-  filtersHasCaptured = true;
-
-  if (cameraStream) {
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = minDim;
-    tempCanvas.height = minDim;
-    const tempCtx = tempCanvas.getContext('2d');
-    
-    // Front facing mirror capture
-    if (cameraFacingMode === 'user') {
-      tempCtx.translate(minDim, 0);
-      tempCtx.scale(-1, 1);
-    }
-    
-    tempCtx.drawImage(videoEl, sx, sy, minDim, minDim, 0, 0, minDim, minDim);
-    filtersCapturedUrl = tempCanvas.toDataURL('image/jpeg', 0.95);
-  } else {
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = 480;
-    tempCanvas.height = 480;
-    const tempCtx = tempCanvas.getContext('2d');
-    tempCtx.fillStyle = '#221f1b';
-    tempCtx.fillRect(0, 0, 480, 480);
-    tempCtx.fillStyle = '#a00ae6';
-    tempCtx.font = 'bold 24px sans-serif';
-    tempCtx.textAlign = 'center';
-    tempCtx.fillText('Camera Offline', 240, 240);
-    filtersCapturedUrl = tempCanvas.toDataURL('image/jpeg', 0.95);
-  }
-
-  videoEl.style.display = 'none';
-  canvasEl.style.display = 'block';
-
-  renderFiltersComposite();
-
-  document.getElementById('filters-btn-capture').style.display = 'none';
-  document.getElementById('filters-btn-action').style.display = 'none';
-  document.getElementById('filters-btn-retake').classList.add('visible');
-  document.getElementById('filters-result-actions').style.display = 'grid';
-}
-
-function retakeFiltersPhoto() {
-  filtersHasCaptured = false;
-  filtersCapturedUrl = null;
-  
-  document.getElementById('filters-btn-capture').style.display = 'flex';
-  document.getElementById('filters-btn-action').style.display = 'flex';
-  document.getElementById('filters-btn-retake').classList.remove('visible');
-  document.getElementById('filters-result-actions').style.display = 'none';
-  
-  const videoEl = document.getElementById('filters-video');
-  const canvasEl = document.getElementById('filters-canvas-preview');
-  if (videoEl) {
-    videoEl.style.display = 'block';
-    videoEl.style.filter = getFilterCSS(filtersSelectedFilter);
-  }
-  if (canvasEl) {
-    canvasEl.style.display = 'none';
-  }
-  
-  startCamera();
-}
-
-async function downloadFiltersPhoto() {
-  if (!filtersHasCaptured) return;
-  const finalCanvas = await getFiltersFinalCanvas();
-  if (!finalCanvas) return;
-
-  const link = document.createElement('a');
-  link.download = `groovepop-snapshot-${Date.now()}.jpg`;
-  link.href = finalCanvas.toDataURL('image/jpeg', 0.95);
-  link.click();
-  showToast('Saved to your photos!');
-}
-
-async function shareFiltersPhoto() {
-  if (!filtersHasCaptured) return;
-  const finalCanvas = await getFiltersFinalCanvas();
-  if (!finalCanvas) return;
-
-  const dataUrl = finalCanvas.toDataURL('image/jpeg', 0.95);
-  showToast("Sharing photo...");
-  
-  try {
-    const res = await fetch('/.netlify/functions/upload-image', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        base64: dataUrl.split(',')[1], mimeType: 'image/jpeg',
-        userId: (currentUser && (currentUser.id || currentUser.email)) || 'party-guest',
-        styleKey: 'filter-camera',
-        styleName: 'Filter Photo',
-        subtheme: filtersSelectedFilter || 'none',
-        variantKey: filtersSelectedFrame !== null ? 'frame-' + (filtersSelectedFrame + 1) : 'no-frame',
-        caption: 'Event Snapshot'
-      })
-    });
-    const data = await res.json();
-    if (res.ok) {
-      if (partyDocId && dbRef) {
-        await dbRef.collection("parties").doc(partyDocId).collection("photos").add({
-          imageUrl: data.url,
-          styleId: 'filter-camera',
-          styleName: 'Filter Photo',
-          caption: 'Event Snapshot',
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-      }
-      showToast('Shared to the gallery ✦');
-    } else {
-      showToast('Upload failed, try again');
-    }
-  } catch (err) {
-    console.error(err);
-    showToast('Failed sharing photo');
-  }
-}
-
-// Groove Pop Camera Capture
-function captureGPPhoto() {
-  const videoEl = document.getElementById('filters-video'); // Use unified video element
-  const canvasEl = document.getElementById('filters-canvas-preview'); // Use unified canvas element
   if (!videoEl || !canvasEl) return;
 
   const vw = videoEl.videoWidth || 480;
@@ -4562,19 +4461,30 @@ function captureGPPhoto() {
     ctx.fillText('Camera Offline', minDim/2, minDim/2);
   }
 
-  uploadedDataUrl = canvasEl.toDataURL('image/jpeg', 0.95);
+  const dataUrl = canvasEl.toDataURL('image/jpeg', 0.95);
+  
+  uploadedDataUrl = dataUrl;
+  filtersCapturedUrl = dataUrl;
+  filtersHasCaptured = true;
+  
   stopCamera();
-
-  setImageZoneState('upload');
-  showUploadedPreview();
+  
+  setImageZoneState('edit');
+  renderFiltersComposite();
 
   const randomBtn = document.getElementById('btn-randomize');
   if (randomBtn) {
     randomBtn.disabled = false;
     randomBtn.classList.add('lit');
   }
+  
   updateGenerateButton();
 }
+
+// Backward compatibility aliases
+function captureGPPhoto() { capturePhoto(); }
+function captureFiltersPhoto() { capturePhoto(); }
+function retakeFiltersPhoto() { resetPhoto(); }
 
 
 // ══════════════════════════════════════════
