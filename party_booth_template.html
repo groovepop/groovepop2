@@ -3916,43 +3916,137 @@ function keyOutCheckerboard(frameImg, targetW, targetH) {
       const imgData = ctx.getImageData(0, 0, w, h);
       const data = imgData.data;
       
-      // Safety bounds (skip keying on outer 8% to preserve borders)
-      const minX = Math.floor(w * 0.08);
-      const maxX = Math.floor(w * 0.92);
-      const minY = Math.floor(h * 0.08);
-      const maxY = Math.floor(h * 0.92);
+      const cx = Math.floor(w / 2);
+      const cy = Math.floor(h / 2);
       
-      // Sample center pixel color
-      const centerIdx = (Math.floor(h / 2) * w + Math.floor(w / 2)) * 4;
-      const targetR = data[centerIdx];
-      const targetG = data[centerIdx + 1];
-      const targetB = data[centerIdx + 2];
+      // Helper function to check if a color is neutral (grey/white)
+      const isNeutralColor = (r, g, b) => {
+        const isWhite = r >= 220 && g >= 220 && b >= 220 && Math.abs(r - g) <= 12 && Math.abs(r - b) <= 12;
+        const isGrey = r >= 165 && r <= 220 && g >= 165 && g <= 220 && b >= 165 && b <= 220 && Math.abs(r - g) <= 12 && Math.abs(r - b) <= 12;
+        return isWhite || isGrey;
+      };
       
-      for (let y = 0; y < h; y++) {
-        for (let x = 0; x < w; x++) {
-          if (x >= minX && x <= maxX && y >= minY && y <= maxY) {
+      // Starting point of the search
+      let sx = cx;
+      let sy = cy;
+      
+      // If center pixel is not neutral, look around to find a starting point that is neutral (checkerboard)
+      const centerIdx = (cy * w + cx) * 4;
+      if (!isNeutralColor(data[centerIdx], data[centerIdx + 1], data[centerIdx + 2])) {
+        let found = false;
+        const maxSearch = 80;
+        for (let r = 5; r <= maxSearch; r += 5) {
+          for (let angle = 0; angle < 360; angle += 45) {
+            const rad = angle * Math.PI / 180;
+            const tx = Math.floor(cx + r * Math.cos(rad));
+            const ty = Math.floor(cy + r * Math.sin(rad));
+            if (tx >= 0 && tx < w && ty >= 0 && ty < h) {
+              const idx = (ty * w + tx) * 4;
+              if (isNeutralColor(data[idx], data[idx + 1], data[idx + 2])) {
+                sx = tx;
+                sy = ty;
+                found = true;
+                break;
+              }
+            }
+          }
+          if (found) break;
+        }
+      }
+      
+      // Sample color C1 at the starting point
+      const startIdx = (sy * w + sx) * 4;
+      const c1 = {
+        r: data[startIdx],
+        g: data[startIdx + 1],
+        b: data[startIdx + 2]
+      };
+      
+      // Find alternating checkerboard color C2
+      let c2 = null;
+      for (let x = sx; x < Math.min(sx + 40, w); x++) {
+        const idx = (sy * w + x) * 4;
+        const r = data[idx];
+        const g = data[idx + 1];
+        const b = data[idx + 2];
+        const dist = Math.sqrt(Math.pow(r - c1.r, 2) + Math.pow(g - c1.g, 2) + Math.pow(b - c1.b, 2));
+        if (dist > 30 && isNeutralColor(r, g, b)) {
+          c2 = { r, g, b };
+          break;
+        }
+      }
+      
+      // Helper function to check if a pixel matches either C1 or C2 checkerboard colors
+      const isCheckerboard = (r, g, b) => {
+        const dist1 = Math.sqrt(Math.pow(r - c1.r, 2) + Math.pow(g - c1.g, 2) + Math.pow(b - c1.b, 2));
+        if (dist1 < 30) return true;
+        if (c2) {
+          const dist2 = Math.sqrt(Math.pow(r - c2.r, 2) + Math.pow(g - c2.g, 2) + Math.pow(b - c2.b, 2));
+          if (dist2 < 30) return true;
+        }
+        return isNeutralColor(r, g, b);
+      };
+      
+      // Detect boundaries of the checkerboard center region
+      // Walk Up
+      let y_top = sy;
+      while (y_top > 0) {
+        const idx = (y_top * w + sx) * 4;
+        if (!isCheckerboard(data[idx], data[idx + 1], data[idx + 2])) {
+          break;
+        }
+        y_top--;
+      }
+      
+      // Walk Down
+      let y_bottom = sy;
+      while (y_bottom < h - 1) {
+        const idx = (y_bottom * w + sx) * 4;
+        if (!isCheckerboard(data[idx], data[idx + 1], data[idx + 2])) {
+          break;
+        }
+        y_bottom++;
+      }
+      
+      // Walk Left
+      let x_left = sx;
+      while (x_left > 0) {
+        const idx = (sy * w + x_left) * 4;
+        if (!isCheckerboard(data[idx], data[idx + 1], data[idx + 2])) {
+          break;
+        }
+        x_left--;
+      }
+      
+      // Walk Right
+      let x_right = sx;
+      while (x_right < w - 1) {
+        const idx = (sy * w + x_right) * 4;
+        if (!isCheckerboard(data[idx], data[idx + 1], data[idx + 2])) {
+          break;
+        }
+        x_right++;
+      }
+      
+      // Safe margins to ensure we don't accidentally clip frame borders
+      const pad = 2;
+      const minX = x_left + pad;
+      const maxX = x_right - pad;
+      const minY = y_top + pad;
+      const maxY = y_bottom - pad;
+      
+      // Only execute chroma-key within the detected bounding box
+      if (maxX > minX && maxY > minY) {
+        for (let y = minY; y <= maxY; y++) {
+          for (let x = minX; x <= maxX; x++) {
             const idx = (y * w + x) * 4;
-            const r = data[idx];
-            const g = data[idx + 1];
-            const b = data[idx + 2];
-            
-            // 1. Check distance to center background color
-            const dist = Math.sqrt(
-              Math.pow(r - targetR, 2) +
-              Math.pow(g - targetG, 2) +
-              Math.pow(b - targetB, 2)
-            );
-            
-            // 2. Fallback to standard white/grey checkerboard pattern
-            const isWhite = r >= 235 && g >= 235 && b >= 235 && Math.abs(r - g) <= 5 && Math.abs(r - b) <= 5;
-            const isGrey = r >= 190 && r <= 215 && g >= 190 && g <= 215 && b >= 190 && b <= 215 && Math.abs(r - g) <= 5 && Math.abs(r - b) <= 5;
-            
-            if (dist < 40 || isWhite || isGrey) {
-              data[idx + 3] = 0; // Transparent alpha
+            if (isCheckerboard(data[idx], data[idx + 1], data[idx + 2])) {
+              data[idx + 3] = 0; // Set alpha to transparent
             }
           }
         }
       }
+      
       ctx.putImageData(imgData, 0, 0);
     } catch (err) {
       console.warn("[GP] Checkerboard keying failed:", err);
