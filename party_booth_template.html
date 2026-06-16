@@ -901,6 +901,7 @@ let partyDocId = null;
 let dbRef = null;
 let expectedKey = null;
 let customLogoUrl = null;
+let customLogoUrls = [];
 let customEventName = null;
 
 let STYLES = [], STYLES_MULTI = [];
@@ -990,6 +991,7 @@ async function initApp() {
               isActiveEvent = data.isActive !== false;
               photosTakenCount = data.photosTaken || 0;
               customLogoUrl = data.logoUrl || null;
+              customLogoUrls = data.logoUrls || [];
               customEventName = data.eventName || null;
               
               if (data.isActive === false) {
@@ -2722,19 +2724,19 @@ let usedLogoIndices = new Set();
 let activeLayer = 'a'; // module-scoped so endLogoTransformation can read it
 
 function pickRandomLogo(excludeCurrent = true) {
-  let pool = GROOVE_POP_LOGOS.map((_, i) => i).filter(i =>
+  const sourceArray = (customLogoUrls && customLogoUrls.length > 0) ? customLogoUrls : GROOVE_POP_LOGOS;
+  let pool = sourceArray.map((_, i) => i).filter(i =>
     !excludeCurrent || i !== currentLogoIndex
   );
   // Avoid recently used ones if pool is large enough
   if (pool.length > 20) {
     pool = pool.filter(i => !usedLogoIndices.has(i));
-    if (!pool.length) { usedLogoIndices.clear(); pool = GROOVE_POP_LOGOS.map((_, i) => i).filter(i => i !== currentLogoIndex); }
+    if (!pool.length) { usedLogoIndices.clear(); pool = sourceArray.map((_, i) => i).filter(i => i !== currentLogoIndex); }
   }
   const idx = pool[Math.floor(Math.random() * pool.length)];
   usedLogoIndices.add(idx);
-  if (usedLogoIndices.size > 50) {
-    const first = usedLogoIndices.values().next().value;
-    usedLogoIndices.delete(first);
+  if (usedLogoIndices.size > sourceArray.length) {
+    usedLogoIndices.clear();
   }
   return idx;
 }
@@ -2742,7 +2744,10 @@ function pickRandomLogo(excludeCurrent = true) {
 function setLogoImage(index) {
   currentLogoIndex = index;
   const img = document.getElementById('app-bar-logo-img');
-  if (img) img.src = GROOVE_POP_LOGOS[index];
+  if (img) {
+    const sourceArray = (customLogoUrls && customLogoUrls.length > 0) ? customLogoUrls : GROOVE_POP_LOGOS;
+    img.src = sourceArray[index] || sourceArray[0];
+  }
 }
 
 function clearLogoIntervals() {
@@ -2772,7 +2777,9 @@ function startLogoTransformation() {
   zone.classList.add(FX_EFFECTS[Math.floor(Math.random() * FX_EFFECTS.length)]);
   zone.classList.add('active');
 
-  if (customLogoUrl) {
+  if (customLogoUrls && customLogoUrls.length > 0) {
+    // Let it fall through to run the swapping sequence using customLogoUrls!
+  } else if (customLogoUrl) {
     layerA.src = customLogoUrl;
     layerA.style.opacity = '1';
     layerA.style.zIndex  = '2';
@@ -2790,15 +2797,18 @@ function startLogoTransformation() {
     return; // Stop here! No swapping sequence.
   }
 
-  // Fallback to Groove Pop Logo Swapping Sequence
+  // Fallback to Groove Pop / Custom Logo Swapping Sequence
   layerA.style.display = 'block';
   layerB.style.display = 'block';
   if (logoText) logoText.style.display = 'none';
 
-  layerA.src = GROOVE_POP_LOGOS[currentLogoIndex];
+  const sourceArray = (customLogoUrls && customLogoUrls.length > 0) ? customLogoUrls : GROOVE_POP_LOGOS;
+  currentLogoIndex = 0;
+
+  layerA.src = sourceArray[currentLogoIndex];
   layerA.style.opacity = '1';
   layerA.style.zIndex  = '2';
-  layerB.src = GROOVE_POP_LOGOS[currentLogoIndex];
+  layerB.src = sourceArray[currentLogoIndex];
   layerB.style.opacity = '0';
   layerB.style.zIndex  = '1';
 
@@ -2814,7 +2824,7 @@ function startLogoTransformation() {
   function preloadNext() {
     const idx = pickRandomLogo(true);
     currentLogoIndex = idx;
-    getBack().src = GROOVE_POP_LOGOS[idx];
+    getBack().src = sourceArray[idx];
   }
 
   function swapNow() {
@@ -2902,7 +2912,12 @@ function endLogoTransformation(finalLogoIndex) {
       if (wrap) { wrap.style.transition = ''; wrap.style.transform = ''; wrap.style.animation = ''; }
       
       // Restore bar branding
-      if (customLogoUrl) {
+      if (customLogoUrls && customLogoUrls.length > 0) {
+        if (barImg) {
+          barImg.src = customLogoUrls[0];
+          barImg.style.display = 'block';
+        }
+      } else if (customLogoUrl) {
         if (barImg) {
           barImg.src = customLogoUrl;
           barImg.style.display = 'block';
@@ -2912,7 +2927,8 @@ function endLogoTransformation(finalLogoIndex) {
           barLogo.innerHTML = `<span style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.08em;color:var(--white);">${customEventName.toUpperCase()}</span>`;
         }
       } else {
-        const shownSrc = topLayer ? topLayer.src : GROOVE_POP_LOGOS[finalLogoIndex];
+        const sourceArray = (customLogoUrls && customLogoUrls.length > 0) ? customLogoUrls : GROOVE_POP_LOGOS;
+        const shownSrc = topLayer ? topLayer.src : sourceArray[finalLogoIndex];
         if (barImg) {
           barImg.style.opacity = '0';
           barImg.src = shownSrc;
@@ -2933,7 +2949,15 @@ function initLogo() {
   const layerB = document.getElementById('gen-logo-b');
   const logoText = document.getElementById('gen-logo-text');
   
-  if (customLogoUrl) {
+  if (customLogoUrls && customLogoUrls.length > 0) {
+    if (barImg) {
+      barImg.src = customLogoUrls[0];
+      barImg.style.display = 'block';
+    }
+    if (layerA) { layerA.src = customLogoUrls[0]; layerA.style.display = 'block'; }
+    if (layerB) { layerB.src = customLogoUrls[0]; layerB.style.display = 'block'; }
+    if (logoText) logoText.style.display = 'none';
+  } else if (customLogoUrl) {
     if (barImg) {
       barImg.src = customLogoUrl;
       barImg.style.display = 'block';

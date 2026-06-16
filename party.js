@@ -8,6 +8,8 @@ const firebaseConfig = {
   appId: "1:12398739529:web:9480eedb11ec1219ea3f98"
 };
 
+const API_BASE = 'https://groovepop-engine-f7ged0hndrbucafm.eastus2-01.azurewebsites.net/api';
+
 // State
 let uploadedImageFile = null;
 let uploadedImageUrl = null;
@@ -83,6 +85,50 @@ els.uploadArea.addEventListener('drop', (e) => {
     }
 });
 
+// Helper to generate 6 custom event logos using gpt-image-2 deployment
+async function generateEventLogos(eventName, eventVenue, eventDate, eventTime, bgColor, primaryColor, accentColor, eventType, docId) {
+    const prompts = {
+        wedding: `An elegant event logo for "${eventName}" at ${eventVenue}. ${eventDate}. Refined serif typography with a delicate ornamental flourish, arch or wreath composition. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as primary brand colors. No photography, no illustration. Flat vector aesthetic, would work on printed wedding stationery or a venue screen.`,
+        corporate: `A clean, minimal event logo for "${eventName}" at ${eventVenue}. ${eventDate}. Professional typographic design, bold sans-serif lettering, geometric accent mark or monogram. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as primary brand colors. No photography, no illustration. Flat vector aesthetic, would work on a printed badge or event backdrop.`,
+        birthday: `A bold, celebratory event logo for "${eventName}" at ${eventVenue}. ${eventDate}. Playful expressive lettering, festive graphic accent — star, confetti burst, or balloon motif. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as primary brand colors. No photography, no illustration. Flat vector aesthetic, would work on a party banner or phone screen.`,
+        festival: `A hand-crafted event logo for "${eventName}" at ${eventVenue}. ${eventDate}. Bold stacked typography, screen-print poster aesthetic, sun or landscape graphic accent. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as primary brand colors. No photography, no illustration. Flat vector aesthetic, would work on a festival wristband or wooden sign.`,
+        nightlife: `A striking event logo for "${eventName}" at ${eventVenue}. ${eventDate}. Bold condensed typography, neon glow treatment or high-contrast graphic accent. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as primary brand colors. No photography, no illustration. Flat vector aesthetic, would work projected on a club wall or printed on a wristband.`
+    };
+    
+    const basePrompt = prompts[eventType] || prompts.wedding;
+    
+    // Generate 6 logos in parallel (gpt-image-2 allows up to 10 concurrent runs)
+    const logoPromises = Array.from({ length: 6 }).map(async (_, i) => {
+        const res = await fetch(`${API_BASE}/generate-logo`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: basePrompt })
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || `Failed generating logo ${i + 1}`);
+        }
+        const data = await res.json();
+        return data.base64;
+    });
+
+    const results = await Promise.all(logoPromises);
+    
+    // Upload each base64 to Firebase Storage
+    const uploadBase64ToStorage = async (base64Str, filename) => {
+        const ref = storage.ref().child(`party_logos/${docId}/${filename}`);
+        const snapshot = await ref.putString(base64Str, 'base64', { contentType: 'image/jpeg' });
+        return await snapshot.ref.getDownloadURL();
+    };
+
+    const urls = [];
+    for (let i = 0; i < results.length; i++) {
+        const url = await uploadBase64ToStorage(results[i], `logo_${i + 1}.jpg`);
+        urls.push(url);
+    }
+    return urls;
+}
+
 // Generate PWA Prototype
 els.btnGenerate.addEventListener('click', async () => {
     // Validation
@@ -94,18 +140,46 @@ els.btnGenerate.addEventListener('click', async () => {
         }
     }
 
-    els.btnGenerate.textContent = "Generating Prototype...";
+    els.btnGenerate.textContent = "Uploading assets...";
     els.btnGenerate.disabled = true;
 
     try {
-        // 1. Upload Image to Firebase Storage
+        let docId = "local-test-" + Date.now();
+        let docRef = null;
+        if (db) {
+            docRef = db.collection("parties").doc();
+            docId = docRef.id;
+        }
+
+        // 1. Upload custom logo if manually uploaded
         if (uploadedImageFile && storage) {
             try {
-                const fileRef = storage.ref().child(`party_logos/${Date.now()}_${uploadedImageFile.name}`);
+                const fileRef = storage.ref().child(`party_logos/${docId}/custom_logo_${Date.now()}`);
                 const snapshot = await fileRef.put(uploadedImageFile);
                 uploadedImageUrl = await snapshot.ref.getDownloadURL();
             } catch (err) {
                 console.warn("Storage upload failed, skipping image.", err);
+            }
+        }
+
+        // 2. Generate 6 Event Logos
+        let logoUrls = [];
+        if (db && storage) {
+            els.btnGenerate.textContent = "Designing Event Logos...";
+            try {
+                logoUrls = await generateEventLogos(
+                    els.eventName.value,
+                    els.eventVenue.value,
+                    els.eventDate.value,
+                    els.eventTime.value,
+                    els.bgColor.value,
+                    els.primaryColor.value,
+                    els.accentColor.value,
+                    els.eventType.value,
+                    docId
+                );
+            } catch (logoErr) {
+                console.error("AI Logo Generation failed, proceeding without custom logos:", logoErr);
             }
         }
 
@@ -117,7 +191,7 @@ els.btnGenerate.addEventListener('click', async () => {
         };
         const randomKey = generateKey();
 
-        // 2. Gather Configuration
+        // 3. Gather Configuration
         const partyConfig = {
             eventName: els.eventName.value,
             eventDate: els.eventDate.value,
@@ -134,30 +208,29 @@ els.btnGenerate.addEventListener('click', async () => {
                 accent: els.accentColor.value
             },
             logoUrl: uploadedImageUrl,
+            logoUrls: logoUrls,
             pendingKey: randomKey,
             isActive: false,
             createdAt: new Date()
         };
 
-        // 3. Save to Firestore
-        let docId = "local-test-" + Date.now();
-        if (db) {
+        // 4. Save to Firestore
+        if (docRef) {
             try {
-                const docRef = await db.collection("parties").add(partyConfig);
-                docId = docRef.id;
+                await docRef.set(partyConfig);
             } catch (fbError) {
                 console.warn("Firebase save failed, using local dummy ID.", fbError);
             }
         }
 
-        // 4. Generate Output URL
+        // 5. Generate Output URL
         const baseUrl = window.location.href.replace('party.html', 'party_booth_template.html');
         const finalUrl = `${baseUrl}?partyId=${docId}`;
         
         els.shareUrl.value = finalUrl;
         document.getElementById('activation-key').value = randomKey;
         
-        // 5. Generate QR Code
+        // 6. Generate QR Code
         els.qrcode.innerHTML = "";
         new QRCode(els.qrcode, {
             text: finalUrl,
