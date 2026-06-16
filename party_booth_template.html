@@ -960,9 +960,10 @@
   <!-- APP BAR -->
   <div class="app-bar">
     <!-- Event logo/name — injected dynamically from Firestore config -->
-    <div class="app-bar-logo" id="app-bar-logo-wrap">
+    <div class="app-bar-logo" id="app-bar-logo-wrap" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: 64px;">
       <img id="app-bar-logo-img" src="" alt="" style="height:64px;width:auto;max-width:360px;object-fit:contain;display:none;">
-      <span id="app-bar-logo-text" style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.08em;color:var(--white);display:none;"></span>
+      <span id="app-bar-logo-text" style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.08em;color:var(--white);display:none;line-height:1.1;"></span>
+      <span id="app-bar-welcome-text" style="font-family:'DM Sans',sans-serif;font-size:0.75rem;font-style:italic;color:var(--muted);display:none;margin-top:2px;line-height:1;"></span>
     </div>
     <div class="app-bar-right" id="app-bar-right" style="flex-shrink:0;margin-left:auto;gap:0.5rem;">
       <button class="pill-btn" id="btn-randomize" disabled onclick="randomizeGeneration()">⚡ SURPRISE ME</button>
@@ -983,13 +984,7 @@
     <!-- LEFT: image zone -->
     <div class="home-left" id="home-left" style="display: flex; flex-direction: column; overflow: hidden; min-height: 0;">
 
-      <!-- Camera Lane Selector (Tabs Switcher) -->
-      <div class="camera-tabs">
-        <button class="camera-tab active" id="tab-filters-btn" onclick="switchCameraTab('filters')">📸 FILTERS</button>
-        <button class="camera-tab" id="tab-groovepop-btn" onclick="switchCameraTab('groovepop')">🔑 TRANSFORM</button>
-      </div>
-
-      <!-- Unified Square Viewfinder (1:1 aspect ratio) -->
+      <!-- Unified Square Viewfinder (1:1 aspect ratio) at the Top -->
       <div class="viewfinder-container">
         <div class="viewfinder-wrap">
           <!-- Live video feed (used for both lanes) -->
@@ -1037,7 +1032,13 @@
         </div>
       </div>
 
-      <!-- Controls & Panels below Viewfinder -->
+      <!-- Camera Lane Selector (Tabs Switcher) BELOW the Viewfinder -->
+      <div class="camera-tabs">
+        <button class="camera-tab active" id="tab-filters-btn" onclick="switchCameraTab('filters')">📸 FILTERS</button>
+        <button class="camera-tab" id="tab-groovepop-btn" onclick="switchCameraTab('groovepop')">🎨 TRANSFORM</button>
+      </div>
+
+      <!-- Controls & Panels below Viewfinder/Tabs -->
       <div class="camera-controls-container" style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;">
         
         <!-- ── LANE 1: FILTERS CONTROLS ── -->
@@ -1563,18 +1564,10 @@ async function initApp() {
               }
 
               // Welcome Message
-              if (data.welcomeMessage) {
-                  const welcomeEl = document.createElement('div');
-                  welcomeEl.style.padding = "1rem 1.25rem 0.5rem";
-                  welcomeEl.style.textAlign = "center";
-                  welcomeEl.style.fontStyle = "italic";
-                  welcomeEl.style.fontSize = "0.85rem";
-                  welcomeEl.style.opacity = "0.8";
-                  welcomeEl.style.color = "var(--white)";
-                  welcomeEl.textContent = data.welcomeMessage;
-                  // Prepend inside home-left column to keep three-row grid intact
-                  const homeLeft = document.getElementById('home-left');
-                  if (homeLeft) homeLeft.insertBefore(welcomeEl, homeLeft.firstChild);
+              const welcomeTextEl = document.getElementById('app-bar-welcome-text');
+              if (data.welcomeMessage && welcomeTextEl) {
+                  welcomeTextEl.textContent = data.welcomeMessage;
+                  welcomeTextEl.style.display = 'block';
               }
 
               // Populate Event Info Modal details
@@ -1802,6 +1795,16 @@ function setImageZoneState(state) {
   document.getElementById('result-state').classList.toggle('active', state === 'result');
   document.getElementById('gen-status-bar').classList.toggle('active', state === 'generating');
   if (state !== 'result') document.getElementById('error-card').classList.remove('visible');
+
+  // Hide sticky footer completely in Filters lane, show in Groove Pop lane
+  const homeBottom = document.querySelector('.home-bottom');
+  if (homeBottom) {
+    if (activeCameraLane === 'filters') {
+      homeBottom.style.setProperty('display', 'none', 'important');
+    } else {
+      homeBottom.style.display = '';
+    }
+  }
 
   // Explicitly manage bottom bar display to guarantee "3 PARTY" disappears
   const bottomHome = document.getElementById('bottom-home');
@@ -3890,38 +3893,62 @@ function applySpecialEffect(ctx, w, h, type) {
   }
 }
 
-// Chroma-key out the grey-and-white transparent background grid pattern in frames
+// Chroma-key out the transparent center background in frames
 function keyOutCheckerboard(frameImg, targetW, targetH) {
   return new Promise((resolve) => {
+    // Limit processing resolution to max 512 for high performance and zero lockups
+    const maxDim = 512;
+    let w = targetW;
+    let h = targetH;
+    if (w > maxDim || h > maxDim) {
+      const ratio = Math.min(maxDim / w, maxDim / h);
+      w = Math.floor(w * ratio);
+      h = Math.floor(h * ratio);
+    }
+
     const offscreen = document.createElement('canvas');
-    offscreen.width = targetW;
-    offscreen.height = targetH;
+    offscreen.width = w;
+    offscreen.height = h;
     const ctx = offscreen.getContext('2d');
-    ctx.drawImage(frameImg, 0, 0, targetW, targetH);
+    ctx.drawImage(frameImg, 0, 0, w, h);
     
     try {
-      const imgData = ctx.getImageData(0, 0, targetW, targetH);
+      const imgData = ctx.getImageData(0, 0, w, h);
       const data = imgData.data;
       
       // Safety bounds (skip keying on outer 8% to preserve borders)
-      const minX = Math.floor(targetW * 0.08);
-      const maxX = Math.floor(targetW * 0.92);
-      const minY = Math.floor(targetH * 0.08);
-      const maxY = Math.floor(targetH * 0.92);
+      const minX = Math.floor(w * 0.08);
+      const maxX = Math.floor(w * 0.92);
+      const minY = Math.floor(h * 0.08);
+      const maxY = Math.floor(h * 0.92);
       
-      for (let y = 0; y < targetH; y++) {
-        for (let x = 0; x < targetW; x++) {
+      // Sample center pixel color
+      const centerIdx = (Math.floor(h / 2) * w + Math.floor(w / 2)) * 4;
+      const targetR = data[centerIdx];
+      const targetG = data[centerIdx + 1];
+      const targetB = data[centerIdx + 2];
+      
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
           if (x >= minX && x <= maxX && y >= minY && y <= maxY) {
-            const idx = (y * targetW + x) * 4;
+            const idx = (y * w + x) * 4;
             const r = data[idx];
             const g = data[idx + 1];
             const b = data[idx + 2];
             
-            // Check if neutral and bright (white or light grey checkerboard)
-            if (r >= 220 && g >= 220 && b >= 220) {
-              if (Math.abs(r - g) <= 8 && Math.abs(r - b) <= 8 && Math.abs(g - b) <= 8) {
-                data[idx + 3] = 0; // Transparent alpha
-              }
+            // 1. Check distance to center background color
+            const dist = Math.sqrt(
+              Math.pow(r - targetR, 2) +
+              Math.pow(g - targetG, 2) +
+              Math.pow(b - targetB, 2)
+            );
+            
+            // 2. Fallback to standard white/grey checkerboard pattern
+            const isWhite = r >= 235 && g >= 235 && b >= 235 && Math.abs(r - g) <= 5 && Math.abs(r - b) <= 5;
+            const isGrey = r >= 190 && r <= 215 && g >= 190 && g <= 215 && b >= 190 && b <= 215 && Math.abs(r - g) <= 5 && Math.abs(r - b) <= 5;
+            
+            if (dist < 40 || isWhite || isGrey) {
+              data[idx + 3] = 0; // Transparent alpha
             }
           }
         }
