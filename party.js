@@ -92,7 +92,7 @@ async function generateEventFrames(eventName, eventVenue, eventDate, bgColor, pr
         const res = await fetch(`${API_BASE}/generate-logo`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: promptText, size: '1024x1024' })
+            body: JSON.stringify({ prompt: promptText, size: '1024x1024', output_format: 'png' })
         });
         if (!res.ok) {
             const err = await res.json().catch(() => ({}));
@@ -104,16 +104,16 @@ async function generateEventFrames(eventName, eventVenue, eventDate, bgColor, pr
 
     const results = await Promise.all(framePromises);
 
-    // Upload each base64 to Firebase Storage
+    // Upload each base64 to Firebase Storage as image/png
     const uploadBase64ToStorage = async (base64Str, filename) => {
         const ref = storage.ref().child(`party_logos/${docId}/${filename}`);
-        const snapshot = await ref.putString(base64Str, 'base64', { contentType: 'image/jpeg' });
+        const snapshot = await ref.putString(base64Str, 'base64', { contentType: 'image/png' });
         return await snapshot.ref.getDownloadURL();
     };
 
     const urls = [];
     for (let i = 0; i < results.length; i++) {
-        const url = await uploadBase64ToStorage(results[i], `frame_${i + 1}.jpg`);
+        const url = await uploadBase64ToStorage(results[i], `frame_${i + 1}.png`);
         urls.push(url);
     }
     return urls;
