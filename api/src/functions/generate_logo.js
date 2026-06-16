@@ -33,8 +33,6 @@ app.http('generate-logo', {
           prompt,
           n: 1,
           size: size || '1024x1024',
-          quality: 'standard',
-          response_format: 'b64_json',
         }),
       });
 
@@ -45,11 +43,25 @@ app.http('generate-logo', {
       }
 
       const data = await response.json();
-      if (!data.data || !data.data[0] || !data.data[0].b64_json) {
+      if (!data.data || !data.data[0]) {
         throw new Error('Invalid response format from Azure OpenAI images service');
       }
 
-      const b64 = data.data[0].b64_json;
+      let b64 = '';
+      if (data.data[0].b64_json) {
+        b64 = data.data[0].b64_json;
+      } else if (data.data[0].url) {
+        // Fetch the image from URL and convert to base64
+        const imgRes = await fetch(data.data[0].url);
+        if (!imgRes.ok) {
+          throw new Error(`Failed to download generated image from URL: ${data.data[0].url}`);
+        }
+        const arrayBuffer = await imgRes.arrayBuffer();
+        b64 = Buffer.from(arrayBuffer).toString('base64');
+      } else {
+        throw new Error('No b64_json or url in Azure OpenAI response');
+      }
+
       return jsonResponse(200, { base64: b64 }, request);
     } catch (err) {
       context.error('generate-logo error:', err);

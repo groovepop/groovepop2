@@ -229,6 +229,13 @@ els.btnGenerate.addEventListener('click', async () => {
         
         els.shareUrl.value = finalUrl;
         document.getElementById('activation-key').value = randomKey;
+
+        const shareLink = document.getElementById('share-link');
+        if (shareLink) {
+            shareLink.href = finalUrl;
+            shareLink.textContent = finalUrl;
+            shareLink.style.display = 'inline-block';
+        }
         
         // 6. Generate QR Code
         els.qrcode.innerHTML = "";
@@ -277,4 +284,38 @@ els.btnReset.addEventListener('click', () => {
     uploadedImageUrl = null;
     els.uploadArea.querySelector('span').textContent = "Drag & Drop or Click to Upload";
     els.outputOverlay.style.display = 'none';
+    const shareLink = document.getElementById('share-link');
+    if (shareLink) {
+        shareLink.href = "#";
+        shareLink.textContent = "";
+        shareLink.style.display = 'none';
+    }
+});
+
+// Pre-fill form fields for easy developer testing
+function prefillForm() {
+    if (els.eventName) els.eventName.value = "Marcus's 40th Bash";
+    if (els.eventHost) els.eventHost.value = "Marcus & Friends";
+    
+    // Set date to tomorrow
+    if (els.eventDate) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const yyyy = tomorrow.getFullYear();
+        const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+        const dd = String(tomorrow.getDate()).padStart(2, '0');
+        els.eventDate.value = `${yyyy}-${mm}-${dd}`;
+    }
+    
+    if (els.eventTime) els.eventTime.value = "20:00";
+    if (els.eventVenue) els.eventVenue.value = "The Penthouse Lounge, 555 Skyline Blvd";
+    if (els.eventType) els.eventType.value = "birthday";
+    if (els.welcomeMessage) els.welcomeMessage.value = "Welcome to Marcus's 40th! Let's make it unforgettable!";
+    if (els.rsvpLink) els.rsvpLink.value = "https://groovepop.com/marcus40";
+    if (els.dressCode) els.dressCode.value = "Festive & Colorful";
+}
+
+// Run prefill on load
+document.addEventListener('DOMContentLoaded', () => {
+    prefillForm();
 });

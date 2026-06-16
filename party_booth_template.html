@@ -187,11 +187,11 @@
   #screen-home[data-state="generating"] #app-bar-right { display:none; }
   #screen-home[data-state="generating"] .app-bar-logo { display:none; }
   #screen-home[data-state="generating"] .app-bar-generating { display:flex !important; }
-  #screen-home[data-state="generating"] .bottom-home { display:none; }
+  #screen-home[data-state="generating"] .bottom-home { display:none !important; }
   #screen-home[data-state="generating"] .bottom-generating { display:flex; }
   #screen-home[data-state="result"] .home-content { grid-template-columns:1fr; }
   #screen-home[data-state="result"] .home-right { display:none; }
-  #screen-home[data-state="result"] .bottom-home { display:none; }
+  #screen-home[data-state="result"] .bottom-home { display:none !important; }
   #screen-home[data-state="result"] .bottom-result { display:grid; }
 
   /* ── SCREEN: PRINT ── */
@@ -1427,8 +1427,7 @@ async function randomizeGeneration() {
   const pool = (subjectCount === 'multiple' && STYLES_MULTI.length) ? STYLES_MULTI : STYLES;
   const filtered = pool.filter(s => s.subtheme !== 'Uncanny');
   const shuffled = shuffledPool(filtered);
-  selectedStyle = shuffled[0];
-  chosenVariant = null;
+  selectStyle(shuffled[0]);
   startGeneration();
 }
 
@@ -1438,8 +1437,7 @@ async function surpriseFromResult() {
   // Exclude current family, exclude Uncanny, then shuffle
   const filtered = pool.filter(s => s.subtheme !== 'Uncanny' && (!selectedStyle || s.family_key !== selectedStyle.family_key));
   const shuffled = shuffledPool(filtered);
-  selectedStyle = shuffled[0];
-  chosenVariant = null;
+  selectStyle(shuffled[0]);
   startGeneration();
 }
 
@@ -1565,8 +1563,9 @@ async function generateImage(caption, style) {
   }
 
   const fullPrompt = `${caption}\n\n---\n\n${chosen.prompt.map(l => `"${l}",`).join('\n')}`;
-  const base64Image = uploadedDataUrl.split(',')[1];
-  const mimeType = uploadedDataUrl.split(';')[0].split(':')[1] || 'image/jpeg';
+  const compressed = await resizeImage(uploadedDataUrl, 1024);
+  const base64Image = compressed.split(',')[1];
+  const mimeType = 'image/jpeg';
 
   const res = await fetch(`${API_BASE}/generate`, {
     method: 'POST',
@@ -1830,7 +1829,7 @@ async function autoUploadToCloudinary(imageDataUrl, style) {
           
           // Update prompt text on activation screen
           const promptText = document.getElementById('activation-prompt-text');
-          const nameText = (typeof data !== 'undefined' && data && data.eventName) ? ` for ${data.eventName.toUpperCase()}` : '';
+          const nameText = customEventName ? ` for ${customEventName.toUpperCase()}` : '';
           if (promptText) {
               if (photosTakenCount >= 10) {
                   promptText.textContent = `TRIAL ENDED: You've used all 10 trial generations. Enter your activation key to unlock${nameText}!`;
