@@ -56,6 +56,69 @@ const els = {
     btnCopy: document.getElementById('copy-btn')
 };
 
+// Helper to generate 6 custom event frames (3 decorative and 3 typographic)
+async function generateEventFrames(eventName, eventVenue, eventDate, bgColor, primaryColor, accentColor, eventType, docId) {
+    const list1Prompts = {
+        wedding: `A decorative photo frame border for "${eventName}" at ${eventVenue}. ${eventDate}. Bold graphic border design with ornamental corners and floral garland side tiles — the center is fully transparent. Romantic arch composition, delicate ornamental flourishes, elegant serif typography. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as accent colors. No photography, no faces. The frame text reads "${eventName}" at the top and "${eventVenue} · ${eventDate}" at the bottom.`,
+        corporate: `A decorative photo frame border for "${eventName}" at ${eventVenue}. ${eventDate}. Bold graphic border design with geometric grid corners and minimal repeating side tiles — the center is fully transparent. Architectural grid composition, clean sans-serif typography, forward-looking precision. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as accent colors. No photography, no faces. The frame text reads "${eventName}" at the top and "${eventVenue} · ${eventDate}" at the bottom.`,
+        birthday: `A decorative photo frame border for "${eventName}" at ${eventVenue}. ${eventDate}. Bold graphic border design with confetti burst corners and star pattern side tiles — the center is fully transparent. Playful expressive composition, festive bold typography, celebratory energy. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as accent colors. No photography, no faces. The frame text reads "${eventName}" at the top and "${eventVenue} · ${eventDate}" at the bottom.`,
+        festival: `A decorative photo frame border for "${eventName}" at ${eventVenue}. ${eventDate}. Bold graphic border design with folk art geometric corners and screen-print pattern side tiles — the center is fully transparent. Hand-crafted poster aesthetic, bold stacked typography, sun and landscape accent motifs. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as accent colors. No photography, no faces. The frame text reads "${eventName}" at the top and "${eventVenue} · ${eventDate}" at the bottom.`,
+        nightlife: `A decorative photo frame border for "${eventName}" at ${eventVenue}. ${eventDate}. Bold graphic border design with high contrast geometric corners and neon accent side tiles — the center is fully transparent. Cinematic bold composition, neon glow treatment, condensed typography with electric energy. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as accent colors. No photography, no faces. The frame text reads "${eventName}" at the top and "${eventVenue} · ${eventDate}" at the bottom.`
+    };
+
+    const list2Prompts = {
+        wedding: `A typographic photo frame border for "${eventName}" at ${eventVenue}. ${eventDate}. Thin elegant ruled lines forming the border, event name in large refined serif lettering across the top, venue and date in spaced small caps at the bottom, delicate corner monogram details — the center is fully transparent. Minimal and editorial, like a luxury invitation. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as accent colors. No photography, no faces.`,
+        corporate: `A typographic photo frame border for "${eventName}" at ${eventVenue}. ${eventDate}. Bold sans-serif event name as a thick header bar across the top, venue and date as a footer bar at the bottom, vertical ruled side borders with subtle tick marks — the center is fully transparent. Clean and architectural, like a conference credential. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as accent colors. No photography, no faces.`,
+        birthday: `A typographic photo frame border for "${eventName}" at ${eventVenue}. ${eventDate}. Bold playful oversized lettering repeated as a pattern along the side borders, event name as a thick celebratory header at the top, venue and date at the bottom — the center is fully transparent. Fun and loud, like a party banner. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as accent colors. No photography, no faces.`,
+        festival: `A typographic photo frame border for "${eventName}" at ${eventVenue}. ${eventDate}. Stacked bold condensed festival lettering as a header bar across the top, repeating event name text running vertically along both sides, venue and date as a footer bar — the center is fully transparent. Raw screen-print energy, like a festival wristband or backstage pass. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as accent colors. No photography, no faces.`,
+        nightlife: `A typographic photo frame border for "${eventName}" at ${eventVenue}. ${eventDate}. Glowing neon-style event name as a header bar across the top, repeating event name text running vertically along both sides in condensed bold type, venue and date at the bottom — the center is fully transparent. Electric and cinematic, like a club wristband or VIP pass. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as accent colors. No photography, no faces.`
+    };
+
+    const basePrompt1 = list1Prompts[eventType] || list1Prompts.wedding;
+    const basePrompt2 = list2Prompts[eventType] || list2Prompts.wedding;
+
+    // Generate 6 frames: 3 decorative (List 1) and 3 typographic (List 2)
+    const framePrompts = [
+        basePrompt1 + ", design variation A",
+        basePrompt1 + ", design variation B",
+        basePrompt1 + ", design variation C",
+        basePrompt2 + ", design variation A",
+        basePrompt2 + ", design variation B",
+        basePrompt2 + ", design variation C"
+    ];
+
+    // Generate 6 frames in parallel
+    const framePromises = framePrompts.map(async (promptText, i) => {
+        const res = await fetch(`${API_BASE}/generate-logo`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: promptText, size: '1024x1024' })
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || `Failed generating frame ${i + 1}`);
+        }
+        const data = await res.json();
+        return data.base64;
+    });
+
+    const results = await Promise.all(framePromises);
+
+    // Upload each base64 to Firebase Storage
+    const uploadBase64ToStorage = async (base64Str, filename) => {
+        const ref = storage.ref().child(`party_logos/${docId}/${filename}`);
+        const snapshot = await ref.putString(base64Str, 'base64', { contentType: 'image/jpeg' });
+        return await snapshot.ref.getDownloadURL();
+    };
+
+    const urls = [];
+    for (let i = 0; i < results.length; i++) {
+        const url = await uploadBase64ToStorage(results[i], `frame_${i + 1}.jpg`);
+        urls.push(url);
+    }
+    return urls;
+}
+
 // Helper to generate 6 custom event logos using gpt-image-2 deployment
 async function generateEventLogos(eventName, eventVenue, eventDate, eventTime, bgColor, primaryColor, accentColor, eventType, docId) {
     const prompts = {
@@ -162,6 +225,7 @@ els.btnGenerate.addEventListener('click', async () => {
 
         // 2. Generate 6 Event Logos
         let logoUrls = [];
+        let frameUrls = [];
         let finalBgColor = els.bgColor.value;
         if (db && storage) {
             els.btnGenerate.textContent = "Designing Event Logos...";
@@ -189,6 +253,24 @@ els.btnGenerate.addEventListener('click', async () => {
                 }
             } catch (logoErr) {
                 console.error("AI Logo Generation failed, proceeding without custom logos:", logoErr);
+            }
+
+            // 2b. Generate 6 Event Frames (after logos complete, to respect concurrency limit)
+            els.btnGenerate.textContent = "Designing Event Frames...";
+            try {
+                frameUrls = await generateEventFrames(
+                    els.eventName.value,
+                    els.eventVenue.value,
+                    els.eventDate.value,
+                    finalBgColor,
+                    els.primaryColor.value,
+                    els.accentColor.value,
+                    els.eventType.value,
+                    docId
+                );
+                console.log("Generated frame URLs:", frameUrls);
+            } catch (frameErr) {
+                console.error("AI Frame Generation failed:", frameErr);
             }
         }
 
@@ -218,6 +300,7 @@ els.btnGenerate.addEventListener('click', async () => {
             },
             logoUrl: uploadedImageUrl,
             logoUrls: logoUrls,
+            frameUrls: frameUrls,
             pendingKey: randomKey,
             isActive: false,
             createdAt: new Date()
