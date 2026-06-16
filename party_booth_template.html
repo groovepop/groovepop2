@@ -299,7 +299,6 @@
   .gen-logo-inner img {
     position:absolute; height:72px; width:auto; max-width:100%;
     object-fit:contain; display:block; transition:none;
-    mix-blend-mode:screen;
   }
   .gen-logo-inner .layer-a { opacity:1; z-index:2; }
   .gen-logo-inner .layer-b { opacity:0; z-index:1; }
@@ -571,13 +570,20 @@
 <!-- ══ SCREEN: HOME — three-state grid ══ -->
 <section class="screen" id="screen-home" data-state="upload">
 
-  <div id="home-alert-container" onclick="goTo('activation')" style="background: var(--gold); color: var(--black); font-family: 'Bebas Neue', sans-serif; font-size: 0.72rem; font-weight: bold; letter-spacing: 0.15em; text-align: center; padding: 4px 12px; cursor: pointer; display: none; z-index: 10; transition: background 0.2s; line-height: 1.2;">⚡ ACTIVATE YOUR PARTY</div>
+  <div id="home-alert-container" onclick="goTo('activation')" style="background: var(--gold); color: var(--black); font-family: 'Bebas Neue', sans-serif; font-size: 0.72rem; font-weight: bold; letter-spacing: 0.15em; text-align: center; padding: 4px 12px; cursor: pointer; display: none; z-index: 10; transition: background 0.2s; line-height: 1.2; align-items: center; justify-content: center; gap: 4px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; flex-shrink: 0;">
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="15" cy="9" r="2.5" />
+      <path d="m13.2 10.8-5.7 5.7M9 16.5l1.5 1.5M7.5 15l1.5 1.5" />
+    </svg>
+    ACTIVATE YOUR PARTY
+  </div>
 
   <!-- APP BAR -->
   <div class="app-bar">
     <!-- Event logo/name — injected dynamically from Firestore config -->
     <div class="app-bar-logo" id="app-bar-logo-wrap">
-      <img id="app-bar-logo-img" src="" alt="" style="height:64px;width:auto;max-width:360px;object-fit:contain;display:none;mix-blend-mode:screen;">
+      <img id="app-bar-logo-img" src="" alt="" style="height:64px;width:auto;max-width:360px;object-fit:contain;display:none;">
       <span id="app-bar-logo-text" style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.08em;color:var(--white);display:none;"></span>
     </div>
     <div class="app-bar-right" id="app-bar-right" style="flex-shrink:0;margin-left:auto;gap:0.5rem;">
@@ -1006,8 +1012,8 @@ async function initApp() {
               const alertBanner = document.getElementById('home-alert-container');
               if (alertBanner) {
                   if (!isActiveEvent) {
-                      alertBanner.style.display = 'block';
-                      alertBanner.innerHTML = `⚡ ACTIVATE YOUR PARTY`;
+                      alertBanner.style.display = 'flex';
+                      alertBanner.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0;margin-right:4px;"><circle cx="12" cy="12" r="10" /><circle cx="15" cy="9" r="2.5" /><path d="m13.2 10.8-5.7 5.7M9 16.5l1.5 1.5M7.5 15l1.5 1.5" /></svg>ACTIVATE YOUR PARTY`;
                   } else {
                       alertBanner.style.display = 'none';
                   }
@@ -1852,7 +1858,7 @@ async function autoUploadToCloudinary(imageDataUrl, style) {
           // Update the trial alert banner
           const alertBanner = document.getElementById('home-alert-container');
           if (alertBanner && !isActiveEvent) {
-              alertBanner.innerHTML = `⚡ ACTIVATE YOUR PARTY`;
+              alertBanner.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0;margin-right:4px;"><circle cx="12" cy="12" r="10" /><circle cx="15" cy="9" r="2.5" /><path d="m13.2 10.8-5.7 5.7M9 16.5l1.5 1.5M7.5 15l1.5 1.5" /></svg>ACTIVATE YOUR PARTY`;
           }
           
           // Update prompt text on activation screen
@@ -2941,9 +2947,12 @@ function endLogoTransformation(finalLogoIndex) {
         const sourceArray = customLogoUrls;
         const shownSrc = topLayer ? topLayer.src : sourceArray[finalLogoIndex];
         if (barImg) {
+          barImg.onload = () => { barImg.style.opacity = '1'; };
           barImg.style.opacity = '0';
           barImg.src = shownSrc;
-          barImg.onload = () => { barImg.style.opacity = '1'; };
+          if (barImg.complete) {
+            barImg.style.opacity = '1';
+          }
           barImg.style.display = 'block';
         }
         const barText = document.getElementById('app-bar-logo-text');
@@ -2966,9 +2975,12 @@ function endLogoTransformation(finalLogoIndex) {
         const sourceArray = (customLogoUrls && customLogoUrls.length > 0) ? customLogoUrls : GROOVE_POP_LOGOS;
         const shownSrc = topLayer ? topLayer.src : sourceArray[finalLogoIndex];
         if (barImg) {
+          barImg.onload = () => { barImg.style.opacity = '1'; };
           barImg.style.opacity = '0';
           barImg.src = shownSrc;
-          barImg.onload = () => { barImg.style.opacity = '1'; };
+          if (barImg.complete) {
+            barImg.style.opacity = '1';
+          }
           barImg.style.display = 'block';
         }
         const barText = document.getElementById('app-bar-logo-text');

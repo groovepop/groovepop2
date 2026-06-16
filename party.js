@@ -46,8 +46,6 @@ const els = {
     bgColor: document.getElementById('bg-color'),
     primaryColor: document.getElementById('primary-color'),
     accentColor: document.getElementById('accent-color'),
-    logoUpload: document.getElementById('logo-upload'),
-    uploadArea: document.getElementById('upload-area'),
     
     // Output Modal
     outputOverlay: document.getElementById('output-overlay'),
@@ -58,41 +56,14 @@ const els = {
     btnCopy: document.getElementById('copy-btn')
 };
 
-// Image Upload Handling
-els.uploadArea.addEventListener('click', () => els.logoUpload.click());
-els.logoUpload.addEventListener('change', (e) => {
-    if (e.target.files && e.target.files[0]) {
-        uploadedImageFile = e.target.files[0];
-        els.uploadArea.querySelector('span').textContent = uploadedImageFile.name;
-    }
-});
-
-// Drag and drop support
-els.uploadArea.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    els.uploadArea.style.borderColor = "var(--secondary)";
-});
-els.uploadArea.addEventListener('dragleave', (e) => {
-    e.preventDefault();
-    els.uploadArea.style.borderColor = "var(--glass-border)";
-});
-els.uploadArea.addEventListener('drop', (e) => {
-    e.preventDefault();
-    els.uploadArea.style.borderColor = "var(--glass-border)";
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-        els.logoUpload.files = e.dataTransfer.files;
-        els.logoUpload.dispatchEvent(new Event('change'));
-    }
-});
-
 // Helper to generate 6 custom event logos using gpt-image-2 deployment
 async function generateEventLogos(eventName, eventVenue, eventDate, eventTime, bgColor, primaryColor, accentColor, eventType, docId) {
     const prompts = {
-        wedding: `An elegant event logo for "${eventName}" at ${eventVenue}. ${eventDate}. Refined serif typography with a delicate ornamental flourish, arch or wreath composition. Color palette: solid black background, ${primaryColor} and ${accentColor} as primary brand colors. No photography, no illustration. Flat vector aesthetic, would work on printed wedding stationery or a venue screen.`,
-        corporate: `A clean, minimal event logo for "${eventName}" at ${eventVenue}. ${eventDate}. Professional typographic design, bold sans-serif lettering, geometric accent mark or monogram. Color palette: solid black background, ${primaryColor} and ${accentColor} as primary brand colors. No photography, no illustration. Flat vector aesthetic, would work on a printed badge or event backdrop.`,
-        birthday: `A bold, celebratory event logo for "${eventName}" at ${eventVenue}. ${eventDate}. Playful expressive lettering, festive graphic accent — star, confetti burst, or balloon motif. Color palette: solid black background, ${primaryColor} and ${accentColor} as primary brand colors. No photography, no illustration. Flat vector aesthetic, would work on a party banner or phone screen.`,
-        festival: `A hand-crafted event logo for "${eventName}" at ${eventVenue}. ${eventDate}. Bold stacked typography, screen-print poster aesthetic, sun or landscape graphic accent. Color palette: solid black background, ${primaryColor} and ${accentColor} as primary brand colors. No photography, no illustration. Flat vector aesthetic, would work on a festival wristband or wooden sign.`,
-        nightlife: `A striking event logo for "${eventName}" at ${eventVenue}. ${eventDate}. Bold condensed typography, neon glow treatment or high-contrast graphic accent. Color palette: solid black background, ${primaryColor} and ${accentColor} as primary brand colors. No photography, no illustration. Flat vector aesthetic, would work projected on a club wall or printed on a wristband.`
+        wedding: `An elegant event logo for "${eventName}" at ${eventVenue}. ${eventDate}. Refined serif typography with a delicate ornamental flourish, arch or wreath composition. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as primary brand colors. No photography, no illustration. Flat vector aesthetic, would work on printed wedding stationery or a venue screen.`,
+        corporate: `A clean, minimal event logo for "${eventName}" at ${eventVenue}. ${eventDate}. Professional typographic design, bold sans-serif lettering, geometric accent mark or monogram. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as primary brand colors. No photography, no illustration. Flat vector aesthetic, would work on a printed badge or event backdrop.`,
+        birthday: `A bold, celebratory event logo for "${eventName}" at ${eventVenue}. ${eventDate}. Playful expressive lettering, festive graphic accent — star, confetti burst, or balloon motif. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as primary brand colors. No photography, no illustration. Flat vector aesthetic, would work on a party banner or phone screen.`,
+        festival: `A hand-crafted event logo for "${eventName}" at ${eventVenue}. ${eventDate}. Bold stacked typography, screen-print poster aesthetic, sun or landscape graphic accent. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as primary brand colors. No photography, no illustration. Flat vector aesthetic, would work on a festival wristband or wooden sign.`,
+        nightlife: `A striking event logo for "${eventName}" at ${eventVenue}. ${eventDate}. Bold condensed typography, neon glow treatment or high-contrast graphic accent. Color palette: ${bgColor} background, ${primaryColor} and ${accentColor} as primary brand colors. No photography, no illustration. Flat vector aesthetic, would work projected on a club wall or printed on a wristband.`
     };
     
     const basePrompt = prompts[eventType] || prompts.wedding;
@@ -126,7 +97,34 @@ async function generateEventLogos(eventName, eventVenue, eventDate, eventTime, b
         const url = await uploadBase64ToStorage(results[i], `logo_${i + 1}.jpg`);
         urls.push(url);
     }
-    return urls;
+    return { urls, base64s: results };
+}
+
+// Helper to extract the actual background color of the generated logo from its corner pixel
+function getCornerColor(base64Str) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = 10;
+                canvas.height = 10;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, 10, 10);
+                const data = ctx.getImageData(1, 1, 1, 1).data;
+                const r = data[0];
+                const g = data[1];
+                const b = data[2];
+                const hex = "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+                resolve(hex);
+            } catch (e) {
+                console.warn("[GP] Canvas extraction failed:", e);
+                resolve(null);
+            }
+        };
+        img.onerror = () => resolve(null);
+        img.src = "data:image/jpeg;base64," + base64Str;
+    });
 }
 
 // Generate PWA Prototype
@@ -164,10 +162,11 @@ els.btnGenerate.addEventListener('click', async () => {
 
         // 2. Generate 6 Event Logos
         let logoUrls = [];
+        let finalBgColor = els.bgColor.value;
         if (db && storage) {
             els.btnGenerate.textContent = "Designing Event Logos...";
             try {
-                logoUrls = await generateEventLogos(
+                const results = await generateEventLogos(
                     els.eventName.value,
                     els.eventVenue.value,
                     els.eventDate.value,
@@ -178,6 +177,16 @@ els.btnGenerate.addEventListener('click', async () => {
                     els.eventType.value,
                     docId
                 );
+                logoUrls = results.urls;
+                
+                // Extract actual corner color of the first generated logo
+                if (results.base64s && results.base64s.length > 0) {
+                    const corner = await getCornerColor(results.base64s[0]);
+                    if (corner) {
+                        finalBgColor = corner;
+                        console.log("Extracted logo background color:", finalBgColor);
+                    }
+                }
             } catch (logoErr) {
                 console.error("AI Logo Generation failed, proceeding without custom logos:", logoErr);
             }
@@ -203,7 +212,7 @@ els.btnGenerate.addEventListener('click', async () => {
             rsvpLink: els.rsvpLink.value,
             dressCode: els.dressCode.value,
             colors: {
-                bg: els.bgColor.value,
+                bg: finalBgColor,
                 text: els.primaryColor.value,
                 accent: els.accentColor.value
             },
@@ -282,7 +291,6 @@ els.btnReset.addEventListener('click', () => {
     document.getElementById('party-form').reset();
     uploadedImageFile = null;
     uploadedImageUrl = null;
-    els.uploadArea.querySelector('span').textContent = "Drag & Drop or Click to Upload";
     els.outputOverlay.style.display = 'none';
     const shareLink = document.getElementById('share-link');
     if (shareLink) {
