@@ -1015,14 +1015,6 @@
             <button class="btn-capture" id="filters-btn-capture" onclick="capturePhoto()" style="width: 76px; height: 76px; border: 4px solid var(--white); border-radius: 50%; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.1s; outline: none;">
               <div style="width: 58px; height: 58px; background: var(--white); border-radius: 50%;"></div>
             </button>
-            
-            <!-- Choose file fallback -->
-            <div class="upload-unified" onclick="document.getElementById('selfie-input').click()" style="display: flex; margin: 6px 0; width: 100%; border-radius: 4px; border: 1px dashed var(--border); background: var(--surface); cursor: pointer;">
-              <div class="upload-opt" style="width: 100%; display: flex; flex-direction: row; gap: 8px; justify-content: center; align-items: center; padding: 10px 0;">
-                <div class="upload-icon" style="width:24px; height:24px; border:none; display:flex; align-items:center; justify-content:center;"><svg viewBox="0 0 24 24" style="width:14px; height:14px;"><circle cx="12" cy="12" r="3"/><path d="M6.343 6.343a8 8 0 1011.314 0M12 2v4"/></svg></div>
-                <span class="upload-hint" style="font-size:0.65rem; color:var(--muted); font-weight:600; letter-spacing:0.08em; text-transform:uppercase;">OR CHOOSE PHOTO FILE</span>
-              </div>
-            </div>
           </div>
 
           <!-- Scrollable area for filters & frames -->
@@ -1095,14 +1087,6 @@
             <button class="btn-capture" id="gp-btn-capture" onclick="capturePhoto()" style="width: 76px; height: 76px; border: 4px solid var(--white); border-radius: 50%; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.1s; outline: none;">
               <div style="width: 58px; height: 58px; background: var(--white); border-radius: 50%;"></div>
             </button>
-            
-            <!-- Choose file fallback -->
-            <div class="upload-unified" onclick="document.getElementById('selfie-input').click()" style="display: flex; margin: 6px 0; width: 100%; border-radius: 4px; border: 1px dashed var(--border); background: var(--surface); cursor: pointer;">
-              <div class="upload-opt" style="width: 100%; display: flex; flex-direction: row; gap: 8px; justify-content: center; align-items: center; padding: 10px 0;">
-                <div class="upload-icon" style="width:24px; height:24px; border:none; display:flex; align-items:center; justify-content:center;"><svg viewBox="0 0 24 24" style="width:14px; height:14px;"><circle cx="12" cy="12" r="3"/><path d="M6.343 6.343a8 8 0 1011.314 0M12 2v4"/></svg></div>
-                <span class="upload-hint" style="font-size:0.65rem; color:var(--muted); font-weight:600; letter-spacing:0.08em; text-transform:uppercase;">OR CHOOSE PHOTO FILE</span>
-              </div>
-            </div>
           </div>
 
           <!-- Style Picker & Transform controls (always shown, but adapt behavior) -->
@@ -4568,8 +4552,6 @@ function captureGPPhoto() {
 }
 
 // Backward compatibility aliases
-function captureGPPhoto() { capturePhoto(); }
-function captureFiltersPhoto() { capturePhoto(); }
 function retakeFiltersPhoto() { resetPhoto(); }
 
 
