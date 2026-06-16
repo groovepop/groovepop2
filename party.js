@@ -87,12 +87,11 @@ async function generateEventFrames(eventName, eventVenue, eventDate, bgColor, pr
         basePrompt2 + ", design variation C"
     ];
 
-    // Generate 6 frames in parallel
     const framePromises = framePrompts.map(async (promptText, i) => {
         const res = await fetch(`${API_BASE}/generate-logo`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: promptText, size: '1024x1024', output_format: 'png' })
+            body: JSON.stringify({ prompt: promptText, size: '1024x1024' })
         });
         if (!res.ok) {
             const err = await res.json().catch(() => ({}));
