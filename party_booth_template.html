@@ -18,7 +18,7 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --black: #0a0a0a; --white: #f5f2ec; --gold: #c8a84b; --gold-light: #e8cc7a;
+    --black: #0a0a0a; --white: #f5f2ec; --gold: #a00ae6; --gold-light: #c24cf6;
     --rust: #c4522a; --muted: #6b6560; --surface: #1a1714; --surface2: #221f1b;
     --border: rgba(200,168,75,0.2); --border-dim: rgba(200,168,75,0.1);
   }
@@ -577,6 +577,7 @@
     <!-- Event logo/name — injected dynamically from Firestore config -->
     <div class="app-bar-logo" id="app-bar-logo-wrap">
       <img id="app-bar-logo-img" src="" alt="" style="height:32px;width:auto;max-width:180px;object-fit:contain;display:none;">
+      <span id="app-bar-logo-text" style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.08em;color:var(--white);display:none;"></span>
     </div>
     <div class="app-bar-right" id="app-bar-right" style="flex-shrink:0;margin-left:auto;gap:0.5rem;">
       <button class="pill-btn" id="btn-randomize" disabled onclick="randomizeGeneration()">⚡ SURPRISE ME</button>
@@ -647,6 +648,7 @@
       <div class="error-card" id="error-card">
         <div class="error-card-icon"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>
         <div class="error-card-msg" id="error-card-msg"></div>
+        <div id="error-card-debug" style="font-size:0.55rem; color:#e8896a; opacity:0.6; font-family:monospace; word-break:break-all; margin-top:0.3rem; line-height:1.2; display:none;"></div>
         <button class="error-card-retry" onclick="startGeneration()">TRY THAT AGAIN</button>
       </div>
 
@@ -1056,15 +1058,20 @@ async function initApp() {
               }
               // Update branding
               const barImg = document.getElementById('app-bar-logo-img');
-              const barLogo = document.getElementById('app-bar-logo-wrap');
-              if (barImg) {
-                  if (data.logoUrl) {
+              const barText = document.getElementById('app-bar-logo-text');
+              if (barImg && barText) {
+                  if (data.logoUrls && data.logoUrls.length > 0) {
+                      barImg.src = data.logoUrls[0];
+                      barImg.style.display = 'block';
+                      barText.style.display = 'none';
+                  } else if (data.logoUrl) {
                       barImg.src = data.logoUrl;
                       barImg.style.display = 'block';
+                      barText.style.display = 'none';
                   } else if (data.eventName) {
-                      if (barLogo) {
-                          barLogo.innerHTML = `<span style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.08em;color:var(--white);">${data.eventName.toUpperCase()}</span>`;
-                      }
+                      barText.textContent = data.eventName.toUpperCase();
+                      barText.style.display = 'block';
+                      barImg.style.display = 'none';
                   }
               }
 
@@ -1458,6 +1465,11 @@ async function startGeneration() {
   document.getElementById('gen-bar-style-label').textContent = `${selectedStyle.family_label} · ${selectedStyle.subtheme}`;
   setImageZoneState('generating');
   document.getElementById('error-card').classList.remove('visible');
+  const debugEl = document.getElementById('error-card-debug');
+  if (debugEl) {
+    debugEl.textContent = '';
+    debugEl.style.display = 'none';
+  }
   startWaitScreen();
   startLogoTransformation();
 
@@ -1510,6 +1522,14 @@ async function startGeneration() {
     else msg = "Something went wrong. Please try again.";
     document.getElementById('result-img').src = '';
     document.getElementById('error-card-msg').textContent = msg;
+    
+    // Set raw error details on screen for easy debugging
+    const debugEl = document.getElementById('error-card-debug');
+    if (debugEl) {
+      debugEl.textContent = `Error details: ${raw}`;
+      debugEl.style.display = 'block';
+    }
+
     setImageZoneState('result');
     document.getElementById('error-card').classList.add('visible');
   }
@@ -1520,12 +1540,18 @@ function cancelGeneration() {
   clearWaitIntervals();
   clearLogoIntervals();
   const zone = document.getElementById('gen-logo-zone');
-      if (zone) zone.classList.remove('active', 'logo-final', 'fx-hue','fx-holo','fx-glitch','fx-pixel','fx-heat','fx-glow','fx-grain');
+  if (zone) zone.classList.remove('active', 'logo-final', 'fx-hue','fx-holo','fx-glitch','fx-pixel','fx-heat','fx-glow','fx-grain');
   const barLogo = document.getElementById('app-bar-logo-wrap');
   if (barLogo) barLogo.classList.remove('hidden');
   setImageZoneState('upload');
   if (uploadedDataUrl) showUploadedPreview();
   updateGenerateButton();
+  
+  const debugEl = document.getElementById('error-card-debug');
+  if (debugEl) {
+    debugEl.textContent = '';
+    debugEl.style.display = 'none';
+  }
 }
 
 function startOver() { resetPhoto(); }
@@ -2769,12 +2795,10 @@ function startLogoTransformation() {
   // Hide app bar logo
   if (barLogo) barLogo.classList.add('hidden');
 
-  // Pick a random effect for this generation run
+  // Revert to the logo sequence in app.html: slow fade with color shifts (fx-hue) and scan line
   zone.classList.remove('logo-cycling', 'logo-static',
     'fx-hue','fx-holo','fx-glitch','fx-pixel','fx-heat','fx-glow','fx-grain');
-  const FX_EFFECTS = ['fx-hue','fx-holo','fx-glitch','fx-pixel','fx-heat','fx-glow','fx-grain'];
-  zone.classList.add(FX_EFFECTS[Math.floor(Math.random() * FX_EFFECTS.length)]);
-  zone.classList.add('active');
+  zone.classList.add('fx-hue', 'active');
 
   if (customLogoUrls && customLogoUrls.length > 0) {
     // Let it fall through to run the swapping sequence using customLogoUrls!
@@ -2912,19 +2936,30 @@ function endLogoTransformation(finalLogoIndex) {
       
       // Restore bar branding
       if (customLogoUrls && customLogoUrls.length > 0) {
+        const sourceArray = customLogoUrls;
+        const shownSrc = topLayer ? topLayer.src : sourceArray[finalLogoIndex];
         if (barImg) {
-          barImg.src = customLogoUrls[0];
+          barImg.style.opacity = '0';
+          barImg.src = shownSrc;
+          barImg.onload = () => { barImg.style.opacity = '1'; };
           barImg.style.display = 'block';
         }
+        const barText = document.getElementById('app-bar-logo-text');
+        if (barText) barText.style.display = 'none';
       } else if (customLogoUrl) {
         if (barImg) {
           barImg.src = customLogoUrl;
           barImg.style.display = 'block';
         }
+        const barText = document.getElementById('app-bar-logo-text');
+        if (barText) barText.style.display = 'none';
       } else if (customEventName) {
-        if (barLogo) {
-          barLogo.innerHTML = `<span style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.08em;color:var(--white);">${customEventName.toUpperCase()}</span>`;
+        const barText = document.getElementById('app-bar-logo-text');
+        if (barText) {
+          barText.textContent = customEventName.toUpperCase();
+          barText.style.display = 'block';
         }
+        if (barImg) barImg.style.display = 'none';
       } else {
         const sourceArray = (customLogoUrls && customLogoUrls.length > 0) ? customLogoUrls : GROOVE_POP_LOGOS;
         const shownSrc = topLayer ? topLayer.src : sourceArray[finalLogoIndex];
@@ -2932,7 +2967,10 @@ function endLogoTransformation(finalLogoIndex) {
           barImg.style.opacity = '0';
           barImg.src = shownSrc;
           barImg.onload = () => { barImg.style.opacity = '1'; };
+          barImg.style.display = 'block';
         }
+        const barText = document.getElementById('app-bar-logo-text');
+        if (barText) barText.style.display = 'none';
       }
       if (barLogo) barLogo.classList.remove('hidden');
     }, 400);

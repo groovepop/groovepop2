@@ -102,7 +102,7 @@ async function generateEventLogos(eventName, eventVenue, eventDate, eventTime, b
         const res = await fetch(`${API_BASE}/generate-logo`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: basePrompt })
+            body: JSON.stringify({ prompt: basePrompt, size: '1792x1024' })
         });
         if (!res.ok) {
             const err = await res.json().catch(() => ({}));
