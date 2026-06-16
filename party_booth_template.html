@@ -299,6 +299,7 @@
   .gen-logo-inner img {
     position:absolute; height:72px; width:auto; max-width:100%;
     object-fit:contain; display:block; transition:none;
+    mix-blend-mode:screen;
   }
   .gen-logo-inner .layer-a { opacity:1; z-index:2; }
   .gen-logo-inner .layer-b { opacity:0; z-index:1; }
@@ -576,7 +577,7 @@
   <div class="app-bar">
     <!-- Event logo/name — injected dynamically from Firestore config -->
     <div class="app-bar-logo" id="app-bar-logo-wrap">
-      <img id="app-bar-logo-img" src="" alt="" style="height:32px;width:auto;max-width:180px;object-fit:contain;display:none;">
+      <img id="app-bar-logo-img" src="" alt="" style="height:64px;width:auto;max-width:360px;object-fit:contain;display:none;mix-blend-mode:screen;">
       <span id="app-bar-logo-text" style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.08em;color:var(--white);display:none;"></span>
     </div>
     <div class="app-bar-right" id="app-bar-right" style="flex-shrink:0;margin-left:auto;gap:0.5rem;">
@@ -632,6 +633,7 @@
       <!-- Result state — generated image + inset thumbnail -->
       <div class="result-state" id="result-state">
         <img class="result-zone-img" id="result-img" src="" alt="Generated image">
+        <img class="result-thumb" id="result-thumb" style="display:none;" src="" alt="">
       </div>
 
       <!-- Status bar -->
