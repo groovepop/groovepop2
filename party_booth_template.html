@@ -37,7 +37,7 @@
   @keyframes pulse-dot { 0%,80%,100%{opacity:.2;transform:scale(.8)} 40%{opacity:1;transform:scale(1.2)} }
 
   /* ── APP BAR ── */
-  .app-bar { width:100%; padding:0.875rem 1.25rem; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--black); z-index:20; flex-shrink:0; }
+  .app-bar { width:100%; padding:0.6rem 1rem; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--black); z-index:20; flex-shrink:0; }
   .app-bar-right { display:flex; align-items:center; gap:0.5rem; }
 
   /* ── BACK BTN ── */
@@ -281,6 +281,8 @@
   /* ── APP BAR LOGO ── */
   .app-bar-logo { flex-shrink:0; transition:opacity 0.3s ease; }
   .app-bar-logo.hidden { opacity:0; pointer-events:none; }
+  .app-bar-logo.hidden ~ #app-bar-welcome-wrap { opacity:0; pointer-events:none; }
+  #screen-home[data-state="generating"] #app-bar-welcome-wrap { display:none !important; }
 
   /* ── GENERATION LOGO ZONE — 7 randomised effects ── */
   .gen-logo-zone {
@@ -956,13 +958,15 @@
   <!-- APP BAR -->
   <div class="app-bar">
     <!-- Event logo/name — injected dynamically from Firestore config -->
-    <div class="app-bar-logo" id="app-bar-logo-wrap" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: 64px;">
-      <img id="app-bar-logo-img" src="" alt="" style="height:64px;width:auto;max-width:360px;object-fit:contain;display:none;">
-      <span id="app-bar-logo-text" style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.08em;color:var(--white);display:none;line-height:1.1;"></span>
-      <span id="app-bar-welcome-text" style="font-family:'DM Sans',sans-serif;font-size:0.75rem;font-style:italic;color:var(--muted);display:none;margin-top:2px;line-height:1;"></span>
+    <div class="app-bar-logo" id="app-bar-logo-wrap" style="display: flex; align-items: center; justify-content: flex-start; height: 38px; flex-shrink: 0;">
+      <img id="app-bar-logo-img" src="" alt="" style="height:36px;width:auto;max-width:140px;object-fit:contain;display:none;">
+      <span id="app-bar-logo-text" style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.08em;color:var(--white);display:none;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></span>
     </div>
-    <div class="app-bar-right" id="app-bar-right" style="flex-shrink:0;margin-left:auto;gap:0.5rem;">
-      <button class="pill-btn" id="btn-randomize" disabled onclick="randomizeGeneration()">⚡ SURPRISE ME</button>
+    <!-- Custom welcome greeting integrated inline -->
+    <div class="app-bar-center" id="app-bar-welcome-wrap" style="flex: 1; min-width: 0; display: flex; justify-content: center; align-items: center; padding: 0 8px; overflow: hidden; text-align: center;">
+      <span id="app-bar-welcome-text" style="font-family:'DM Sans',sans-serif;font-size:0.72rem;font-style:italic;color:var(--muted);display:none;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;"></span>
+    </div>
+    <div class="app-bar-right" id="app-bar-right" style="flex-shrink:0;margin-left:auto;display:flex;align-items:center;gap:0.5rem;">
       <button class="pill-btn" id="btn-info" onclick="openInfoModal()" style="display:none;">INFO</button>
       <button class="pill-btn" id="btn-install" onclick="showInstallBanner()" style="display:none;" title="Add to home screen">⊕ INSTALL</button>
       <button class="pill-btn" id="btn-gallery" onclick="drawerGoGallery()">GALLERY</button>
@@ -980,167 +984,179 @@
     <!-- LEFT: image zone -->
     <div class="home-left" id="home-left" style="display: flex; flex-direction: column; overflow: hidden; min-height: 0; flex: 1; width: 100%;">
 
-      <!-- Unified Square Viewfinder (1:1 aspect ratio) at the Top -->
-      <div class="viewfinder-container">
-        <div class="viewfinder-wrap">
-          <!-- Live video feed (used for both lanes) -->
-          <video class="viewfinder-video" id="filters-video" autoplay playsinline muted></video>
-          
-          <!-- Hidden canvas for capturing & filters (used for both lanes) -->
-          <canvas class="viewfinder-canvas" id="filters-canvas-preview"></canvas>
-          
-          <!-- Image preview (captured selfie / filtered snapshot / upload preview) -->
-          <img id="unified-preview-img" class="viewfinder-preview-img" alt="" style="display: none;">
-          
-          <!-- Frame overlay (for Filters mode) -->
-          <img id="filters-frame-overlay" class="viewfinder-frame-overlay" alt="" style="display: none;">
-          
-          <!-- GP Generating State Overlay inside viewfinder -->
-          <div class="generating-state" id="generating-state" style="display: none; position: absolute; inset: 0; z-index: 3;">
-            <img class="gen-zone-img" id="gen-zone-img" src="" alt="" style="width: 100%; height: 100%; object-fit: cover;">
-            <div class="gen-zone-overlay" style="position: absolute; inset: 0;">
-              <div class="gen-grid-lines" id="gen-grid"></div>
-              <div class="gen-scan"></div>
-              <div class="gen-static"></div>
-              <div class="gen-brackets">
-                <div class="gen-bracket tl"></div><div class="gen-bracket tr"></div>
-                <div class="gen-bracket bl"></div><div class="gen-bracket br"></div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Result State (inside viewfinder) -->
-          <div class="result-state" id="result-state" style="display: none; position: absolute; inset: 0; z-index: 4;">
-            <img class="result-zone-img" id="result-img" src="" alt="Generated image" style="width: 100%; height: 100%; object-fit: cover;">
-            <img class="result-thumb" id="result-thumb" style="display: none;" src="" alt="">
-          </div>
-
-          <!-- Camera Flip Button (common) -->
-          <button class="flip-btn" id="unified-flip-btn" onclick="flipCameraDevice()" title="Flip camera">⟳</button>
-
-          <!-- GP "CHANGE PHOTO" Pill Button Overlay - Obsolete now, replaced by inline Retake buttons, but keeping hidden just in case of JS refs -->
-          <button class="photo-change-btn" id="gp-change-photo-btn" onclick="resetPhoto()" style="display: none;">
-            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
-            </svg>
-            CHANGE PHOTO
-          </button>
-        </div>
-      </div>
-
-      <!-- Unified Capture Controls (Only shown in 'capture' state) -->
-      <div id="unified-capture-controls" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 12px 1.25rem 20px; width: 100%;">
-        <button class="btn-capture" id="unified-btn-capture" onclick="capturePhoto()" style="width: 76px; height: 76px; border: 4px solid var(--white); border-radius: 50%; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.1s; outline: none;">
-          <div style="width: 58px; height: 58px; background: var(--white); border-radius: 50%;"></div>
-        </button>
-        
-        <!-- Camera only fallback / file upload option -->
-        <div class="upload-unified" id="upload-state" style="display: flex; margin: 6px 0; width: 100%; border-radius: 4px; border: 1px dashed var(--border); background: var(--surface);">
-          <div class="upload-opt" onclick="document.getElementById('selfie-input').click()" style="width: 100%; display: flex; flex-direction: row; gap: 8px; justify-content: center; align-items: center; padding: 10px 0;">
-            <div class="upload-icon" style="width:24px; height:24px; border:none; display:flex; align-items:center; justify-content:center;"><svg viewBox="0 0 24 24" style="width:14px; height:14px;"><circle cx="12" cy="12" r="3"/><path d="M6.343 6.343a8 8 0 1011.314 0M12 2v4"/></svg></div>
-            <span class="upload-hint" style="font-size:0.65rem; color:var(--muted); font-weight:600; letter-spacing:0.08em; text-transform:uppercase;">OR CHOOSE PHOTO FILE</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Camera Lane Selector (Tabs Switcher) BELOW the Viewfinder (shown in 'edit' state) -->
-      <div class="camera-tabs" id="camera-tabs" style="display: none;">
+      <!-- Camera Lane Selector (Tabs Switcher) directly at the top of content area -->
+      <div class="camera-tabs" id="camera-tabs" style="display: flex;">
         <button class="camera-tab active" id="tab-filters-btn" onclick="switchCameraTab('filters')">📸 FILTERS</button>
-        <button class="camera-tab" id="tab-groovepop-btn" onclick="switchCameraTab('groovepop')">🎨 TRANSFORM</button>
+        <button class="camera-tab" id="tab-groovepop-btn" onclick="switchCameraTab('groovepop')">🎨 GROOVE POP</button>
       </div>
 
       <!-- Controls & Panels below Viewfinder/Tabs -->
-      <div class="camera-controls-container" style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; width: 100%;">
+      <div class="camera-controls-container" style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; min-height: 0; width: 100%; overflow: hidden;">
         
         <!-- ── LANE 1: FILTERS CONTROLS ── -->
-        <div class="lane-controls-panel" id="panel-filters" style="display: none; flex-direction: column; gap: 8px; padding: 0 1.25rem 20px;">
-          <!-- Obsolete duplicate buttons, keeping hidden just in case of JS references -->
-          <div class="camera-controls" style="display: none;">
-            <button class="btn-retake" id="filters-btn-retake" onclick="resetPhoto()" title="Retake">✕</button>
-            <button class="btn-capture" id="filters-btn-capture" style="display: none;"><div class="btn-capture-inner"></div></button>
-            <button class="btn-action" id="filters-btn-action" style="display: none;">⧉</button>
+        <div class="lane-controls-panel" id="panel-filters" style="display: flex; flex-direction: column; min-height: 0; flex: 1; width: 100%; overflow: hidden;">
+          
+          <!-- Filters Viewfinder -->
+          <div class="viewfinder-container" id="viewfinder-container-filters">
+            <div class="viewfinder-wrap">
+              <!-- Live video feed for Filters -->
+              <video class="viewfinder-video" id="filters-video" autoplay playsinline muted></video>
+              <!-- Hidden canvas for capturing & filters -->
+              <canvas class="viewfinder-canvas" id="filters-canvas-preview"></canvas>
+              <!-- Frame overlay -->
+              <img id="filters-frame-overlay" class="viewfinder-frame-overlay" alt="" style="display: none;">
+              <!-- Camera Flip Button -->
+              <button class="flip-btn" id="filters-flip-btn" onclick="flipCameraDevice()" title="Flip camera">⟳</button>
+            </div>
           </div>
 
-          <div class="filter-strip-label" style="font-size:0.65rem; letter-spacing:0.12em; color:var(--muted); font-family:'Bebas Neue',sans-serif; margin-top:4px;">Choose a Filter</div>
-          <div class="filter-strip" id="filter-strip">
-            <!-- Populated via Javascript -->
-          </div>
-
-          <div class="filter-strip-label" style="font-size:0.65rem; letter-spacing:0.12em; color:var(--muted); font-family:'Bebas Neue',sans-serif;">Choose a Frame</div>
-          <div class="frame-strip" id="filters-frame-strip">
-            <!-- Populated via Javascript -->
-          </div>
-
-          <!-- Actions Grid for Filters snapshot -->
-          <div class="result-actions-grid" id="filters-result-actions" style="display: flex; margin-top: 8px; gap: 10px; width: 100%;">
-            <button class="btn-ghost" onclick="resetPhoto()" style="flex: 1; padding: 12px; border-radius: 4px; font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 0.1em;">✕ Retake</button>
-            <button class="btn-primary" onclick="downloadFiltersPhoto()" style="flex: 1.5; padding: 12px; border-radius: 4px; font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 0.1em; display: flex; align-items: center; justify-content: center; gap: 4px;">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:2px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-              Save
+          <!-- Capture controls for Filters (only shown when not captured) -->
+          <div class="panel-capture-controls" id="filters-capture-controls" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 12px 1.25rem 8px; width: 100%; flex-shrink: 0;">
+            <button class="btn-capture" id="filters-btn-capture" onclick="capturePhoto()" style="width: 76px; height: 76px; border: 4px solid var(--white); border-radius: 50%; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.1s; outline: none;">
+              <div style="width: 58px; height: 58px; background: var(--white); border-radius: 50%;"></div>
             </button>
-            <button class="btn-primary" onclick="shareFiltersPhoto()" style="flex: 2; padding: 12px; border-radius: 4px; font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 0.1em; display: flex; align-items: center; justify-content: center; gap: 4px;">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:2px;"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
-              Share Gallery
-            </button>
+            
+            <!-- Choose file fallback -->
+            <div class="upload-unified" onclick="document.getElementById('selfie-input').click()" style="display: flex; margin: 6px 0; width: 100%; border-radius: 4px; border: 1px dashed var(--border); background: var(--surface); cursor: pointer;">
+              <div class="upload-opt" style="width: 100%; display: flex; flex-direction: row; gap: 8px; justify-content: center; align-items: center; padding: 10px 0;">
+                <div class="upload-icon" style="width:24px; height:24px; border:none; display:flex; align-items:center; justify-content:center;"><svg viewBox="0 0 24 24" style="width:14px; height:14px;"><circle cx="12" cy="12" r="3"/><path d="M6.343 6.343a8 8 0 1011.314 0M12 2v4"/></svg></div>
+                <span class="upload-hint" style="font-size:0.65rem; color:var(--muted); font-weight:600; letter-spacing:0.08em; text-transform:uppercase;">OR CHOOSE PHOTO FILE</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scrollable area for filters & frames -->
+          <div class="filter-controls-scroll" style="flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 8px; padding: 0 1.25rem 20px;">
+            <div class="filter-strip-label" style="font-size:0.65rem; letter-spacing:0.12em; color:var(--muted); font-family:'Bebas Neue',sans-serif; margin-top:4px;">Choose a Filter</div>
+            <div class="filter-strip" id="filter-strip">
+              <!-- Populated via Javascript -->
+            </div>
+
+            <div class="filter-strip-label" style="font-size:0.65rem; letter-spacing:0.12em; color:var(--muted); font-family:'Bebas Neue',sans-serif;">Choose a Frame</div>
+            <div class="frame-strip" id="filters-frame-strip">
+              <!-- Populated via Javascript -->
+            </div>
+
+            <!-- Actions Grid for Filters snapshot (only shown when captured) -->
+            <div class="result-actions-grid" id="filters-result-actions" style="display: none; margin-top: 8px; gap: 10px; width: 100%;">
+              <button class="btn-ghost" onclick="resetPhoto()" style="flex: 1; padding: 12px; border-radius: 4px; font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 0.1em;">✕ Retake</button>
+              <button class="btn-primary" onclick="downloadFiltersPhoto()" style="flex: 1.5; padding: 12px; border-radius: 4px; font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 0.1em; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:2px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                Save
+              </button>
+              <button class="btn-primary" onclick="shareFiltersPhoto()" style="flex: 2; padding: 12px; border-radius: 4px; font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 0.1em; display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:2px;"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+                Share Gallery
+              </button>
+            </div>
           </div>
         </div>
 
         <!-- ── LANE 2: GROOVE POP AI CONTROLS ── -->
-        <div class="lane-controls-panel" id="panel-groovepop" style="display: none; flex-direction: column; gap: 8px; padding: 0 1.25rem 20px;">
+        <div class="lane-controls-panel" id="panel-groovepop" style="display: none; flex-direction: column; min-height: 0; flex: 1; width: 100%; overflow: hidden;">
           
-          <!-- Obsolete step headings, keeping hidden just in case of JS references -->
-          <div class="home-section-heading" id="gp-step-heading" style="display: none;"></div>
-          <div class="camera-controls" id="gp-capture-controls" style="display: none;"></div>
+          <!-- Groove Pop Viewfinder -->
+          <div class="viewfinder-container" id="viewfinder-container-groovepop">
+            <div class="viewfinder-wrap">
+              <!-- Live video feed for Groove Pop -->
+              <video class="viewfinder-video" id="gp-video" autoplay playsinline muted></video>
+              <!-- Hidden canvas for capturing -->
+              <canvas class="viewfinder-canvas" id="gp-canvas-preview"></canvas>
+              <!-- Image preview (captured selfie / upload preview) -->
+              <img id="gp-preview-img" class="viewfinder-preview-img" alt="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+              
+              <!-- GP Generating State Overlay inside viewfinder -->
+              <div class="generating-state" id="generating-state" style="display: none; position: absolute; inset: 0; z-index: 3;">
+                <img class="gen-zone-img" id="gen-zone-img" src="" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                <div class="gen-zone-overlay" style="position: absolute; inset: 0;">
+                  <div class="gen-grid-lines" id="gen-grid"></div>
+                  <div class="gen-scan"></div>
+                  <div class="gen-static"></div>
+                  <div class="gen-brackets">
+                    <div class="gen-bracket tl"></div><div class="gen-bracket tr"></div>
+                    <div class="gen-bracket bl"></div><div class="gen-bracket br"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Result State (inside viewfinder) -->
+              <div class="result-state" id="result-state" style="display: none; position: absolute; inset: 0; z-index: 4;">
+                <img class="result-zone-img" id="result-img" src="" alt="Generated image" style="width: 100%; height: 100%; object-fit: cover;">
+                <img class="result-thumb" id="result-thumb" style="display: none;" src="" alt="">
+              </div>
 
-          <!-- Inline Style Picker -->
-          <div class="home-right-inline" id="home-right-inline" style="display: flex; flex-direction: column; min-height: 0; flex-shrink: 0; margin-bottom: 8px; width: 100%;">
-            <div class="home-section-heading" style="padding: 0.35rem 0 0.2rem; display: flex; align-items: baseline; gap: 0.3em; flex-shrink: 0;">
-              <span class="home-section-num" style="font-family:'Bebas Neue',sans-serif; font-size:1.2rem; color:var(--white); line-height:1;">2</span>
-              <span class="home-section-text" style="font-family:'Bebas Neue',sans-serif; font-size:0.7rem; letter-spacing:0.12em; color:var(--white); line-height:1;">CHOOSE <span class="accent" style="color:var(--gold);">A STYLE</span></span>
-            </div>
-            <div class="subtheme-scroll" id="subtheme-tabs" style="display: flex; flex-wrap: wrap; gap: 0.3rem; padding: 0.4rem 0; background: var(--black); flex-shrink: 0;"></div>
-            <div class="style-grid-wrap" style="max-height: 260px; border: 1px solid var(--border); border-radius: 4px; overflow-y: auto; -webkit-overflow-scrolling: touch;">
-              <div class="styles-grid" id="styles-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); padding: 1px;"></div>
+              <!-- Camera Flip Button -->
+              <button class="flip-btn" id="gp-flip-btn" onclick="flipCameraDevice()" title="Flip camera">⟳</button>
             </div>
           </div>
 
-          <!-- Inline Transform control -->
-          <div class="gp-transform-inline" style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px; width: 100%;">
-            <div class="selected-style-info" style="display: flex; align-items: center; justify-content: space-between;">
-              <span id="selected-style-name-inline" style="font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.08em; color: var(--gold);">No style selected</span>
-              <span style="font-size: 0.6rem; color: var(--muted); opacity: 0.5;">Step 3</span>
-            </div>
+          <!-- Capture controls for Groove Pop (only shown when not captured/uploaded) -->
+          <div class="panel-capture-controls" id="gp-capture-controls-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 12px 1.25rem 8px; width: 100%; flex-shrink: 0;">
+            <button class="btn-capture" id="gp-btn-capture" onclick="capturePhoto()" style="width: 76px; height: 76px; border: 4px solid var(--white); border-radius: 50%; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.1s; outline: none;">
+              <div style="width: 58px; height: 58px; background: var(--white); border-radius: 50%;"></div>
+            </button>
             
-            <div style="display: flex; gap: 10px; width: 100%;">
-              <button class="btn-ghost" onclick="resetPhoto()" style="flex: 1; padding: 12px; border-radius: 4px; font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 0.1em;">✕ Retake</button>
-              <button class="btn-primary" id="btn-generate-inline" disabled onclick="startGeneration()" style="flex: 2; padding: 12px; border-radius: 4px; font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.1em; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 2px;">
-                  <circle cx="12" cy="12" r="10" />
-                  <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
-                </svg>
-                3 PARTY
-              </button>
+            <!-- Choose file fallback -->
+            <div class="upload-unified" onclick="document.getElementById('selfie-input').click()" style="display: flex; margin: 6px 0; width: 100%; border-radius: 4px; border: 1px dashed var(--border); background: var(--surface); cursor: pointer;">
+              <div class="upload-opt" style="width: 100%; display: flex; flex-direction: row; gap: 8px; justify-content: center; align-items: center; padding: 10px 0;">
+                <div class="upload-icon" style="width:24px; height:24px; border:none; display:flex; align-items:center; justify-content:center;"><svg viewBox="0 0 24 24" style="width:14px; height:14px;"><circle cx="12" cy="12" r="3"/><path d="M6.343 6.343a8 8 0 1011.314 0M12 2v4"/></svg></div>
+                <span class="upload-hint" style="font-size:0.65rem; color:var(--muted); font-weight:600; letter-spacing:0.08em; text-transform:uppercase;">OR CHOOSE PHOTO FILE</span>
+              </div>
             </div>
           </div>
 
-          <!-- Status Bar (shows when generating) -->
-          <div class="gen-status-bar" id="gen-status-bar" style="display: none; margin: 8px 0; width: 100%;">
-            <div class="gen-status-top">
-              <div class="gen-phase-label" id="gen-phase-label">PROCESSING</div>
-              <div class="gen-dots" id="gen-dots"><span></span><span></span><span></span></div>
+          <!-- Style Picker & Transform controls (always shown, but adapt behavior) -->
+          <div class="gp-controls-scroll" style="flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 8px; padding: 0 1.25rem 20px;">
+            <!-- Inline Style Picker -->
+            <div class="home-right-inline" id="home-right-inline" style="display: flex; flex-direction: column; min-height: 0; flex-shrink: 0; margin-bottom: 8px; width: 100%;">
+              <div class="home-section-heading" style="padding: 0.35rem 0 0.2rem; display: flex; align-items: baseline; gap: 0.3em; flex-shrink: 0;">
+                <span class="home-section-num" style="font-family:'Bebas Neue',sans-serif; font-size:1.2rem; color:var(--white); line-height:1;">2</span>
+                <span class="home-section-text" style="font-family:'Bebas Neue',sans-serif; font-size:0.7rem; letter-spacing:0.12em; color:var(--white); line-height:1;">CHOOSE <span class="accent" style="color:var(--gold);">A STYLE</span></span>
+              </div>
+              <div class="subtheme-scroll" id="subtheme-tabs" style="display: flex; flex-wrap: wrap; gap: 0.3rem; padding: 0.4rem 0; background: var(--black); flex-shrink: 0;"></div>
+              <div class="style-grid-wrap" style="border: 1px solid var(--border); border-radius: 4px; overflow: visible;">
+                <div class="styles-grid" id="styles-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); padding: 1px;"></div>
+              </div>
             </div>
-            <div class="gen-main-text" id="gen-main-text">READING IMAGE</div>
-            <div class="gen-progress-wrap"><div class="gen-progress-bar" id="gen-progress-bar"></div></div>
-          </div>
 
-          <!-- Error Card -->
-          <div class="error-card" id="error-card" style="display: none; margin: 8px 0; width: 100%;">
-            <div class="error-card-icon">
-              <svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+            <!-- Inline Transform controls -->
+            <div class="gp-transform-inline" id="gp-transform-inline-actions" style="display: none; flex-direction: column; gap: 8px; margin-top: 4px; width: 100%;">
+              <div class="selected-style-info" style="display: flex; align-items: center; justify-content: space-between;">
+                <span id="selected-style-name-inline" style="font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.08em; color: var(--gold);">No style selected</span>
+                <span style="font-size: 0.6rem; color: var(--muted); opacity: 0.5;">Step 3</span>
+              </div>
+              
+              <div style="display: flex; gap: 10px; width: 100%;">
+                <button class="btn-ghost" onclick="resetPhoto()" style="flex: 1; padding: 12px; border-radius: 4px; font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; letter-spacing: 0.1em;">✕ Retake</button>
+                <button class="btn-primary" id="btn-generate-inline" disabled onclick="startGeneration()" style="flex: 2; padding: 12px; border-radius: 4px; font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.1em; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 2px;">
+                    <circle cx="12" cy="12" r="10" />
+                    <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/>
+                  </svg>
+                  3 PARTY
+                </button>
+              </div>
             </div>
-            <div class="error-card-msg" id="error-card-msg"></div>
-            <div id="error-card-debug" style="font-size:0.55rem; color:#e8896a; opacity:0.6; font-family:monospace; word-break:break-all; margin-top:0.3rem; line-height:1.2; display:none;"></div>
-            <button class="error-card-retry" onclick="startGeneration()">TRY THAT AGAIN</button>
+
+            <!-- Status Bar (shows when generating) -->
+            <div class="gen-status-bar" id="gen-status-bar" style="display: none; margin: 8px 0; width: 100%;">
+              <div class="gen-status-top">
+                <div class="gen-phase-label" id="gen-phase-label">PROCESSING</div>
+                <div class="gen-dots" id="gen-dots"><span></span><span></span><span></span></div>
+              </div>
+              <div class="gen-main-text" id="gen-main-text">READING IMAGE</div>
+              <div class="gen-progress-wrap"><div class="gen-progress-bar" id="gen-progress-bar"></div></div>
+            </div>
+
+            <!-- Error Card -->
+            <div class="error-card" id="error-card" style="display: none; margin: 8px 0; width: 100%;">
+              <div class="error-card-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+              </div>
+              <div class="error-card-msg" id="error-card-msg"></div>
+              <div id="error-card-debug" style="font-size:0.55rem; color:#e8896a; opacity:0.6; font-family:monospace; word-break:break-all; margin-top:0.3rem; line-height:1.2; display:none;"></div>
+              <button class="error-card-retry" onclick="startGeneration()">TRY THAT AGAIN</button>
+            </div>
           </div>
         </div>
 
@@ -1755,6 +1771,13 @@ function goTo(id) {
 // ══════════════════════════════════════════
 // IMAGE ZONE STATE MACHINE
 // ══════════════════════════════════════════
+function updatePanelVisibility() {
+  const panelFilters = document.getElementById('panel-filters');
+  const panelGroovepop = document.getElementById('panel-groovepop');
+  if (panelFilters) panelFilters.style.display = activeCameraLane === 'filters' ? 'flex' : 'none';
+  if (panelGroovepop) panelGroovepop.style.display = activeCameraLane === 'groovepop' ? 'flex' : 'none';
+}
+
 function setImageZoneState(state) {
   imageZoneState = state;
   const screenHome = document.getElementById('screen-home');
@@ -1768,68 +1791,26 @@ function setImageZoneState(state) {
     screenHome.dataset.substate = state; // Add a custom substate
   }
 
-  const uploadState = document.getElementById('upload-state');
-  const previewImg = document.getElementById('unified-preview-img');
-  const videoEl = document.getElementById('filters-video');
-  const canvasEl = document.getElementById('filters-canvas-preview');
-  
-  // Capture Controls & Tabs
-  const captureControls = document.getElementById('unified-capture-controls');
   const cameraTabs = document.getElementById('camera-tabs');
-  const panelFilters = document.getElementById('panel-filters');
-  const panelGroovepop = document.getElementById('panel-groovepop');
-  
-  // Show / hide based on state
-  if (state === 'capture') {
-    if (videoEl) videoEl.style.display = 'block';
-    if (canvasEl) canvasEl.style.display = 'none';
-    if (previewImg) previewImg.style.display = 'none';
-    if (uploadState) uploadState.style.display = 'flex';
-    
-    if (captureControls) captureControls.style.display = 'flex';
-    if (cameraTabs) cameraTabs.style.display = 'none';
-    if (panelFilters) panelFilters.style.display = 'none';
-    if (panelGroovepop) panelGroovepop.style.display = 'none';
-  } 
-  else if (state === 'edit') {
-    if (videoEl) videoEl.style.display = 'none';
-    if (previewImg) {
-      previewImg.src = uploadedDataUrl || '';
-      previewImg.style.display = 'block';
-    }
-    if (uploadState) uploadState.style.display = 'none';
-    
-    if (captureControls) captureControls.style.display = 'none';
-    if (cameraTabs) cameraTabs.style.display = 'flex';
-    
-    // Toggle active tab panel
-    if (panelFilters) panelFilters.style.display = activeCameraLane === 'filters' ? 'flex' : 'none';
-    if (panelGroovepop) panelGroovepop.style.display = activeCameraLane === 'groovepop' ? 'flex' : 'none';
-    
-    // Show/hide canvas vs image based on Filters composite rendering
-    if (activeCameraLane === 'filters') {
-      if (canvasEl) canvasEl.style.display = 'block';
-      if (previewImg) previewImg.style.display = 'none';
-    } else {
-      if (canvasEl) canvasEl.style.display = 'none';
-      if (previewImg) previewImg.style.display = 'block';
-    }
-  } 
-  else { // generating or result
-    if (uploadState) uploadState.style.display = 'none';
-    if (previewImg && state !== 'generating' && state !== 'result') {
-      previewImg.style.display = 'none';
-    }
-    if (captureControls) captureControls.style.display = 'none';
-    if (cameraTabs) cameraTabs.style.display = 'none';
-    if (panelFilters) panelFilters.style.display = 'none';
-    if (panelGroovepop) panelGroovepop.style.display = 'none';
+  if (cameraTabs) {
+    cameraTabs.style.display = (state === 'generating' || state === 'result') ? 'none' : 'flex';
   }
 
-  document.getElementById('generating-state').classList.toggle('active', state === 'generating');
-  document.getElementById('result-state').classList.toggle('active', state === 'result');
-  document.getElementById('gen-status-bar').classList.toggle('active', state === 'generating');
-  if (state !== 'result') document.getElementById('error-card').classList.remove('visible');
+  // Toggle active tab panel
+  updatePanelVisibility();
+
+  // Show/hide overlays inside GP viewfinder
+  const genState = document.getElementById('generating-state');
+  if (genState) genState.classList.toggle('active', state === 'generating');
+  const resState = document.getElementById('result-state');
+  if (resState) resState.classList.toggle('active', state === 'result');
+  
+  const statusEl = document.getElementById('gen-status-bar');
+  if (statusEl) statusEl.classList.toggle('active', state === 'generating');
+  if (state !== 'result') {
+    const errEl = document.getElementById('error-card');
+    if (errEl) errEl.classList.remove('visible');
+  }
 
   // Sticky bottom bar display logic
   const homeBottom = document.querySelector('.home-bottom');
@@ -1857,31 +1838,56 @@ function handleFileInput(file) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function(ev) {
-    uploadedDataUrl = ev.target.result;
-    filtersCapturedUrl = ev.target.result;
+    const dataUrl = ev.target.result;
+    uploadedDataUrl = dataUrl;
+    filtersCapturedUrl = dataUrl;
     filtersHasCaptured = true;
+    
+    // Update Filters UI
+    const filtersVideo = document.getElementById('filters-video');
+    const filtersCanvas = document.getElementById('filters-canvas-preview');
+    if (filtersVideo) filtersVideo.style.display = 'none';
+    if (filtersCanvas) filtersCanvas.style.display = 'block';
+    const filtersCaptureControls = document.getElementById('filters-capture-controls');
+    if (filtersCaptureControls) filtersCaptureControls.style.display = 'none';
+    const filtersResultActions = document.getElementById('filters-result-actions');
+    if (filtersResultActions) filtersResultActions.style.display = 'flex';
+    
+    // Update GP UI
+    const gpVideo = document.getElementById('gp-video');
+    const gpPreviewImg = document.getElementById('gp-preview-img');
+    if (gpVideo) gpVideo.style.display = 'none';
+    if (gpPreviewImg) {
+      gpPreviewImg.src = dataUrl;
+      gpPreviewImg.style.display = 'block';
+    }
+    const gpCaptureControls = document.getElementById('gp-capture-controls-container');
+    if (gpCaptureControls) gpCaptureControls.style.display = 'none';
+    const gpTransformActions = document.getElementById('gp-transform-inline-actions');
+    if (gpTransformActions) gpTransformActions.style.display = 'flex';
+    
+    stopCamera();
     
     setImageZoneState('edit');
     renderFiltersComposite();
-
-    const randomBtn = document.getElementById('btn-randomize');
-    if (randomBtn) {
-      randomBtn.disabled = false;
-      randomBtn.classList.add('lit');
-    }
     updateGenerateButton();
   };
   reader.readAsDataURL(file);
 }
 
 function showUploadedPreview() {
-  const previewImg = document.getElementById('unified-preview-img');
-  if (previewImg) {
-    previewImg.src = uploadedDataUrl || '';
-    previewImg.style.display = 'block';
+  const gpPreviewImg = document.getElementById('gp-preview-img');
+  if (gpPreviewImg) {
+    gpPreviewImg.src = uploadedDataUrl || '';
+    gpPreviewImg.style.display = 'block';
   }
-  const videoEl = document.getElementById('filters-video');
-  if (videoEl) videoEl.style.display = 'none';
+  const gpVideo = document.getElementById('gp-video');
+  if (gpVideo) gpVideo.style.display = 'none';
+
+  const filtersCanvas = document.getElementById('filters-canvas-preview');
+  if (filtersCanvas) filtersCanvas.style.display = 'block';
+  const filtersVideo = document.getElementById('filters-video');
+  if (filtersVideo) filtersVideo.style.display = 'none';
 }
 
 function resetPhoto() {
@@ -1892,23 +1898,36 @@ function resetPhoto() {
   chosenVariant = null;
   selectedStyle = null;
   
-  const previewImg = document.getElementById('unified-preview-img');
-  if (previewImg) {
-    previewImg.src = '';
-    previewImg.style.display = 'none';
-  }
-  
   const fileInput = document.getElementById('file-input');
   if (fileInput) fileInput.value = '';
   
   const selfieInput = document.getElementById('selfie-input');
   if (selfieInput) selfieInput.value = '';
   
-  const randomBtn = document.getElementById('btn-randomize');
-  if (randomBtn) {
-    randomBtn.disabled = true;
-    randomBtn.classList.remove('lit');
+  // Reset Filters UI
+  const filtersVideo = document.getElementById('filters-video');
+  const filtersCanvas = document.getElementById('filters-canvas-preview');
+  if (filtersVideo) filtersVideo.style.display = 'block';
+  if (filtersCanvas) filtersCanvas.style.display = 'none';
+  const filtersCaptureControls = document.getElementById('filters-capture-controls');
+  if (filtersCaptureControls) filtersCaptureControls.style.display = 'flex';
+  const filtersResultActions = document.getElementById('filters-result-actions');
+  if (filtersResultActions) filtersResultActions.style.display = 'none';
+
+  // Reset GP UI
+  const gpVideo = document.getElementById('gp-video');
+  const gpCanvas = document.getElementById('gp-canvas-preview');
+  const gpPreviewImg = document.getElementById('gp-preview-img');
+  if (gpVideo) gpVideo.style.display = 'block';
+  if (gpCanvas) gpCanvas.style.display = 'none';
+  if (gpPreviewImg) {
+    gpPreviewImg.src = '';
+    gpPreviewImg.style.display = 'none';
   }
+  const gpCaptureControls = document.getElementById('gp-capture-controls-container');
+  if (gpCaptureControls) gpCaptureControls.style.display = 'flex';
+  const gpTransformActions = document.getElementById('gp-transform-inline-actions');
+  if (gpTransformActions) gpTransformActions.style.display = 'none';
   
   const styleNameEl = document.getElementById('selected-style-name-inline') || document.getElementById('selected-style-name');
   if (styleNameEl) {
@@ -4113,8 +4132,12 @@ function getKeyedFrame(url) {
 async function startCamera() {
   stopCamera();
   
-  const videoEl = document.getElementById('filters-video');
-  const canvasEl = document.getElementById('filters-canvas-preview');
+  const videoEl = activeCameraLane === 'filters' 
+      ? document.getElementById('filters-video') 
+      : document.getElementById('gp-video');
+  const canvasEl = activeCameraLane === 'filters' 
+      ? document.getElementById('filters-canvas-preview') 
+      : document.getElementById('gp-canvas-preview');
 
   if (!videoEl) return;
 
@@ -4209,6 +4232,7 @@ function flipCameraDevice() {
 function switchCameraTab(lane) {
   if (activeCameraLane === lane) return;
   
+  stopCamera();
   activeCameraLane = lane;
   
   document.getElementById('tab-filters-btn').classList.toggle('active', lane === 'filters');
@@ -4229,12 +4253,15 @@ function switchCameraTab(lane) {
     frameOverlay.style.display = (lane === 'filters' && filtersSelectedFrame !== null) ? 'block' : 'none';
   }
 
+  // Update panels display
+  updatePanelVisibility();
+
   // Trigger composite render if in filters mode and photo is taken
   if (lane === 'filters' && filtersHasCaptured) {
     renderFiltersComposite();
   }
 
-  setImageZoneState(imageZoneState);
+  startCamera();
 }
 
 // Filters Strip Builder (12 filters)
@@ -4431,8 +4458,65 @@ function getFiltersFinalCanvas() {
 }
 
 function capturePhoto() {
+  if (activeCameraLane === 'filters') {
+    captureFiltersPhoto();
+  } else {
+    captureGPPhoto();
+  }
+}
+
+function captureFiltersPhoto() {
   const videoEl = document.getElementById('filters-video');
   const canvasEl = document.getElementById('filters-canvas-preview');
+  if (!videoEl || !canvasEl) return;
+
+  const vw = videoEl.videoWidth || 480;
+  const vh = videoEl.videoHeight || 640;
+  const minDim = Math.min(vw, vh);
+  const sx = (vw - minDim) / 2;
+  const sy = (vh - minDim) / 2;
+
+  filtersHasCaptured = true;
+
+  canvasEl.width = minDim;
+  canvasEl.height = minDim;
+  const ctx = canvasEl.getContext('2d');
+
+  if (cameraStream) {
+    // Front facing mirror capture
+    if (cameraFacingMode === 'user') {
+      ctx.translate(minDim, 0);
+      ctx.scale(-1, 1);
+    }
+    ctx.drawImage(videoEl, sx, sy, minDim, minDim, 0, 0, minDim, minDim);
+  } else {
+    ctx.fillStyle = '#111';
+    ctx.fillRect(0, 0, minDim, minDim);
+    ctx.fillStyle = '#a00ae6';
+    ctx.font = 'bold 24px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Camera Offline', minDim/2, minDim/2);
+  }
+
+  filtersCapturedUrl = canvasEl.toDataURL('image/jpeg', 0.95);
+  stopCamera();
+  
+  // Update UI elements for Filters edit state
+  if (videoEl) videoEl.style.display = 'none';
+  if (canvasEl) canvasEl.style.display = 'block';
+  
+  // Hide capture controls, show result actions
+  const filtersCaptureControls = document.getElementById('filters-capture-controls');
+  if (filtersCaptureControls) filtersCaptureControls.style.display = 'none';
+  const filtersResultActions = document.getElementById('filters-result-actions');
+  if (filtersResultActions) filtersResultActions.style.display = 'flex';
+
+  renderFiltersComposite();
+}
+
+function captureGPPhoto() {
+  const videoEl = document.getElementById('gp-video');
+  const canvasEl = document.getElementById('gp-canvas-preview');
   if (!videoEl || !canvasEl) return;
 
   const vw = videoEl.videoWidth || 480;
@@ -4461,23 +4545,25 @@ function capturePhoto() {
     ctx.fillText('Camera Offline', minDim/2, minDim/2);
   }
 
-  const dataUrl = canvasEl.toDataURL('image/jpeg', 0.95);
-  
-  uploadedDataUrl = dataUrl;
-  filtersCapturedUrl = dataUrl;
-  filtersHasCaptured = true;
-  
+  uploadedDataUrl = canvasEl.toDataURL('image/jpeg', 0.95);
   stopCamera();
-  
-  setImageZoneState('edit');
-  renderFiltersComposite();
 
-  const randomBtn = document.getElementById('btn-randomize');
-  if (randomBtn) {
-    randomBtn.disabled = false;
-    randomBtn.classList.add('lit');
-  }
+  // Update UI elements for GP edit state
+  if (videoEl) videoEl.style.display = 'none';
   
+  const gpPreviewImg = document.getElementById('gp-preview-img');
+  if (gpPreviewImg) {
+    gpPreviewImg.src = uploadedDataUrl;
+    gpPreviewImg.style.display = 'block';
+  }
+
+  // Hide capture controls, show transform actions
+  const gpCaptureControls = document.getElementById('gp-capture-controls-container');
+  if (gpCaptureControls) gpCaptureControls.style.display = 'none';
+  const gpTransformActions = document.getElementById('gp-transform-inline-actions');
+  if (gpTransformActions) gpTransformActions.style.display = 'flex';
+
+  setImageZoneState('edit');
   updateGenerateButton();
 }
 
