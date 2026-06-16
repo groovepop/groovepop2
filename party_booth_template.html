@@ -3978,7 +3978,9 @@ function getKeyedFrame(url) {
     img.onerror = () => {
       resolve(url);
     };
-    img.src = url;
+    // Route through Netlify proxy function to prevent CORS canvas tainting
+    const proxiedUrl = `/.netlify/functions/frame-proxy?url=${encodeURIComponent(url)}`;
+    img.src = proxiedUrl;
   });
 }
 
@@ -4185,7 +4187,6 @@ function buildFrameStrip() {
     thumb.appendChild(fallback);
 
     const img = new Image();
-    img.crossOrigin = "anonymous";
     img.src = url;
     img.alt = `Frame ${idx + 1}`;
     img.style.width = '100%';
