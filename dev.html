@@ -108,11 +108,9 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
 .t1{color:var(--accent)}.t2{color:var(--warn)}
 
 /* FREEFORM BAR */
-#freeform-bar{display:none;background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 16px}
-#freeform-bar.on{display:block}
+#freeform-bar{display:block;background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 16px}
 #freeform-prompt{width:100%;min-height:100px;resize:none;overflow:hidden;background:var(--bg);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:11px;border-radius:3px;padding:7px 9px;line-height:1.6}
 #freeform-prompt:focus{outline:1px solid var(--accent)}
-#freeform-toggle.on{color:var(--accent);border-color:var(--accent)}
 
 /* RESULTS */
 #panel-results{padding:20px;display:flex;flex-direction:column;gap:16px}
@@ -208,19 +206,7 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
 #manage-trash.trash-over{border-color:var(--err);color:var(--err);background:rgba(229,64,64,.08)}
 #manage-trash-top.trash-over{border-color:var(--err) !important;color:var(--err) !important;background:rgba(229,64,64,.08)}
 
-/* DIRECT STRIP */
-#direct-strip{background:var(--bg2);border-top:2px solid var(--border2);padding:20px;display:flex;flex-direction:column;gap:10px}
-.direct-title{font-family:var(--sans);font-size:15px;font-weight:700;color:var(--text);letter-spacing:-.01em}
-#direct-prompt{width:100%;min-height:80px;resize:none;overflow:hidden;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:11px;border-radius:3px;padding:9px;line-height:1.6}
-#direct-prompt:focus{outline:1px solid var(--accent)}
-#direct-controls{display:flex;gap:8px;align-items:center}
-#direct-controls select{background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px}
-#direct-status{font-family:var(--mono);font-size:10px;color:var(--text3)}
-#direct-results{display:flex;flex-wrap:wrap;gap:10px}
-.dr-card{position:relative;flex-shrink:0}
-.dr-card img{display:block;height:220px;width:auto;border-radius:3px;cursor:zoom-in;border:1px solid var(--border)}
-.dr-dl{position:absolute;bottom:5px;right:5px;font-family:var(--mono);font-size:9px;background:rgba(0,0,0,.7);color:var(--text);border:none;border-radius:2px;padding:3px 6px;cursor:pointer;opacity:0;transition:.15s}
-.dr-card:hover .dr-dl{opacity:1}
+
 
 
 /* MUSE LIBRARY */
@@ -325,31 +311,30 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
   <div id="main">
 
     <div id="main-toolbar">
-      <select id="quality-select" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px">
-        <option value="low">Low ~$0.005</option>
-        <option value="medium" selected>Medium ~$0.041</option>
-        <option value="high">High ~$0.165</option>
+      <select id="generation-mode" style="background:var(--bg3);border:1px solid var(--border2);color:var(--accent);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px;font-weight:700">
+        <option value="groovepop">Mode: Groove Pop</option>
+        <option value="direct">Mode: Direct</option>
       </select>
-      <select id="size-select" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px">
-        <option value="1024x1536" selected>Portrait</option>
-        <option value="1536x1024">Landscape</option>
-      </select>
-      <button class="bg bsm" id="freeform-toggle" onclick="toggleFreeform()">✎ Custom</button>
-      <button class="bp" id="run-btn" onclick="runNow()">▶ Run</button>
+      <select id="format-select" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px"></select>
+      <select id="quality-select" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px"></select>
+      <select id="size-select" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px"></select>
+      <button class="bp" id="run-btn" onclick="runNow()" style="margin-left:auto">▶ Run</button>
     </div>
 
     <div id="freeform-bar">
       <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border2); border-radius: 4px; padding: 10px; margin-bottom: 16px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-          <div class="sb-label" style="margin:0; color:var(--text)">Custom Vision Prompt</div>
+        <div style="display:flex;align-items:center;gap:8px;cursor:pointer" onclick="document.getElementById('vision-prompt-wrap').style.display=document.getElementById('vision-prompt-wrap').style.display==='none'?'block':'none'">
+          <div class="sb-label" style="margin:0; color:var(--text)">Custom Vision Prompt ▾</div>
           <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">Optional override for the vision model</span>
         </div>
-        <textarea id="vision-prompt-override" placeholder="Override default vision prompt here..." oninput="autoGrow(this)" style="width:100%;min-height:40px;background:var(--bg);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:6px 8px;resize:none;overflow:hidden;"></textarea>
+        <div id="vision-prompt-wrap" style="display:none;margin-top:8px">
+          <textarea id="vision-prompt-override" placeholder="Override default vision prompt here..." oninput="autoGrow(this)" style="width:100%;min-height:40px;background:var(--bg);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:6px 8px;resize:none;overflow:hidden;"></textarea>
+        </div>
       </div>
 
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <div class="sb-label" style="margin:0">Custom Style Prompt</div>
-        <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">Click tags below to add · --- separates stacked tags</span>
+        <div class="sb-label" style="margin:0">Text Prompt</div>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">Click tags below to add · --- separates stacked tags in Groove Pop</span>
         <div style="margin-left:auto;display:flex;gap:5px">
           <button class="bg bsm" onclick="copyFreeform()">⎘ Copy</button>
           <button class="bg bsm" onclick="clearFreeform()">Clear</button>
@@ -429,27 +414,7 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
   </div>
 </div>
 
-<!-- DIRECT STRIP -->
-<div id="direct-strip">
-  <div class="direct-title">Direct Generation</div>
-  <textarea id="direct-prompt" placeholder="Text prompt sent directly to gpt-image-2. No photo, no caption, no tags." oninput="autoGrow(this)"></textarea>
-  <div id="direct-controls">
-    <select id="direct-size">
-      <option value="1024x1536" selected>Portrait</option>
-      <option value="1536x1024">Landscape</option>
-      <option value="1024x1024">Square</option>
-    </select>
-    <select id="direct-quality">
-      <option value="low">Low ~$0.005</option>
-      <option value="medium" selected>Medium ~$0.041</option>
-      <option value="high">High ~$0.165</option>
-    </select>
-    <button class="bp" id="direct-run-btn" onclick="runDirect()">▶ Generate</button>
-    <button class="bd bsm" id="direct-cancel-btn" onclick="cancelDirect()" style="display:none">✕ Cancel</button>
-    <div id="direct-status"></div>
-  </div>
-  <div id="direct-results"></div>
-</div>
+
 
 <script>
 const AZURE_EP   = 'https://green-mos1tune-eastus2.openai.azure.com';
@@ -459,6 +424,33 @@ const CAP_DEP  = 'groovepop-vision';
 const IMG_DEP  = 'gpt-image-2';
 const PAGE_SIZE = 12;
 const DEFAULT_FOLDER = 'default';
+
+const IMAGE_SIZES = {
+  // Square
+  square_sm:       { label: "Square",         size: "1024x1024", ratio: "1:1"  },
+  square_hd:       { label: "Square HD",      size: "2048x2048", ratio: "1:1"  },
+
+  // Portrait
+  portrait_23:     { label: "Portrait 2:3",   size: "1024x1536", ratio: "2:3"  },
+  portrait_34:     { label: "Portrait 3:4",   size: "1536x2048", ratio: "3:4"  },
+  portrait_916:    { label: "Story 9:16",     size: "1080x1920", ratio: "9:16" },
+  portrait_13:     { label: "Tall 1:3",       size: "864x2560",  ratio: "1:3"  },
+
+  // Landscape
+  landscape_32:    { label: "Landscape 3:2",  size: "1536x1024", ratio: "3:2"  },
+  landscape_43:    { label: "Landscape 4:3",  size: "2048x1536", ratio: "4:3"  },
+  landscape_169:   { label: "Widescreen",     size: "2048x1152", ratio: "16:9" },
+  landscape_74:    { label: "Cinematic 7:4",  size: "1792x1024", ratio: "7:4"  },
+  landscape_31:    { label: "Ultra Wide 3:1", size: "2560x864",  ratio: "3:1"  },
+
+  // Social presets
+  social_square:   { label: "Social Square",  size: "1080x1080", ratio: "1:1"  },
+  social_story:    { label: "Social Story",   size: "1080x1920", ratio: "9:16" },
+  social_banner:   { label: "Social Banner",  size: "1920x1080", ratio: "16:9" },
+};
+
+const IMAGE_QUALITY = ["low", "medium", "high"];
+const IMAGE_FORMAT  = ["png", "jpeg"];
 
 let allTags = [], filteredTags = [];
 let photoBlob = null, photoURL = null;
@@ -824,6 +816,36 @@ async function init() {
   await openMuseDB();
   await loadMusesFromDB();
 
+  // Populate Format
+  const fmtSel = document.getElementById('format-select');
+  IMAGE_FORMAT.forEach(f => {
+    const o = document.createElement('option');
+    o.value = f; o.textContent = f.toUpperCase();
+    if (f === 'jpeg') o.selected = true;
+    fmtSel.appendChild(o);
+  });
+
+  // Populate Quality
+  const qSel = document.getElementById('quality-select');
+  IMAGE_QUALITY.forEach(q => {
+    const o = document.createElement('option');
+    o.value = q; o.textContent = q.charAt(0).toUpperCase() + q.slice(1);
+    if (q === 'medium') o.selected = true;
+    qSel.appendChild(o);
+  });
+
+  // Populate Size
+  const sSel = document.getElementById('size-select');
+  Object.keys(IMAGE_SIZES).forEach(k => {
+    const s = IMAGE_SIZES[k];
+    const o = document.createElement('option');
+    o.value = s.size; o.textContent = s.label + " (" + s.size + ")";
+    if (k === 'portrait_23') o.selected = true;
+    sSel.appendChild(o);
+  });
+
+  document.getElementById('generation-mode').addEventListener('change', refreshRunBtn);
+
   try {
     const r = await fetch('styles.json');
     if (!r.ok) throw 0;
@@ -1031,8 +1053,6 @@ function renderList() {
 
 function sendLinesToCustom(lines) {
   const text = lines.map(l=>`"${l}",`).join('\n');
-  document.getElementById('freeform-bar').classList.add('on');
-  document.getElementById('freeform-toggle').classList.add('on');
   const ta = document.getElementById('freeform-prompt');
   ta.value = text; // clear and replace
   autoGrow(ta);
@@ -1043,14 +1063,7 @@ function sendLinesToCustom(lines) {
 // tag selection removed — all tags send to custom prompt
 
 // ── FREEFORM ──────────────────────────────────────────────────
-function toggleFreeform() {
-  document.getElementById('freeform-bar').classList.toggle('on');
-  document.getElementById('freeform-toggle').classList.toggle('on');
-  refreshRunBtn();
-}
-
 function getFreeform() {
-  if (!document.getElementById('freeform-bar').classList.contains('on')) return null;
   return document.getElementById('freeform-prompt').value.trim() || null;
 }
 
@@ -1070,7 +1083,12 @@ function copyFreeform() {
 }
 
 function refreshRunBtn() {
-  document.getElementById('run-btn').disabled = !hasInput();
+  const mode = document.getElementById('generation-mode')?.value || 'groovepop';
+  if (mode === 'direct') {
+    document.getElementById('run-btn').disabled = false;
+  } else {
+    document.getElementById('run-btn').disabled = !hasInput();
+  }
 }
 
 // ── GENERATION ────────────────────────────────────────────────
@@ -1115,11 +1133,16 @@ function startCooldownUI() {
 }
 
 async function runNow() {
-  if (!hasInput()) return;
+  const mode = document.getElementById('generation-mode').value;
+  if (mode === 'groovepop' && !hasInput()) return;
 
   const freeform = getFreeform();
-  if (!freeform) {
+  if (mode === 'groovepop' && !freeform) {
     alert('Add a style prompt — click a tag or use Custom.');
+    return;
+  }
+  if (mode === 'direct' && !freeform) {
+    alert('Enter a text prompt.');
     return;
   }
 
@@ -1133,11 +1156,10 @@ async function runNow() {
 
   runningControllers[id] = controller;
   
-
-  const label    = 'Custom';
-  const fakeTags = [{label:'Custom',subtheme:'Custom',key:'custom',prompt:[]}];
+  const label    = mode === 'direct' ? 'Direct Generation' : 'Custom';
+  const fakeTags = [{label,subtheme:'Custom',key:'custom',prompt:[], size: getOutputSize()}];
   const quality  = document.getElementById('quality-select').value;
-  const baseKey  = 'custom';
+  const baseKey  = mode === 'direct' ? 'direct' : 'custom';
 
   results[id] = { status:'running', tags:fakeTags, label, freeform, quality, caption:null, baseKey, startedAt:Date.now(), elapsed:null, museId: activeMuseId };
   cardFolder[id] = activeFolderId;
@@ -1151,14 +1173,17 @@ async function runNow() {
   startTimer(id);
 
   try {
-    const { caption, subjectCount } = await getCaption(controller.signal);
+    let imageURL;
+    if (mode === 'groovepop') {
+      const { caption, subjectCount } = await getCaption(controller.signal);
+      results[id].caption = caption;
+      results[id].subjectCount = subjectCount;
+      renderCard(id);
+      imageURL = await generateRaw(freeform, caption, null, controller.signal);
+    } else {
+      imageURL = await generateDirectRaw(freeform, controller.signal);
+    }
 
-    results[id].caption = caption;
-    results[id].subjectCount = subjectCount;
-    renderCard(id);
-
-    const styleLines = freeform;
-    const imageURL = await generateRaw(styleLines, caption, null, controller.signal);
     results[id] = { ...results[id], status:'done', imageURL, elapsed:((Date.now()-results[id].startedAt)/1000).toFixed(1) };
     renderCard(id);
     autoUpload(id);
@@ -1188,22 +1213,29 @@ async function rerun(id) {
   startTimer(id);
 
   try {
-    let caption = r.caption;
-    if (!caption) {
-      const capResult = await getCaption(controller.signal);
-      caption = capResult.caption;
-      results[id].subjectCount = capResult.subjectCount;
-      results[id].caption = caption;
-      renderCard(id);
+    let imageURL;
+    if (r.baseKey === 'direct') {
+      const prompt = r.freeform || r.tags[0].label;
+      imageURL = await generateDirectRaw(prompt, controller.signal);
+    } else {
+      let caption = r.caption;
+      if (!caption) {
+        const capResult = await getCaption(controller.signal);
+        caption = capResult.caption;
+        results[id].subjectCount = capResult.subjectCount;
+        results[id].caption = caption;
+        renderCard(id);
+      }
+
+      const t0 = allTags.find(t=>t.key===r.tags[0]?.key) || r.tags[0];
+      const t1r = r.tags[1] ? (allTags.find(t=>t.key===r.tags[1].key)||r.tags[1]) : null;
+      const styleLines = r.freeform ||
+        resolvePrompt(t0).map(l=>`"${l}",`).join('\n') +
+        (t1r ? '\n\n---\n\n' + resolvePrompt(t1r).map(l=>`"${l}",`).join('\n') : '');
+
+      imageURL = await generateRaw(styleLines, caption, r.tags[0]?.key !== 'custom' ? t0 : null, controller.signal);
     }
 
-    const t0 = allTags.find(t=>t.key===r.tags[0]?.key) || r.tags[0];
-    const t1r = r.tags[1] ? (allTags.find(t=>t.key===r.tags[1].key)||r.tags[1]) : null;
-    const styleLines = r.freeform ||
-      resolvePrompt(t0).map(l=>`"${l}",`).join('\n') +
-      (t1r ? '\n\n---\n\n' + resolvePrompt(t1r).map(l=>`"${l}",`).join('\n') : '');
-
-    const imageURL = await generateRaw(styleLines, caption, r.tags[0]?.key !== 'custom' ? t0 : null, controller.signal);
     results[id] = { ...results[id], status:'done', imageURL, elapsed:((Date.now()-results[id].startedAt)/1000).toFixed(1) };
     renderCard(id);
     autoUpload(id);
@@ -1361,18 +1393,19 @@ async function generateRaw(styleLines, caption, tag1, signal) {
   const key     = document.getElementById('key-input').value.trim();
   const size    = getOutputSize();
   const quality = document.getElementById('quality-select').value;
+  const format  = document.getElementById('format-select').value;
   const prompt  = caption + '\n\n---\n\n' + styleLines;
 
   const fd = new FormData();
   if (photoBlob) fd.append('image[]', photoBlob, 'photo.jpg');
   fd.append('prompt', prompt);
   fd.append('n','1'); fd.append('size',size); fd.append('quality',quality);
-  fd.append('output_format','jpeg'); fd.append('output_compression','80');
+  fd.append('output_format',format); fd.append('output_compression','80');
 
   const url = `${AZURE_EP}/openai/deployments/${IMG_DEP}/images/edits?api-version=2025-04-01-preview`;
   for (let attempt = 0; attempt < 3; attempt++) {
     const res = await fetch(url, { method:'POST', headers:{'api-key':key}, body:fd, signal });
-    if (res.ok) return `data:image/jpeg;base64,${(await res.json()).data[0].b64_json}`;
+    if (res.ok) return `data:image/${format};base64,${(await res.json()).data[0].b64_json}`;
     if (res.status === 429 && attempt < 2) {
       const retryAfter = parseInt(res.headers.get('retry-after') || '10');
       await new Promise(r => setTimeout(r, (retryAfter || 10) * 1000));
@@ -1380,6 +1413,31 @@ async function generateRaw(styleLines, caption, tag1, signal) {
     }
     const t = await res.text();
     throw new Error(`Image ${res.status}: ${t.slice(0,200)}`);
+  }
+}
+
+async function generateDirectRaw(prompt, signal) {
+  const key     = document.getElementById('key-input').value.trim();
+  const size    = getOutputSize();
+  const quality = document.getElementById('quality-select').value;
+  const format  = document.getElementById('format-select').value;
+
+  const url = `${AZURE_EP}/openai/deployments/${IMG_DEP}/images/generations?api-version=2025-04-01-preview`;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const res = await fetch(url, {
+      method:'POST',
+      headers:{'api-key':key,'Content-Type':'application/json'},
+      signal,
+      body: JSON.stringify({ prompt, n:1, size, quality, output_format:format, output_compression:80 })
+    });
+    if (res.ok) return `data:image/${format};base64,${(await res.json()).data[0].b64_json}`;
+    if (res.status === 429 && attempt < 2) {
+      const retryAfter = parseInt(res.headers.get('retry-after') || '10');
+      await new Promise(r => setTimeout(r, (retryAfter || 10) * 1000));
+      continue;
+    }
+    const t = await res.text();
+    throw new Error(`Direct Generation ${res.status}: ${t.slice(0,200)}`);
   }
 }
 
@@ -1870,75 +1928,7 @@ function switchTab(name) {
 
 function closeLightbox() { document.getElementById('lightbox').classList.remove('on'); }
 
-// ── DIRECT GENERATION ─────────────────────────────────────────
-async function runDirect() {
-  const promptEl = document.getElementById('direct-prompt');
-  const prompt = promptEl.value.trim();
-  if (!prompt) return;
 
-  const nowD = Date.now();
-  if (nowD - lastDirectRunTime < DIRECT_COOLDOWN_MS) return;
-  lastDirectRunTime = nowD;
-
-  const key     = document.getElementById('key-input').value.trim();
-  const size    = document.getElementById('direct-size').value;
-  const quality = document.getElementById('direct-quality').value;
-  const status  = document.getElementById('direct-status');
-
-  // Allow multiple concurrent direct generations
-  const controller = new AbortController();
-  directController = controller;
-  document.getElementById('direct-cancel-btn').style.display = 'inline-block';
-  status.textContent = '';
-
-  // Add spinner placeholder immediately
-  const placeholder = document.createElement('div');
-  placeholder.className = 'dr-card dr-pending';
-  const selSize = document.getElementById('direct-size').value;
-  const ar = selSize === '1536x1024' ? '3/2' : selSize === '1024x1024' ? '1/1' : '2/3';
-  placeholder.innerHTML = `<div style="aspect-ratio:${ar};background:var(--bg3);display:flex;align-items:center;justify-content:center"><div class="spin"></div></div>`;
-  document.getElementById('direct-results').prepend(placeholder);
-
-  try {
-    const res = await fetch(`${AZURE_EP}/openai/deployments/${IMG_DEP}/images/generations?api-version=2025-04-01-preview`, {
-      method:'POST',
-      headers:{'api-key':key,'Content-Type':'application/json'},
-      signal: controller.signal,
-      body: JSON.stringify({ prompt, n:1, size, quality, output_format:'jpeg', output_compression:80 })
-    });
-    if (!res.ok) { const t=await res.text(); throw new Error(`${res.status}: ${t.slice(0,200)}`); }
-    const imgURL = `data:image/jpeg;base64,${(await res.json()).data[0].b64_json}`;
-    const ts = Date.now();
-    const card = document.createElement('div');
-    card.className = 'dr-card';
-    card.innerHTML = `<img src="${imgURL}" onclick="directExpand(this)" alt=""><button class="dr-dl" onclick="directDl(this,'${ts}')">↓</button>`;
-    card.querySelector('.dr-dl').dataset.src = imgURL;
-    placeholder.replaceWith(card);
-  } catch(e) {
-    placeholder.remove();
-    status.textContent = e.name === 'AbortError' ? '' : '⚠ ' + e.message;
-  } finally {
-    directController = null;
-    document.getElementById('direct-cancel-btn').style.display = 'none';
-    status.textContent = '';
-  }
-}
-
-function cancelDirect() {
-  if (directController) { directController.abort(); directController = null; }
-}
-
-function directExpand(img) {
-  document.getElementById('lightbox-img').src = img.src;
-  document.getElementById('lightbox').classList.add('on');
-}
-
-function directDl(btn, ts) {
-  const a = document.createElement('a');
-  a.href = btn.dataset.src;
-  a.download = `direct_${ts}.jpg`;
-  a.click();
-}
 
 // ── UTIL ──────────────────────────────────────────────────────
 function autoGrow(el) {
