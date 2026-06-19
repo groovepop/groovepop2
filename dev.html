@@ -426,27 +426,29 @@ const PAGE_SIZE = 12;
 const DEFAULT_FOLDER = 'default';
 
 const IMAGE_SIZES = {
-  // Square
-  square_sm:       { label: "Square",         size: "1024x1024", ratio: "1:1"  },
-  square_hd:       { label: "Square HD",      size: "2048x2048", ratio: "1:1"  },
-
-  // Portrait
-  portrait_23:     { label: "Portrait 2:3",   size: "1024x1536", ratio: "2:3"  },
-  portrait_34:     { label: "Portrait 3:4",   size: "1536x2048", ratio: "3:4"  },
-  portrait_916:    { label: "Story 9:16",     size: "1080x1920", ratio: "9:16" },
-  portrait_13:     { label: "Tall 1:3",       size: "864x2560",  ratio: "1:3"  },
-
-  // Landscape
-  landscape_32:    { label: "Landscape 3:2",  size: "1536x1024", ratio: "3:2"  },
-  landscape_43:    { label: "Landscape 4:3",  size: "2048x1536", ratio: "4:3"  },
-  landscape_169:   { label: "Widescreen",     size: "2048x1152", ratio: "16:9" },
-  landscape_74:    { label: "Cinematic 7:4",  size: "1792x1024", ratio: "7:4"  },
-  landscape_31:    { label: "Ultra Wide 3:1", size: "2560x864",  ratio: "3:1"  },
-
-  // Social presets
-  social_square:   { label: "Social Square",  size: "1080x1080", ratio: "1:1"  },
-  social_story:    { label: "Social Story",   size: "1080x1920", ratio: "9:16" },
-  social_banner:   { label: "Social Banner",  size: "1920x1080", ratio: "16:9" },
+  // ── Square ──────────────────────────────────────────────────────────────
+  square_sm:          { label: "Square",            size: "1024x1024", ratio: "1:1"  },
+  square_md:          { label: "Square Medium",      size: "1280x1280", ratio: "1:1"  },
+  square_hd:          { label: "Square HD",          size: "1536x1536", ratio: "1:1"  },
+ 
+  // ── Portrait ────────────────────────────────────────────────────────────
+  portrait_45:        { label: "Portrait 4:5 (IG)",  size: "1024x1280", ratio: "4:5"  },
+  portrait_34:        { label: "Portrait 3:4",       size: "768x1024",  ratio: "3:4"  },
+  portrait_34_hd:     { label: "Portrait 3:4 HD",    size: "1152x1536", ratio: "3:4"  },
+  portrait_23:        { label: "Portrait 2:3",       size: "800x1200",  ratio: "2:3"  },
+  portrait_916:       { label: "Story 9:16",         size: "720x1280",  ratio: "9:16" },
+  portrait_916_hd:    { label: "Story 9:16 HD",      size: "1008x1792", ratio: "9:16" },
+  portrait_916_xhd:   { label: "Story 9:16 XHD",     size: "1152x2048", ratio: "9:16" },
+  portrait_13:        { label: "Tall 1:3 (max)",     size: "512x1536",  ratio: "1:3"  },
+ 
+  // ── Landscape ───────────────────────────────────────────────────────────
+  landscape_54:       { label: "Landscape 5:4",      size: "1280x1024", ratio: "5:4"  },
+  landscape_43:       { label: "Landscape 4:3",       size: "1024x768",  ratio: "4:3"  },
+  landscape_32:       { label: "Landscape 3:2",       size: "1200x800",  ratio: "3:2"  },
+  landscape_169:      { label: "Widescreen",          size: "1280x720",  ratio: "16:9" },
+  landscape_169_hd:   { label: "Widescreen HD",       size: "1792x1008", ratio: "16:9" },
+  landscape_169_xhd:  { label: "Widescreen XHD",      size: "2048x1152", ratio: "16:9" },
+  landscape_31:       { label: "Ultra Wide 3:1 (max)",size: "1536x512",  ratio: "3:1"  },
 };
 
 const IMAGE_QUALITY = ["low", "medium", "high"];
