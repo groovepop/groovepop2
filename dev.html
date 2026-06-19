@@ -1402,7 +1402,8 @@ async function generateRaw(styleLines, caption, tag1, signal) {
   if (photoBlob) fd.append('image[]', photoBlob, 'photo.jpg');
   fd.append('prompt', prompt);
   fd.append('n','1'); fd.append('size',size); fd.append('quality',quality);
-  fd.append('output_format',format); fd.append('output_compression','80');
+  fd.append('output_format',format);
+  if (format === 'jpeg') fd.append('output_compression','80');
 
   const url = `${AZURE_EP}/openai/deployments/${IMG_DEP}/images/edits?api-version=2025-04-01-preview`;
   for (let attempt = 0; attempt < 3; attempt++) {
@@ -1430,7 +1431,7 @@ async function generateDirectRaw(prompt, signal) {
       method:'POST',
       headers:{'api-key':key,'Content-Type':'application/json'},
       signal,
-      body: JSON.stringify({ prompt, n:1, size, quality, output_format:format, output_compression:80 })
+      body: JSON.stringify({ prompt, n:1, size, quality, output_format:format, ...(format === 'jpeg' ? {output_compression:80} : {}) })
     });
     if (res.ok) return `data:image/${format};base64,${(await res.json()).data[0].b64_json}`;
     if (res.status === 429 && attempt < 2) {
