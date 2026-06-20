@@ -315,7 +315,7 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
         <option value="groovepop">Mode: Groove Pop</option>
         <option value="direct">Mode: Direct</option>
       </select>
-      <select id="format-select" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px"></select>
+      <select id="count-select" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px"></select>
       <select id="quality-select" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px"></select>
       <select id="size-select" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px"></select>
       <button class="bp" id="run-btn" onclick="runNow()" style="margin-left:auto">▶ Run</button>
@@ -452,7 +452,6 @@ const IMAGE_SIZES = {
 };
 
 const IMAGE_QUALITY = ["low", "medium", "high"];
-const IMAGE_FORMAT  = ["png", "jpeg"];
 
 let allTags = [], filteredTags = [];
 let photoBlob = null, photoURL = null;
@@ -818,14 +817,14 @@ async function init() {
   await openMuseDB();
   await loadMusesFromDB();
 
-  // Populate Format
-  const fmtSel = document.getElementById('format-select');
-  IMAGE_FORMAT.forEach(f => {
+  // Populate Count
+  const cSel = document.getElementById('count-select');
+  for (let i = 1; i <= 5; i++) {
     const o = document.createElement('option');
-    o.value = f; o.textContent = f.toUpperCase();
-    if (f === 'jpeg') o.selected = true;
-    fmtSel.appendChild(o);
-  });
+    o.value = i; o.textContent = i + (i === 1 ? ' Image' : ' Images');
+    if (i === 1) o.selected = true;
+    cSel.appendChild(o);
+  }
 
   // Populate Quality
   const qSel = document.getElementById('quality-select');
@@ -1153,49 +1152,62 @@ async function runNow() {
   if (elapsed < RUN_COOLDOWN_MS && lastRunTime > 0) return; // silently blocked
   lastRunTime = now;
   startCooldownUI();
-  const id   = 'r' + Date.now();
+  const count = parseInt(document.getElementById('count-select').value) || 1;
   const controller = new AbortController();
+  const ids = [];
 
-  runningControllers[id] = controller;
-  
   const label    = mode === 'direct' ? 'Direct Generation' : 'Custom';
   const fakeTags = [{label,subtheme:'Custom',key:'custom',prompt:[], size: getOutputSize()}];
   const quality  = document.getElementById('quality-select').value;
   const baseKey  = mode === 'direct' ? 'direct' : 'custom';
-
-  results[id] = { status:'running', tags:fakeTags, label, freeform, quality, caption:null, baseKey, startedAt:Date.now(), elapsed:null, museId: activeMuseId };
-  cardFolder[id] = activeFolderId;
+  
+  for (let i = 0; i < count; i++) {
+    const id = 'r' + Date.now() + '_' + i;
+    ids.push(id);
+    runningControllers[id] = controller;
+    results[id] = { status:'running', tags:fakeTags, label, freeform, quality, format:'jpeg', caption:null, baseKey, startedAt:Date.now(), elapsed:null, museId: activeMuseId };
+    cardFolder[id] = activeFolderId;
+    allResults.unshift(id);
+    resultCount++;
+  }
+  
   saveFolders();
-  allResults.unshift(id);
-  resultCount++;
   document.getElementById('h-results').textContent = resultCount;
   showGrid();
   currentPage = 0;
   renderPage();
-  startTimer(id);
+  ids.forEach(id => startTimer(id));
 
   try {
-    let imageURL;
+    let imageURLs;
     if (mode === 'groovepop') {
       const { caption, subjectCount } = await getCaption(controller.signal);
-      results[id].caption = caption;
-      results[id].subjectCount = subjectCount;
-      renderCard(id);
-      imageURL = await generateRaw(freeform, caption, null, controller.signal);
+      ids.forEach(id => {
+        results[id].caption = caption;
+        results[id].subjectCount = subjectCount;
+        renderCard(id);
+      });
+      imageURLs = await generateRaw(freeform, caption, null, controller.signal, count);
     } else {
-      imageURL = await generateDirectRaw(freeform, controller.signal);
+      imageURLs = await generateDirectRaw(freeform, controller.signal, count);
     }
 
-    results[id] = { ...results[id], status:'done', imageURL, elapsed:((Date.now()-results[id].startedAt)/1000).toFixed(1) };
-    renderCard(id);
-    autoUpload(id);
+    imageURLs.forEach((url, i) => {
+      const id = ids[i];
+      if (!id) return;
+      results[id] = { ...results[id], status:'done', imageURL: url, elapsed:((Date.now()-results[id].startedAt)/1000).toFixed(1) };
+      renderCard(id);
+      autoUpload(id);
+    });
     return;
   } catch(e) {
-    results[id] = { ...results[id], status:'error', error: e.name==='AbortError' ? 'Cancelled' : e.message, elapsed:((Date.now()-results[id].startedAt)/1000).toFixed(1) };
+    ids.forEach(id => {
+      results[id] = { ...results[id], status:'error', error: e.name==='AbortError' ? 'Cancelled' : e.message, elapsed:((Date.now()-results[id].startedAt)/1000).toFixed(1) };
+      renderCard(id);
+    });
   }
 
-  delete runningControllers[id];
-  renderCard(id);
+  ids.forEach(id => delete runningControllers[id]);
 }
 
 async function rerun(id) {
@@ -1215,10 +1227,10 @@ async function rerun(id) {
   startTimer(id);
 
   try {
-    let imageURL;
+    let imageURLs;
     if (r.baseKey === 'direct') {
       const prompt = r.freeform || r.tags[0].label;
-      imageURL = await generateDirectRaw(prompt, controller.signal);
+      imageURLs = await generateDirectRaw(prompt, controller.signal, 1);
     } else {
       let caption = r.caption;
       if (!caption) {
@@ -1235,9 +1247,10 @@ async function rerun(id) {
         resolvePrompt(t0).map(l=>`"${l}",`).join('\n') +
         (t1r ? '\n\n---\n\n' + resolvePrompt(t1r).map(l=>`"${l}",`).join('\n') : '');
 
-      imageURL = await generateRaw(styleLines, caption, r.tags[0]?.key !== 'custom' ? t0 : null, controller.signal);
+      imageURLs = await generateRaw(styleLines, caption, r.tags[0]?.key !== 'custom' ? t0 : null, controller.signal, 1);
     }
 
+    const imageURL = imageURLs[0];
     results[id] = { ...results[id], status:'done', imageURL, elapsed:((Date.now()-results[id].startedAt)/1000).toFixed(1) };
     renderCard(id);
     autoUpload(id);
@@ -1392,24 +1405,27 @@ function startTimer(id) {
   }, 500);
 }
 
-async function generateRaw(styleLines, caption, tag1, signal) {
+async function generateRaw(styleLines, caption, tag1, signal, count = 1) {
   const key     = document.getElementById('key-input').value.trim();
   const size    = getOutputSize();
   const quality = document.getElementById('quality-select').value;
-  const format  = document.getElementById('format-select').value;
+  const format  = 'jpeg';
   const prompt  = caption + '\n\n---\n\n' + styleLines;
 
   const fd = new FormData();
   if (photoBlob) fd.append('image[]', photoBlob, 'photo.jpg');
   fd.append('prompt', prompt);
-  fd.append('n','1'); fd.append('size',size); fd.append('quality',quality);
+  fd.append('n', count.toString()); fd.append('size',size); fd.append('quality',quality);
   fd.append('output_format',format);
   if (format === 'jpeg') fd.append('output_compression','80');
 
   const url = `${AZURE_EP}/openai/deployments/${IMG_DEP}/images/edits?api-version=2025-04-01-preview`;
   for (let attempt = 0; attempt < 3; attempt++) {
     const res = await fetch(url, { method:'POST', headers:{'api-key':key}, body:fd, signal });
-    if (res.ok) return `data:image/${format};base64,${(await res.json()).data[0].b64_json}`;
+    if (res.ok) {
+      const json = await res.json();
+      return json.data.map(d => `data:image/${format};base64,${d.b64_json}`);
+    }
     if (res.status === 429 && attempt < 2) {
       const retryAfter = parseInt(res.headers.get('retry-after') || '10');
       await new Promise(r => setTimeout(r, (retryAfter || 10) * 1000));
@@ -1420,11 +1436,11 @@ async function generateRaw(styleLines, caption, tag1, signal) {
   }
 }
 
-async function generateDirectRaw(prompt, signal) {
+async function generateDirectRaw(prompt, signal, count = 1) {
   const key     = document.getElementById('key-input').value.trim();
   const size    = getOutputSize();
   const quality = document.getElementById('quality-select').value;
-  const format  = document.getElementById('format-select').value;
+  const format  = 'jpeg';
 
   const url = `${AZURE_EP}/openai/deployments/${IMG_DEP}/images/generations?api-version=2025-04-01-preview`;
   for (let attempt = 0; attempt < 3; attempt++) {
@@ -1432,9 +1448,12 @@ async function generateDirectRaw(prompt, signal) {
       method:'POST',
       headers:{'api-key':key,'Content-Type':'application/json'},
       signal,
-      body: JSON.stringify({ prompt, n:1, size, quality, output_format:format, ...(format === 'jpeg' ? {output_compression:80} : {}) })
+      body: JSON.stringify({ prompt, n:count, size, quality, output_format:format, ...(format === 'jpeg' ? {output_compression:80} : {}) })
     });
-    if (res.ok) return `data:image/${format};base64,${(await res.json()).data[0].b64_json}`;
+    if (res.ok) {
+      const json = await res.json();
+      return json.data.map(d => `data:image/${format};base64,${d.b64_json}`);
+    }
     if (res.status === 429 && attempt < 2) {
       const retryAfter = parseInt(res.headers.get('retry-after') || '10');
       await new Promise(r => setTimeout(r, (retryAfter || 10) * 1000));
