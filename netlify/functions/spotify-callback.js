@@ -5,6 +5,7 @@
 // in system/spotifyToken — never readable by client code or guests.
 
 const admin = require('firebase-admin');
+const { getFirestore } = require('firebase-admin/firestore');
 
 let dbInstance = null;
 
@@ -14,7 +15,8 @@ let dbInstance = null;
 function getDb() {
   if (dbInstance) return dbInstance;
 
-  if (!admin.apps || admin.apps.length === 0) {
+  const apps = admin.getApps();
+  if (!apps || apps.length === 0) {
     let serviceAccount;
 
     // Check for individual variables first (much smaller environment footprint)
@@ -42,11 +44,11 @@ function getDb() {
     }
 
     admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount)
+      credential: admin.cert(serviceAccount)
     });
   }
 
-  dbInstance = admin.firestore();
+  dbInstance = getFirestore();
   return dbInstance;
 }
 
