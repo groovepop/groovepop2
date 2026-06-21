@@ -15,16 +15,17 @@ function getDb() {
   if (dbInstance) return dbInstance;
 
   if (!admin.apps || admin.apps.length === 0) {
-    const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
-    if (!raw) {
-      throw new Error('FIREBASE_SERVICE_ACCOUNT env var is missing or empty.');
+    const b64 = process.env.FIREBASE_SERVICE_ACCOUNT_B64;
+    if (!b64) {
+      throw new Error('FIREBASE_SERVICE_ACCOUNT_B64 env var is missing or empty.');
     }
 
     let serviceAccount;
     try {
-      serviceAccount = JSON.parse(raw);
+      const decoded = Buffer.from(b64, 'base64').toString('utf8');
+      serviceAccount = JSON.parse(decoded);
     } catch (e) {
-      throw new Error('FIREBASE_SERVICE_ACCOUNT is not valid JSON: ' + e.message);
+      throw new Error('FIREBASE_SERVICE_ACCOUNT_B64 did not decode to valid JSON: ' + e.message);
     }
 
     admin.initializeApp({
