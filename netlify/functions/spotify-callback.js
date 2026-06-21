@@ -6,12 +6,35 @@
 
 const admin = require('firebase-admin');
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT))
-  });
+let dbInstance = null;
+
+// Lazy, defensive init — runs inside the handler's try/catch instead of at
+// module load time, so any failure here gets logged with its real message
+// instead of crashing with an opaque "Cannot read properties of undefined" error.
+function getDb() {
+  if (dbInstance) return dbInstance;
+
+  if (!admin.apps || admin.apps.length === 0) {
+    const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
+    if (!raw) {
+      throw new Error('FIREBASE_SERVICE_ACCOUNT env var is missing or empty.');
+    }
+
+    let serviceAccount;
+    try {
+      serviceAccount = JSON.parse(raw);
+    } catch (e) {
+      throw new Error('FIREBASE_SERVICE_ACCOUNT is not valid JSON: ' + e.message);
+    }
+
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+  }
+
+  dbInstance = admin.firestore();
+  return dbInstance;
 }
-const db = admin.firestore();
 
 exports.handler = async (event) => {
   const params = event.queryStringParameters || {};
@@ -23,6 +46,14 @@ exports.handler = async (event) => {
   }
   if (!code) {
     return { statusCode: 400, body: 'Missing authorization code.' };
+  }
+
+  let db;
+  try {
+    db = getDb();
+  } catch (initErr) {
+    console.error('Firebase Admin init failed:', initErr);
+    return { statusCode: 500, body: `Firebase Admin init failed: ${initErr.message}` };
   }
 
   const clientId = process.env.SPOTIFY_CLIENT_ID;
