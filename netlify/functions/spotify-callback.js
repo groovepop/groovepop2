@@ -15,17 +15,30 @@ function getDb() {
   if (dbInstance) return dbInstance;
 
   if (!admin.apps || admin.apps.length === 0) {
-    const b64 = process.env.FIREBASE_SERVICE_ACCOUNT_B64;
-    if (!b64) {
-      throw new Error('FIREBASE_SERVICE_ACCOUNT_B64 env var is missing or empty.');
-    }
-
     let serviceAccount;
-    try {
-      const decoded = Buffer.from(b64, 'base64').toString('utf8');
-      serviceAccount = JSON.parse(decoded);
-    } catch (e) {
-      throw new Error('FIREBASE_SERVICE_ACCOUNT_B64 did not decode to valid JSON: ' + e.message);
+
+    // Check for individual variables first (much smaller environment footprint)
+    if (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PROJECT_ID) {
+      serviceAccount = {
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        // Replace escaped newlines if they are present in the environment variable
+        privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+      };
+    } else {
+      // Fallback to the original base64 or raw JSON variables
+      const rawOrB64 = process.env.FIREBASE_SERVICE_ACCOUNT_B64 || process.env.FIREBASE_SERVICE_ACCOUNT;
+      if (!rawOrB64) {
+        throw new Error('Missing Firebase credentials. Please configure FIREBASE_PRIVATE_KEY, FIREBASE_CLIENT_EMAIL, and FIREBASE_PROJECT_ID, or configure FIREBASE_SERVICE_ACCOUNT_B64.');
+      }
+
+      try {
+        const trimmed = rawOrB64.trim();
+        const decoded = trimmed.startsWith('{') ? trimmed : Buffer.from(trimmed, 'base64').toString('utf8');
+        serviceAccount = JSON.parse(decoded);
+      } catch (e) {
+        throw new Error('Firebase credentials could not be parsed: ' + e.message);
+      }
     }
 
     admin.initializeApp({
