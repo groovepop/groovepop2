@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GROOVE POP WEDDINGS | App Builder</title>
+    <meta name="description" content="Create a customized Groove Pop PWA for your wedding.">
+    <!-- Google Fonts: Outfit for headers, Inter for professional body text -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@800;900&display=swap" rel="stylesheet">
+    <!-- Reusing party.css as-is: same class system (glass-panel, form-grid, grid-col,
+         form-section, input-group, input-row, palette-row, custom-select, req-field).
+         Rename/fork this file later if Weddings ends up wanting its own visual identity. -->
+    <link rel="stylesheet" href="party.css">
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <div class="form-wrapper glass-panel">
+            <header>
+                <h1>GROOVE <span class="pop">POP</span></h1>
+                <div class="party-text">WEDDINGS</div>
+            </header>
+
+            <form id="wedding-form">
+                <div class="form-grid">
+                    <!-- Column 1 -->
+                    <div class="grid-col">
+                        <section class="form-section">
+                            <h2><span class="event-text">The</span> <span class="purple-text">Couple</span></h2>
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="partner1-name">Partner 1 Name *</label>
+                                    <input type="text" id="partner1-name" class="req-field" placeholder="Sarah" required>
+                                </div>
+                                <div class="input-group">
+                                    <label for="partner2-name">Partner 2 Name *</label>
+                                    <input type="text" id="partner2-name" class="req-field" placeholder="John" required>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label for="wedding-hashtag">Wedding Hashtag</label>
+                                <input type="text" id="wedding-hashtag" placeholder="#SarahAndJohn2026">
+                            </div>
+                        </section>
+
+                        <section class="form-section">
+                            <h2><span class="event-text">Wedding</span> <span class="purple-text">Style</span></h2>
+                            <div class="input-group">
+                                <select id="wedding-style" class="req-field custom-select" required>
+                                    <option value="" disabled selected>Pick a Style...</option>
+                                    <option value="classic">Classic Romance</option>
+                                    <option value="modern">Modern Minimal</option>
+                                    <option value="boho">Boho Garden</option>
+                                    <option value="vintage">Vintage Glam</option>
+                                    <option value="rustic">Rustic Charm</option>
+                                </select>
+                            </div>
+                        </section>
+
+                        <section class="form-section">
+                            <h2><span class="event-text">Date &</span> <span class="purple-text">Locations</span></h2>
+                            <div class="input-group">
+                                <label for="wedding-date">Wedding Date *</label>
+                                <input type="date" id="wedding-date" class="req-field" required>
+                            </div>
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="ceremony-time">Ceremony Time</label>
+                                    <input type="time" id="ceremony-time">
+                                </div>
+                                <div class="input-group">
+                                    <label for="ceremony-venue">Ceremony Venue</label>
+                                    <input type="text" id="ceremony-venue" placeholder="St. Andrew's Church">
+                                </div>
+                            </div>
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="reception-time">Reception Time *</label>
+                                    <input type="time" id="reception-time" class="req-field" required>
+                                </div>
+                                <div class="input-group">
+                                    <label for="reception-venue">Reception Venue *</label>
+                                    <input type="text" id="reception-venue" class="req-field" placeholder="The Grand Hotel, 123 Main St" required>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Column 2 -->
+                    <div class="grid-col">
+                        <section class="form-section">
+                            <h2><span class="event-text">Guest</span> <span class="purple-text">Info</span></h2>
+                            <div class="input-group">
+                                <label for="welcome-message">Welcome Message</label>
+                                <input type="text" id="welcome-message" placeholder="Thank you for celebrating with us!">
+                            </div>
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="website-link">Wedding Website</label>
+                                    <input type="text" id="website-link" placeholder="https://...">
+                                </div>
+                                <div class="input-group">
+                                    <label for="registry-link">Registry Link</label>
+                                    <input type="text" id="registry-link" placeholder="https://...">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label for="dress-code">Dress Code</label>
+                                <input type="text" id="dress-code" placeholder="Black Tie Optional">
+                            </div>
+                        </section>
+
+                        <section class="form-section h-100">
+                            <h2><span class="event-text">Event</span> <span class="purple-text">Design</span></h2>
+
+                            <div class="palette-row">
+                                <div class="input-group color-picker">
+                                    <label for="bg-color">Background</label>
+                                    <input type="color" id="bg-color" value="#111111">
+                                </div>
+                                <div class="input-group color-picker">
+                                    <label for="primary-color">Text</label>
+                                    <input type="color" id="primary-color" value="#f5f2ec">
+                                </div>
+                                <div class="input-group color-picker">
+                                    <label for="accent-color">Accent</label>
+                                    <input type="color" id="accent-color" value="#a00ae6">
+                                </div>
+                            </div>
+
+                            <div class="form-actions" style="margin-top: auto; padding-top: 2rem;">
+                                <button type="button" class="btn-primary" id="btn-generate">Generate Prototype PWA</button>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Output / Share Section -->
+    <div class="overlay" id="output-overlay" style="display: none;">
+        <div class="modal glass-panel">
+            <h2>Ready to Celebrate! 💍</h2>
+            <p>Your custom PWA prototype is ready.</p>
+
+            <div class="share-box">
+                <label>Shareable URL</label>
+                <div class="url-group">
+                    <input type="text" id="share-url" readonly value="Generating...">
+                    <button type="button" id="copy-btn" class="btn-icon">📋</button>
+                </div>
+                <div class="share-link-wrap" style="margin-top: 0.5rem; text-align: left;">
+                    <a id="share-link" href="#" target="_blank" style="color: var(--accent); text-decoration: underline; font-size: 0.9rem; word-break: break-all; display: none;"></a>
+                </div>
+            </div>
+            <div class="share-box" style="margin-top: 1rem;">
+                <label>Activation Key (Enter in app to activate)</label>
+                <div class="url-group">
+                    <input type="text" id="activation-key" readonly value="Generating...">
+                    <button type="button" id="copy-key-btn" class="btn-icon">📋</button>
+                </div>
+            </div>
+
+            <div class="qr-container">
+                <div id="qrcode"></div>
+                <p>Scan to test on your phone</p>
+            </div>
+
+            <button type="button" class="btn-secondary mt-1" id="btn-reset">Close & Create Another</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (Compat Version to avoid file:/// CORS issues) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+    <script src="wedding.js?v=1"></script>
+</body>
+</html>

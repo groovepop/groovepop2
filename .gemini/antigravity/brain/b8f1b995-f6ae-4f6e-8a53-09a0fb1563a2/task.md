@@ -1,0 +1,36 @@
+- `[x]` **1. Default Colors & Horizontal Logo Generation**
+  - `[x]` Update `party.html` default accent color input value to `#a00ae6`.
+  - `[x]` Update `party.js` logo generation call to request size `1792x1024`.
+  - `[x]` Update `party_booth_template.html` default `--gold` and `--gold-light` CSS variables to purple colors.
+- `[x]` **2. PWA App Shell Top Bar & Revert Logo Sequence**
+  - `[x]` Add `<span id="app-bar-logo-text">` inside `#app-bar-logo-wrap` in `party_booth_template.html`.
+  - `[x]` Update database load logic to display `logoUrls[0]` as top bar image (and hide text event name) without overwriting DOM elements.
+  - `[x]` Update `startLogoTransformation()` to always use `fx-hue` (color shifts + scan line) and avoid random effects.
+  - `[x]` Update `endLogoTransformation()` to restore the last showing logo to the top panel and safely toggle text event name display.
+- `[x]` **3. On-Screen Error Debugging**
+  - `[x]` Add `<div id="error-card-debug">` under `#error-card-msg` in `party_booth_template.html`.
+  - `[x]` Update `startGeneration()`, `cancelGeneration()`, and catch blocks to toggle and populate the debug element.
+- `[x]` **4. Bug Fixes & Adjustments**
+  - `[x]` Fix the image generation crash by adding `<img class="result-thumb" id="result-thumb" style="display:none;" src="" alt="">` back to the DOM.
+  - `[x]` Double the size of the top app bar logo (from 32px height to 64px height).
+  - `[x]` Change prompt templates in `party.js` to request dynamic background colors using the selected theme background color (`bgColor`).
+  - `[x]` Remove `mix-blend-mode: screen;` on logo images so they display correctly regardless of dark/light background.
+  - `[x]` Implement dynamic color extraction: check corner pixel color of the generated logo and set the app's background color `colors.bg` to that exact hex code, rendering the logo background seamless.
+  - `[x]` Fix race condition in `endLogoTransformation` that caused the top bar logo to occasionally disappear due to cached image `onload` behavior.
+  - `[x]` Remove manual event logo upload field from `party.html` and clean up `party.js` listeners and variables.
+  - `[x]` Change the trial alert banner lightning bolt icon to a circled key SVG icon with perfect alignment.
+- `[x]` **5. Dual-Tab Camera & AI Generated Frames**
+  - `[x]` Implement builder-side frame generation in `party.js` generating 6 frames in sequence after logos finish.
+  - `[x]` Port dual-tab camera markup (Filters / Transform) and CSS style rules to PWA template.
+  - `[x]` Port 12 real-time pixel filters and GPU-accelerated CSS preview maps.
+  - `[x]` Implement automatic cacheable checkerboard chroma-keying for AI frames.
+  - `[x]` Fix style grid mismatch on style randomization by auto-aligning active subtheme tab and scrolling selected styles into view.
+  - `[x]` Explicitly toggle bottom bar state displays to guarantee "3 PARTY" button disappears during processing.
+- `[x]` **6. Minimal Redesign & Viewfinder Optimization**
+  - `[x]` Create a single unified 1:1 aspect ratio square viewfinder container inside `.home-left`.
+  - `[x]` Clean up switcher tab layout to place tabs cleanly above the viewfinder.
+  - `[x]` Move the generating scans, frames, and final AI results inside the unified viewfinder.
+  - `[x]` Design circular swatches for filters and square thumbs for frames.
+  - `[x]` Add "CHANGE PHOTO" overlay button inside viewfinder in Transform mode.
+  - `[x]` Implement center-cropping and active front-facing camera mirroring on capture.
+  - `[x]` Test and verify local development compilation.
