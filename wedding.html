@@ -111,6 +111,22 @@
                             </div>
                         </section>
 
+                        <section class="form-section">
+                            <h2><span class="event-text">Music &</span> <span class="purple-text">DJ</span></h2>
+                            <div class="input-group">
+                                <label for="dj-mode">DJ Mode</label>
+                                <select id="dj-mode" class="custom-select">
+                                    <option value="off">Off — no song requests</option>
+                                    <option value="live" selected>Live DJ — guests vote, a human plays them</option>
+                                    <option value="auto">Auto DJ — guest requests auto-queue to Spotify</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="spotify-playlist">Backing Playlist (optional)</label>
+                                <input type="text" id="spotify-playlist" placeholder="Paste a Spotify playlist link, or leave blank for our default wedding mix">
+                            </div>
+                        </section>
+
                         <section class="form-section h-100">
                             <h2><span class="event-text">Event</span> <span class="purple-text">Design</span></h2>
 
@@ -162,6 +178,13 @@
                     <button type="button" id="copy-key-btn" class="btn-icon">📋</button>
                 </div>
             </div>
+            <div class="share-box" style="margin-top: 1rem;">
+                <label>Admin Key (for the DJ fine-tuning panel — keep this one)</label>
+                <div class="url-group">
+                    <input type="text" id="admin-key" readonly value="Generating...">
+                    <button type="button" id="copy-admin-key-btn" class="btn-icon">📋</button>
+                </div>
+            </div>
 
             <div class="qr-container">
                 <div id="qrcode"></div>
@@ -176,6 +199,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-    <script src="wedding.js?v=1"></script>
+    <script src="wedding.js?v=2"></script>
 </body>
 </html>

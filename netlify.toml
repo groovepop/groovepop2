@@ -11,6 +11,15 @@
 [functions."spotify-callback"]
   external_node_modules = ["firebase-admin"]
 
+[functions."spotify-queue-next"]
+  external_node_modules = ["firebase-admin"]
+
+[functions."spotify-devices"]
+  external_node_modules = ["firebase-admin"]
+
+[functions."spotify-start-playback"]
+  external_node_modules = ["firebase-admin"]
+
 [[headers]]
   for = "/*"
   [headers.values]
