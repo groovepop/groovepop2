@@ -53,6 +53,13 @@ const els = {
     primaryColor: document.getElementById('primary-color'),
     accentColor: document.getElementById('accent-color'),
 
+    // Music & DJ
+    djMode: document.getElementById('dj-mode'),
+    spotifyPlaylist: document.getElementById('spotify-playlist'),
+
+    // Photo Gallery
+    moderationEnabled: document.getElementById('moderation-enabled'),
+
     // Output Modal
     outputOverlay: document.getElementById('output-overlay'),
     shareUrl: document.getElementById('share-url'),
@@ -63,7 +70,31 @@ const els = {
 };
 
 // ---------------------------------------------------------------------------
-// Wedding style prompt library
+// Backing playlist
+// ---------------------------------------------------------------------------
+// TODO: swap this for a real GROOVE POP-curated wedding playlist ID once
+// you've built one. This plays as the ambient soundtrack; guest requests
+// (Live or Auto DJ mode) interleave into it automatically via Spotify's
+// own queue mechanic — no fallback/filler logic needed on our end.
+const DEFAULT_WEDDING_PLAYLIST_ID = 'REPLACE_WITH_YOUR_DEFAULT_PLAYLIST_ID';
+
+// Accepts a full Spotify playlist URL, a spotify:playlist:ID URI, or a bare ID.
+// Falls back to the GROOVE POP default if the field is blank or unparseable.
+function extractSpotifyPlaylistId(input) {
+    if (!input || !input.trim()) return DEFAULT_WEDDING_PLAYLIST_ID;
+    const trimmed = input.trim();
+
+    const urlMatch = trimmed.match(/playlist[/:]([a-zA-Z0-9]+)/);
+    if (urlMatch) return urlMatch[1];
+
+    // Bare ID (Spotify IDs are 22 base62 characters)
+    if (/^[a-zA-Z0-9]{22}$/.test(trimmed)) return trimmed;
+
+    console.warn('[GP] Could not parse Spotify playlist input, falling back to default:', trimmed);
+    return DEFAULT_WEDDING_PLAYLIST_ID;
+}
+
+
 // Replaces the old eventType branching (wedding/corporate/birthday/festival/
 // nightlife) with 5 wedding aesthetics, each driving its own decorative frame,
 // typographic frame, and logo prompt. Same two-list structure as the original
@@ -288,13 +319,17 @@ els.btnGenerate.addEventListener('click', async () => {
             }
         }
 
-        // Generate random activation key
-        const generateKey = () => {
+        // Generate random activation key + a separate, permanent admin key.
+        // The activation key is meant to be consumed once (pendingKey -> isActive).
+        // The admin key never gets cleared — it's the durable way back into the
+        // DJ fine-tuning panel for the life of the event.
+        const generateKey = (prefix) => {
             const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // readable chars
             const r = (len) => Array.from({length: len}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-            return `WED-${r(4)}-${r(4)}`;
+            return `${prefix}-${r(4)}-${r(4)}`;
         };
-        const randomKey = generateKey();
+        const randomKey = generateKey('WED');
+        const adminKey = generateKey('ADMIN');
 
         // 2. Gather Configuration
         const weddingConfig = {
@@ -319,6 +354,11 @@ els.btnGenerate.addEventListener('click', async () => {
             },
             logoUrls: logoUrls,
             frameUrls: frameUrls,
+            djMode: els.djMode.value,
+            spotifyPlaylistId: extractSpotifyPlaylistId(els.spotifyPlaylist.value),
+            bannedTracks: [],
+            moderationEnabled: els.moderationEnabled.value === 'true',
+            adminKey: adminKey,
             pendingKey: randomKey,
             isActive: false,
             createdAt: new Date()
@@ -341,6 +381,7 @@ els.btnGenerate.addEventListener('click', async () => {
 
         els.shareUrl.value = finalUrl;
         document.getElementById('activation-key').value = randomKey;
+        document.getElementById('admin-key').value = adminKey;
 
         const shareLink = document.getElementById('share-link');
         if (shareLink) {
@@ -389,6 +430,15 @@ document.getElementById('copy-key-btn').addEventListener('click', () => {
     setTimeout(() => { document.getElementById('copy-key-btn').textContent = "📋"; }, 2000);
 });
 
+// Copy Admin Key
+document.getElementById('copy-admin-key-btn').addEventListener('click', () => {
+    const keyInput = document.getElementById('admin-key');
+    keyInput.select();
+    document.execCommand('copy');
+    document.getElementById('copy-admin-key-btn').textContent = "✅";
+    setTimeout(() => { document.getElementById('copy-admin-key-btn').textContent = "📋"; }, 2000);
+});
+
 // Reset & Close Modal
 els.btnReset.addEventListener('click', () => {
     document.getElementById('wedding-form').reset();
@@ -426,6 +476,8 @@ function prefillForm() {
     if (els.websiteLink) els.websiteLink.value = "https://groovepop.com/sarahandjohn";
     if (els.registryLink) els.registryLink.value = "https://registry.example.com/sarahandjohn";
     if (els.dressCode) els.dressCode.value = "Black Tie Optional";
+    if (els.djMode) els.djMode.value = "live";
+    if (els.spotifyPlaylist) els.spotifyPlaylist.value = "";
 }
 
 // Run prefill on load

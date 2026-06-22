@@ -57,6 +57,9 @@ const els = {
     djMode: document.getElementById('dj-mode'),
     spotifyPlaylist: document.getElementById('spotify-playlist'),
 
+    // Photo Gallery
+    moderationEnabled: document.getElementById('moderation-enabled'),
+
     // Output Modal
     outputOverlay: document.getElementById('output-overlay'),
     shareUrl: document.getElementById('share-url'),
@@ -73,7 +76,7 @@ const els = {
 // you've built one. This plays as the ambient soundtrack; guest requests
 // (Live or Auto DJ mode) interleave into it automatically via Spotify's
 // own queue mechanic — no fallback/filler logic needed on our end.
-const DEFAULT_WEDDING_PLAYLIST_ID = 'https://open.spotify.com/playlist/4K7mNtRMRsAugsRx0quoqj';
+const DEFAULT_WEDDING_PLAYLIST_ID = 'REPLACE_WITH_YOUR_DEFAULT_PLAYLIST_ID';
 
 // Accepts a full Spotify playlist URL, a spotify:playlist:ID URI, or a bare ID.
 // Falls back to the GROOVE POP default if the field is blank or unparseable.
@@ -354,6 +357,7 @@ els.btnGenerate.addEventListener('click', async () => {
             djMode: els.djMode.value,
             spotifyPlaylistId: extractSpotifyPlaylistId(els.spotifyPlaylist.value),
             bannedTracks: [],
+            moderationEnabled: els.moderationEnabled.value === 'true',
             adminKey: adminKey,
             pendingKey: randomKey,
             isActive: false,
