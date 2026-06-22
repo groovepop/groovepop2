@@ -44,7 +44,7 @@ function getDb() {
     }
 
     admin.initializeApp({
-      credential: admin.cert(serviceAccount)
+      credential: admin.credential.cert(serviceAccount)
     });
   }
 

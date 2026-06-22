@@ -72,6 +72,7 @@ exports.handler = async (event) => {
       height:    r.height,
       createdAt: r.created_at,
       status:    tags.includes('status_pending') ? 'pending' : 'approved',
+      featured:  tags.includes('status_featured'),
       guestName: ctx.guestName || '',
       styleName: ctx.styleName || '',
       caption:   ctx.caption   || ''

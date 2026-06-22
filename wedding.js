@@ -1,8 +1,8 @@
-// Live Firebase configuration for Groove Pop Weddings
+// Live Firebase configuration for Groove Pop Weddings (WhiteRose)
 // NOTE: reusing the same Firebase project / "parties" collection / party_logos storage
 // path as the original Party engine, on purpose — this keeps party_booth_template.html
-// (the guest-facing PWA) working unmodified while we figure out the Weddings-specific
-// PWA config in the next phase. Rename collection/paths then if it makes sense to.
+// (the guest-facing PWA) working unmodified while the Weddings-specific PWA config
+// gets built out. Rename collection/paths then if it makes sense to.
 const firebaseConfig = {
   apiKey: "AIzaSyCdHuNkf8kdfvPjjYvt-p4te13UnJiCW1U",
   authDomain: "groovepopparty.firebaseapp.com",
@@ -34,6 +34,7 @@ const els = {
 
     // Style
     weddingStyle: document.getElementById('wedding-style'),
+    palettePreview: document.getElementById('palette-preview'),
 
     // Date & Locations
     weddingDate: document.getElementById('wedding-date'),
@@ -47,11 +48,6 @@ const els = {
     websiteLink: document.getElementById('website-link'),
     registryLink: document.getElementById('registry-link'),
     dressCode: document.getElementById('dress-code'),
-
-    // Design
-    bgColor: document.getElementById('bg-color'),
-    primaryColor: document.getElementById('primary-color'),
-    accentColor: document.getElementById('accent-color'),
 
     // Music & DJ
     djMode: document.getElementById('dj-mode'),
@@ -70,13 +66,58 @@ const els = {
 };
 
 // ---------------------------------------------------------------------------
+// Locked wedding-style color palettes
+// ---------------------------------------------------------------------------
+// Replaces the old free-form color picker. Each Wedding Style carries one
+// curated, fixed {bg, text, accent} set — chosen so AI-generated frames and
+// logos always pair with colors that were actually designed to go together.
+// No override field; this IS the design control now.
+const WEDDING_STYLE_PALETTES = {
+    classic: { bg: '#FAF6F0', text: '#2B2420', accent: '#C9A66B' }, // ivory / espresso / antique gold
+    modern:  { bg: '#FFFFFF', text: '#22252A', accent: '#B6657A' }, // white / charcoal / dusty rose
+    boho:    { bg: '#F5F0E1', text: '#3E4A33', accent: '#C1684A' }, // cream / olive / terracotta
+    vintage: { bg: '#15120F', text: '#EFE3C8', accent: '#C9A227' }, // near-black / champagne / gold
+    rustic:  { bg: '#EDE3D3', text: '#4A372A', accent: '#7C8C66' }  // kraft / walnut / sage
+};
+
+function getPaletteFor(styleKey) {
+    return WEDDING_STYLE_PALETTES[styleKey] || WEDDING_STYLE_PALETTES.classic;
+}
+
+// Updates the live swatch preview the instant a Wedding Style is picked —
+// this is the fix for "color choices weren't carrying through": there's no
+// separate picker to fall out of sync with anymore, just this preview.
+function updatePalettePreview() {
+    if (!els.palettePreview) return;
+    const palette = getPaletteFor(els.weddingStyle.value);
+    els.palettePreview.innerHTML = '';
+    [palette.bg, palette.text, palette.accent].forEach(color => {
+        const swatch = document.createElement('div');
+        swatch.className = 'palette-swatch';
+        swatch.style.background = color;
+        swatch.title = color;
+        els.palettePreview.appendChild(swatch);
+    });
+
+    // Update root color variables for instant page demo
+    document.documentElement.style.setProperty('--paper', palette.bg);
+    document.documentElement.style.setProperty('--ink', palette.text);
+    document.documentElement.style.setProperty('--rose', palette.accent);
+    document.documentElement.style.setProperty('--gold', palette.accent);
+    document.documentElement.style.setProperty('--paper-deep', palette.bg === '#FFFFFF' ? '#F3EEE5' : palette.bg);
+}
+if (els.weddingStyle) {
+    els.weddingStyle.addEventListener('change', updatePalettePreview);
+}
+
+// ---------------------------------------------------------------------------
 // Backing playlist
 // ---------------------------------------------------------------------------
 // TODO: swap this for a real GROOVE POP-curated wedding playlist ID once
 // you've built one. This plays as the ambient soundtrack; guest requests
 // (Live or Auto DJ mode) interleave into it automatically via Spotify's
 // own queue mechanic — no fallback/filler logic needed on our end.
-const DEFAULT_WEDDING_PLAYLIST_ID = 'REPLACE_WITH_YOUR_DEFAULT_PLAYLIST_ID';
+const DEFAULT_WEDDING_PLAYLIST_ID = '37i9dQZF1DX1u5V1v4yQdf';
 
 // Accepts a full Spotify playlist URL, a spotify:playlist:ID URI, or a bare ID.
 // Falls back to the GROOVE POP default if the field is blank or unparseable.
@@ -87,18 +128,14 @@ function extractSpotifyPlaylistId(input) {
     const urlMatch = trimmed.match(/playlist[/:]([a-zA-Z0-9]+)/);
     if (urlMatch) return urlMatch[1];
 
-    // Bare ID (Spotify IDs are 22 base62 characters)
     if (/^[a-zA-Z0-9]{22}$/.test(trimmed)) return trimmed;
 
     console.warn('[GP] Could not parse Spotify playlist input, falling back to default:', trimmed);
     return DEFAULT_WEDDING_PLAYLIST_ID;
 }
 
-
-// Replaces the old eventType branching (wedding/corporate/birthday/festival/
-// nightlife) with 5 wedding aesthetics, each driving its own decorative frame,
-// typographic frame, and logo prompt. Same two-list structure as the original
-// engine: list1 = decorative frame, list2 = typographic frame.
+// ---------------------------------------------------------------------------
+// Wedding style prompt library
 // ---------------------------------------------------------------------------
 
 function buildFramePrompts(coupleNames, venue, weddingDate, bgColor, primaryColor, accentColor) {
@@ -138,7 +175,6 @@ async function generateWeddingFrames(coupleNames, venue, weddingDate, bgColor, p
     const basePrompt1 = list1Prompts[weddingStyle] || list1Prompts.classic;
     const basePrompt2 = list2Prompts[weddingStyle] || list2Prompts.classic;
 
-    // Generate 6 frames: 3 decorative (List 1) and 3 typographic (List 2)
     const framePrompts = [
         basePrompt1 + ", design variation A",
         basePrompt1 + ", design variation B",
@@ -164,7 +200,6 @@ async function generateWeddingFrames(coupleNames, venue, weddingDate, bgColor, p
 
     const results = await Promise.all(framePromises);
 
-    // Upload each base64 to Firebase Storage as image/png
     const uploadBase64ToStorage = async (base64Str, filename) => {
         const ref = storage.ref().child(`party_logos/${docId}/${filename}`);
         const snapshot = await ref.putString(base64Str, 'base64', { contentType: 'image/png' });
@@ -184,7 +219,6 @@ async function generateWeddingLogos(coupleNames, venue, weddingDate, bgColor, pr
     const prompts = buildLogoPrompts(coupleNames, venue, weddingDate, bgColor, primaryColor, accentColor);
     const basePrompt = prompts[weddingStyle] || prompts.classic;
 
-    // Generate 6 logos in parallel (gpt-image-2 allows up to 10 concurrent runs)
     const logoPromises = Array.from({ length: 6 }).map(async (_, i) => {
         const res = await fetch(`${API_BASE}/generate-logo`, {
             method: 'POST',
@@ -201,7 +235,6 @@ async function generateWeddingLogos(coupleNames, venue, weddingDate, bgColor, pr
 
     const results = await Promise.all(logoPromises);
 
-    // Upload each base64 to Firebase Storage
     const uploadBase64ToStorage = async (base64Str, filename) => {
         const ref = storage.ref().child(`party_logos/${docId}/${filename}`);
         const snapshot = await ref.putString(base64Str, 'base64', { contentType: 'image/jpeg' });
@@ -216,7 +249,9 @@ async function generateWeddingLogos(coupleNames, venue, weddingDate, bgColor, pr
     return { urls, base64s: results };
 }
 
-// Helper to extract the actual background color of the generated logo from its corner pixel
+// Helper to extract the actual background color of the generated logo from its corner pixel.
+// Kept even with locked palettes — it's a safety net in case the AI doesn't land precisely
+// on the requested hex; if it's close, this keeps the app's own chrome matching the asset.
 function getCornerColor(base64Str) {
     return new Promise((resolve) => {
         const img = new Image();
@@ -245,7 +280,6 @@ function getCornerColor(base64Str) {
 
 // Generate PWA Prototype
 els.btnGenerate.addEventListener('click', async () => {
-    // Validation
     const requiredFields = document.querySelectorAll('.req-field');
     for (let field of requiredFields) {
         if (!field.value.trim()) {
@@ -261,18 +295,18 @@ els.btnGenerate.addEventListener('click', async () => {
         let docId = "local-test-" + Date.now();
         let docRef = null;
         if (db) {
-            // Reusing the "parties" collection so the existing booth template keeps working.
             docRef = db.collection("parties").doc();
             docId = docRef.id;
         }
 
         const coupleNames = `${els.partner1Name.value} & ${els.partner2Name.value}`;
         const venue = els.receptionVenue.value;
+        const palette = getPaletteFor(els.weddingStyle.value);
 
-        // 1. Generate 6 Wedding Logos
         let logoUrls = [];
         let frameUrls = [];
-        let finalBgColor = els.bgColor.value;
+        let finalBgColor = palette.bg;
+
         if (db && storage) {
             els.btnGenerate.textContent = "Designing Wedding Logos...";
             try {
@@ -280,15 +314,14 @@ els.btnGenerate.addEventListener('click', async () => {
                     coupleNames,
                     venue,
                     els.weddingDate.value,
-                    els.bgColor.value,
-                    els.primaryColor.value,
-                    els.accentColor.value,
+                    palette.bg,
+                    palette.text,
+                    palette.accent,
                     els.weddingStyle.value,
                     docId
                 );
                 logoUrls = results.urls;
 
-                // Extract actual corner color of the first generated logo
                 if (results.base64s && results.base64s.length > 0) {
                     const corner = await getCornerColor(results.base64s[0]);
                     if (corner) {
@@ -298,9 +331,9 @@ els.btnGenerate.addEventListener('click', async () => {
                 }
             } catch (logoErr) {
                 console.error("AI Logo Generation failed, proceeding without custom logos:", logoErr);
+                alert("AI Logo Generation failed: " + logoErr.message);
             }
 
-            // 1b. Generate 6 Wedding Frames (after logos complete, to respect concurrency limit)
             els.btnGenerate.textContent = "Designing Wedding Frames...";
             try {
                 frameUrls = await generateWeddingFrames(
@@ -308,30 +341,26 @@ els.btnGenerate.addEventListener('click', async () => {
                     venue,
                     els.weddingDate.value,
                     finalBgColor,
-                    els.primaryColor.value,
-                    els.accentColor.value,
+                    palette.text,
+                    palette.accent,
                     els.weddingStyle.value,
                     docId
                 );
                 console.log("Generated frame URLs:", frameUrls);
             } catch (frameErr) {
                 console.error("AI Frame Generation failed:", frameErr);
+                alert("AI Frame Generation failed: " + frameErr.message);
             }
         }
 
-        // Generate random activation key + a separate, permanent admin key.
-        // The activation key is meant to be consumed once (pendingKey -> isActive).
-        // The admin key never gets cleared — it's the durable way back into the
-        // DJ fine-tuning panel for the life of the event.
         const generateKey = (prefix) => {
-            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // readable chars
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
             const r = (len) => Array.from({length: len}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
             return `${prefix}-${r(4)}-${r(4)}`;
         };
         const randomKey = generateKey('WED');
-        const adminKey = generateKey('ADMIN');
+        const adminKey = randomKey;
 
-        // 2. Gather Configuration
         const weddingConfig = {
             partner1Name: els.partner1Name.value,
             partner2Name: els.partner2Name.value,
@@ -339,6 +368,7 @@ els.btnGenerate.addEventListener('click', async () => {
             weddingHashtag: els.weddingHashtag.value,
             weddingStyle: els.weddingStyle.value,
             weddingDate: els.weddingDate.value,
+            eventType: 'wedding',
             ceremonyTime: els.ceremonyTime.value || '',
             ceremonyVenue: els.ceremonyVenue.value || '',
             receptionTime: els.receptionTime.value,
@@ -349,8 +379,8 @@ els.btnGenerate.addEventListener('click', async () => {
             dressCode: els.dressCode.value,
             colors: {
                 bg: finalBgColor,
-                text: els.primaryColor.value,
-                accent: els.accentColor.value
+                text: palette.text,
+                accent: palette.accent
             },
             logoUrls: logoUrls,
             frameUrls: frameUrls,
@@ -364,7 +394,6 @@ els.btnGenerate.addEventListener('click', async () => {
             createdAt: new Date()
         };
 
-        // 3. Save to Firestore
         if (docRef) {
             try {
                 await docRef.set(weddingConfig);
@@ -373,15 +402,14 @@ els.btnGenerate.addEventListener('click', async () => {
             }
         }
 
-        // 4. Generate Output URL
-        // Still pointing at the original booth template — that's the "how the event PWA
-        // is configured" question we're tackling next, not yet rebuilt for weddings.
         const baseUrl = window.location.href.replace('wedding.html', 'party_booth_template.html');
         const finalUrl = `${baseUrl}?partyId=${docId}`;
 
         els.shareUrl.value = finalUrl;
         document.getElementById('activation-key').value = randomKey;
-        document.getElementById('admin-key').value = adminKey;
+
+        const adminUrl = window.location.href.replace('wedding.html', `wedding-admin.html?key=${randomKey}`);
+        document.getElementById('admin-url').value = adminUrl;
 
         const shareLink = document.getElementById('share-link');
         if (shareLink) {
@@ -390,18 +418,22 @@ els.btnGenerate.addEventListener('click', async () => {
             shareLink.style.display = 'inline-block';
         }
 
-        // 5. Generate QR Code
+        const adminLink = document.getElementById('admin-link');
+        if (adminLink) {
+            adminLink.href = adminUrl;
+            adminLink.style.display = 'inline-block';
+        }
+
         els.qrcode.innerHTML = "";
         new QRCode(els.qrcode, {
             text: finalUrl,
             width: 160,
             height: 160,
-            colorDark : "#111111",
+            colorDark : "#2B2A28",
             colorLight : "#ffffff",
             correctLevel : QRCode.CorrectLevel.H
         });
 
-        // Show Output Modal
         els.outputOverlay.style.display = 'flex';
 
     } catch (error) {
@@ -430,19 +462,20 @@ document.getElementById('copy-key-btn').addEventListener('click', () => {
     setTimeout(() => { document.getElementById('copy-key-btn').textContent = "📋"; }, 2000);
 });
 
-// Copy Admin Key
-document.getElementById('copy-admin-key-btn').addEventListener('click', () => {
-    const keyInput = document.getElementById('admin-key');
+// Copy Admin URL
+document.getElementById('copy-admin-url-btn').addEventListener('click', () => {
+    const keyInput = document.getElementById('admin-url');
     keyInput.select();
     document.execCommand('copy');
-    document.getElementById('copy-admin-key-btn').textContent = "✅";
-    setTimeout(() => { document.getElementById('copy-admin-key-btn').textContent = "📋"; }, 2000);
+    document.getElementById('copy-admin-url-btn').textContent = "✅";
+    setTimeout(() => { document.getElementById('copy-admin-url-btn').textContent = "📋"; }, 2000);
 });
 
 // Reset & Close Modal
 els.btnReset.addEventListener('click', () => {
     document.getElementById('wedding-form').reset();
     els.outputOverlay.style.display = 'none';
+    updatePalettePreview();
     const shareLink = document.getElementById('share-link');
     if (shareLink) {
         shareLink.href = "#";
@@ -458,15 +491,12 @@ function prefillForm() {
     if (els.weddingHashtag) els.weddingHashtag.value = "#SarahAndJohn2026";
     if (els.weddingStyle) els.weddingStyle.value = "classic";
 
-    // Set date to one year from now
-    if (els.weddingDate) {
-        const nextYear = new Date();
-        nextYear.setFullYear(nextYear.getFullYear() + 1);
-        const yyyy = nextYear.getFullYear();
-        const mm = String(nextYear.getMonth() + 1).padStart(2, '0');
-        const dd = String(nextYear.getDate()).padStart(2, '0');
-        els.weddingDate.value = `${yyyy}-${mm}-${dd}`;
-    }
+    const nextYear = new Date();
+    nextYear.setFullYear(nextYear.getFullYear() + 1);
+    const yyyy = nextYear.getFullYear();
+    const mm = String(nextYear.getMonth() + 1).padStart(2, '0');
+    const dd = String(nextYear.getDate()).padStart(2, '0');
+    if (els.weddingDate) els.weddingDate.value = `${yyyy}-${mm}-${dd}`;
 
     if (els.ceremonyTime) els.ceremonyTime.value = "15:00";
     if (els.ceremonyVenue) els.ceremonyVenue.value = "St. Andrew's Church, 88 Chapel St";
@@ -478,9 +508,10 @@ function prefillForm() {
     if (els.dressCode) els.dressCode.value = "Black Tie Optional";
     if (els.djMode) els.djMode.value = "live";
     if (els.spotifyPlaylist) els.spotifyPlaylist.value = "";
+
+    updatePalettePreview();
 }
 
-// Run prefill on load
 document.addEventListener('DOMContentLoaded', () => {
     prefillForm();
 });

@@ -81,5 +81,33 @@ exports.handler = async (event) => {
     return { statusCode: 200, body: JSON.stringify({ message: 'Approved', publicId }) };
   }
 
-  return { statusCode: 400, body: JSON.stringify({ error: 'Unknown action — use "approve" or "delete"' }) };
+  if (action === 'feature' || action === 'unfeature') {
+    const command = action === 'feature' ? 'add' : 'remove';
+    const params = new URLSearchParams();
+    params.append('command', command);
+    params.append('tags', 'status_featured');
+    params.append('public_ids[]', publicId);
+
+    let res;
+    try {
+      res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/tags`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${credentials}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: params.toString()
+      });
+    } catch (err) {
+      return { statusCode: 502, body: JSON.stringify({ error: `Cloudinary fetch failed: ${err.message}` }) };
+    }
+
+    const data = await res.json();
+    if (!res.ok) {
+      return { statusCode: res.status, body: JSON.stringify({ error: data.error?.message || `${action} failed` }) };
+    }
+    return { statusCode: 200, body: JSON.stringify({ message: action === 'feature' ? 'Featured' : 'Unfeatured', publicId }) };
+  }
+
+  return { statusCode: 400, body: JSON.stringify({ error: 'Unknown action — use "approve", "delete", "feature" or "unfeature"' }) };
 };

@@ -28,6 +28,90 @@
   .screen { display:none; flex-direction:column; min-height:100vh; }
   .screen.active { display:flex; }
 
+  /* ── LED NOTIFICATION BAR ── */
+  #led-notification-bar {
+    width: 100%;
+    height: 36px;
+    background: #0a0a0a;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 1px 5px rgba(0,0,0,0.5);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    z-index: 15;
+    flex-shrink: 0;
+    transition: background 0.4s, box-shadow 0.4s;
+  }
+  #screen-home[data-state="generating"] #led-notification-bar {
+    display: none !important;
+  }
+  .led-text-container {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    position: relative;
+    padding: 0 16px;
+  }
+  #led-text {
+    display: inline-block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.15rem;
+    font-weight: bold;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    transition: color 0.4s;
+    line-height: 36px;
+  }
+  #led-text.marquee {
+    animation: led-marquee 15s linear infinite;
+    padding-left: 100%;
+    text-align: left;
+  }
+  @keyframes led-marquee {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-100%, 0, 0); }
+  }
+  
+  /* Pulse State */
+  #led-notification-bar.pulse {
+    background: var(--gold) !important;
+    box-shadow: 0 0 15px var(--gold) !important;
+  }
+  #led-notification-bar.pulse #led-text {
+    color: var(--white) !important;
+  }
+
+  /* Camera Paused Overlay */
+  #camera-paused-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 10, 0.95);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    z-index: 100;
+  }
+  #camera-paused-overlay h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+  }
+  #camera-paused-overlay p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--white);
+    line-height: 1.6;
+    max-width: 300px;
+  }
+
   /* ── AUTHGATE ── */
   #screen-authgate { align-items:center; justify-content:center; gap:1rem; }
   .authgate-logo { font-family:'Bebas Neue',sans-serif; font-size:3rem; letter-spacing:0.1em; line-height:0.85; text-align:center; }
@@ -955,6 +1039,13 @@
     ACTIVATE YOUR PARTY
   </div>
 
+  <!-- LED NOTIFICATION BAR -->
+  <div id="led-notification-bar">
+    <div class="led-text-container">
+      <span id="led-text"></span>
+    </div>
+  </div>
+
   <!-- APP BAR -->
   <div class="app-bar">
     <!-- Event logo/name — injected dynamically from Firestore config -->
@@ -967,6 +1058,7 @@
       <span id="app-bar-welcome-text" style="font-family:'DM Sans',sans-serif;font-size:0.72rem;font-style:italic;color:var(--muted);display:none;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;"></span>
     </div>
     <div class="app-bar-right" id="app-bar-right" style="flex-shrink:0;margin-left:auto;display:flex;align-items:center;gap:0.5rem;">
+      <button class="pill-btn" id="btn-admin" style="display:none; background:var(--gold); color:var(--black); border-color:var(--gold); font-weight:bold;">ADMIN</button>
       <button class="pill-btn" id="btn-info" onclick="openInfoModal()" style="display:none;">INFO</button>
       <button class="pill-btn" id="btn-install" onclick="showInstallBanner()" style="display:none;" title="Add to home screen">⊕ INSTALL</button>
       <button class="pill-btn" id="btn-gallery" onclick="drawerGoGallery()">GALLERY</button>
@@ -980,6 +1072,11 @@
 
   <!-- CONTENT — left: image zone | right: style picker -->
   <div class="home-content">
+    <!-- Camera Paused Overlay -->
+    <div id="camera-paused-overlay">
+      <h2>Camera Paused</h2>
+      <p>The photo booth is temporarily paused by the host. Please check back shortly!</p>
+    </div>
 
     <!-- LEFT: image zone -->
     <div class="home-left" id="home-left" style="display: flex; flex-direction: column; overflow: hidden; min-height: 0; flex: 1; width: 100%;">
@@ -1472,6 +1569,24 @@ async function initApp() {
           const db = firebase.firestore();
           dbRef = db;
           const docRef = db.collection("parties").doc(partyId);
+          
+          let currentWelcomeMessage = '';
+          let isNotificationActive = false;
+          let ledTimer = null;
+          const ledTextEl = document.getElementById('led-text');
+          const ledBarEl = document.getElementById('led-notification-bar');
+          
+          function updateLEDText(text) {
+              if (!ledTextEl) return;
+              ledTextEl.textContent = text ? text.toUpperCase() : '';
+              ledTextEl.classList.remove('marquee');
+              setTimeout(() => {
+                  if (ledTextEl.scrollWidth > ledTextEl.parentElement.clientWidth) {
+                      ledTextEl.classList.add('marquee');
+                  }
+              }, 50);
+          }
+
           const docSnap = await docRef.get();
           
           if (docSnap.exists) {
@@ -1573,12 +1688,78 @@ async function initApp() {
                   }
               }
 
-              // Welcome Message
-              const welcomeTextEl = document.getElementById('app-bar-welcome-text');
-              if (data.welcomeMessage && welcomeTextEl) {
-                  welcomeTextEl.textContent = data.welcomeMessage;
-                  welcomeTextEl.style.display = 'block';
+              // Welcome Message & Real-time setup
+              if (data.welcomeMessage) {
+                  currentWelcomeMessage = data.welcomeMessage;
+                  updateLEDText(currentWelcomeMessage);
               }
+
+              // Listen to party updates in real-time
+              docRef.onSnapshot((doc) => {
+                  if (!doc.exists) return;
+                  const d = doc.data();
+                  
+                  // Handle welcome message updates
+                  if (d.welcomeMessage) {
+                      currentWelcomeMessage = d.welcomeMessage;
+                      if (!isNotificationActive) {
+                          updateLEDText(currentWelcomeMessage);
+                      }
+                  }
+                  
+                  // Handle cameraPaused status
+                  const cameraPaused = d.cameraPaused === true;
+                  const pausedOverlay = document.getElementById('camera-paused-overlay');
+                  if (pausedOverlay) {
+                      pausedOverlay.style.display = cameraPaused ? 'flex' : 'none';
+                  }
+                  
+                  // Handle isActive updates
+                  isActiveEvent = d.isActive !== false;
+                  const alertBanner = document.getElementById('home-alert-container');
+                  if (alertBanner) {
+                      if (!isActiveEvent) {
+                          alertBanner.style.display = 'flex';
+                          alertBanner.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0;margin-right:4px;"><circle cx="12" cy="12" r="10" /><circle cx="15" cy="9" r="2.5" /><path d="m13.2 10.8-5.7 5.7M9 16.5l1.5 1.5M7.5 15l1.5 1.5" /></svg>ACTIVATE YOUR PARTY`;
+                      } else {
+                          alertBanner.style.display = 'none';
+                      }
+                  }
+              });
+
+              // Listen to new notifications
+              const pageLoadTime = Date.now();
+              docRef.collection("notifications")
+                  .orderBy("sentAt", "desc")
+                  .limit(1)
+                  .onSnapshot((snap) => {
+                      if (snap.empty) return;
+                      const doc = snap.docs[0];
+                      const d = doc.data();
+                      
+                      // Only show notifications created after the page loaded
+                      const sentAtMs = d.sentAt ? d.sentAt.toDate().getTime() : 0;
+                      if (sentAtMs > pageLoadTime) {
+                          isNotificationActive = true;
+                          if (ledTimer) clearTimeout(ledTimer);
+                          
+                          // Pulse effect: add "pulse" class to bar
+                          ledBarEl.classList.add('pulse');
+                          updateLEDText(d.message);
+                          
+                          // 4 seconds pulse class removal, keep notification message
+                          setTimeout(() => {
+                              ledBarEl.classList.remove('pulse');
+                          }, 4000);
+                          
+                          // Revert to welcome message after configured displaySeconds (default 30)
+                          const displaySeconds = d.displaySeconds || 30;
+                          ledTimer = setTimeout(() => {
+                              isNotificationActive = false;
+                              updateLEDText(currentWelcomeMessage);
+                          }, displaySeconds * 1000);
+                      }
+                  });
 
               // Populate Event Info Modal details
               let hasInfo = false;
@@ -1695,6 +1876,9 @@ async function initApp() {
                   pendingKey: firebase.firestore.FieldValue.delete()
               });
               
+              // Store host activation key in sessionStorage to identify host device
+              sessionStorage.setItem('host_activation_key', val);
+              
               // Transition the global state to live immediately
               isActiveEvent = true;
               
@@ -1704,6 +1888,9 @@ async function initApp() {
               
               // Update generate button text/state
               updateGenerateButton();
+              
+              // Update admin button visibility
+              checkAdminVisibility();
               
               goTo('home');
           } catch(e) {
@@ -1716,6 +1903,23 @@ async function initApp() {
       } else {
           err.textContent = "Invalid activation key. Please try again.";
           err.style.display = 'block';
+      }
+  };
+
+  window.checkAdminVisibility = function() {
+      const hostKey = sessionStorage.getItem('host_activation_key');
+      const adminBtn = document.getElementById('btn-admin');
+      if (adminBtn) {
+          if (hostKey) {
+              adminBtn.style.display = 'inline-block';
+              adminBtn.onclick = () => {
+                  sessionStorage.setItem('groovepop_admin_partyId', partyDocId);
+                  sessionStorage.setItem('groovepop_admin_key', hostKey);
+                  window.open('wedding-admin.html', '_blank');
+              };
+          } else {
+              adminBtn.style.display = 'none';
+          }
       }
   };
 
@@ -1733,6 +1937,7 @@ async function initApp() {
   initLogo();
   buildFilterStrip();
   buildFrameStrip();
+  checkAdminVisibility();
   
   goTo('home');
 }

@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GROOVE POP WEDDINGS | Admin Panel</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="party.css">
+    
+    <style>
+        /* Modernized Styles for Admin Panel */
+        body {
+            display: block;
+            padding: 0;
+            margin: 0;
+            background: #0a0a0a;
+            color: #f5f2ec;
+        }
+        .admin-header {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+        .admin-logo span {
+            color: #a00ae6;
+        }
+        .event-details-header {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            font-family: 'Inter', sans-serif;
+            text-align: right;
+        }
+        .admin-main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            display: none; /* Shown after auth */
+        }
+        
+        /* Auth Gate Overlay */
+        #auth-gate {
+            position: fixed;
+            inset: 0;
+            background: #0a0a0a;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+        }
+        
+        /* Tab Navigation */
+        .admin-tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+        .admin-tab {
+            padding: 0.8rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+        }
+        .admin-tab:hover {
+            color: #f5f2ec;
+        }
+        .admin-tab.active {
+            color: #f5f2ec;
+            border-bottom-color: #a00ae6;
+        }
+        .admin-tab-content {
+            display: none;
+        }
+        .admin-tab-content.active {
+            display: block;
+        }
+
+        /* Control cards / panels */
+        .admin-panel-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Gallery tab styles */
+        .filter-pills {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .filter-pill {
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: transparent;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-pill.active {
+            background: #a00ae6;
+            color: #fff;
+            border-color: #a00ae6;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .gallery-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: transform 0.2s;
+        }
+        .gallery-card:hover {
+            transform: translateY(-4px);
+        }
+        .gallery-img-wrap {
+            width: 100%;
+            aspect-ratio: 1;
+            position: relative;
+            background: #000;
+        }
+        .gallery-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .card-badge {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            z-index: 10;
+        }
+        .badge-pending { background: #b45309; color: #fff; }
+        .badge-approved { background: #047857; color: #fff; }
+        .badge-featured { background: #a00ae6; color: #fff; border: 1px solid rgba(255,255,255,0.5); }
+        
+        .card-info {
+            padding: 0.8rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card-guest {
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: #f5f2ec;
+        }
+        .card-style {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 0.2rem;
+        }
+        .card-caption {
+            font-size: 0.8rem;
+            font-style: italic;
+            color: #f5f2ec;
+            margin-top: 0.5rem;
+            line-height: 1.3;
+        }
+        .card-actions {
+            display: flex;
+            gap: 0.4rem;
+            margin-top: 0.8rem;
+        }
+        .btn-card {
+            flex: 1;
+            padding: 0.45rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            background: rgba(255,255,255,0.05);
+            color: #f5f2ec;
+            transition: all 0.2s;
+        }
+        .btn-card-approve {
+            background: #047857;
+            border-color: #047857;
+            color: #fff;
+        }
+        .btn-card-feature {
+            background: transparent;
+            border-color: #a00ae6;
+            color: #a00ae6;
+        }
+        .btn-card-feature.active {
+            background: #a00ae6;
+            color: #fff;
+        }
+        .btn-card-delete {
+            background: #991b1b;
+            border-color: #991b1b;
+            color: #fff;
+        }
+        
+        /* Stats & Live Tab details */
+        .live-status-row {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            flex: 1;
+            min-width: 200px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .stat-value {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3rem;
+            color: #a00ae6;
+            line-height: 1;
+            margin-top: 0.5rem;
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Toggle pills */
+        .toggle-pill-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .toggle-pill {
+            flex: 1;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.02);
+            color: #94a3b8;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .toggle-pill.active {
+            background: rgba(160, 10, 230, 0.15);
+            border-color: #a00ae6;
+            color: #f5f2ec;
+        }
+        
+        /* Spotify / DJ requests queue */
+        .request-list {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .request-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            gap: 1rem;
+        }
+        .request-item-details {
+            flex: 1;
+        }
+        .request-item-title {
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+        .request-item-artist {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 0.1rem;
+        }
+        .request-item-votes {
+            font-size: 0.85rem;
+            color: #a00ae6;
+            font-weight: 600;
+            background: rgba(160, 10, 230, 0.1);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+        }
+        
+        /* Banned tags */
+        .banned-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .banned-chip {
+            background: rgba(153, 27, 27, 0.15);
+            border: 1px solid rgba(153, 27, 27, 0.3);
+            color: #f87171;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .banned-chip-remove {
+            cursor: pointer;
+            font-weight: bold;
+            color: #ef4444;
+        }
+        
+        /* Grid layout for tabs */
+        .admin-two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        @media(max-width: 768px) {
+            .admin-two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Toast notification */
+        #toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #a00ae6;
+            color: #fff;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1000;
+        }
+
+        .spotify-device-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        .spotify-connected {
+            background: rgba(4, 120, 87, 0.15);
+            border: 1px solid rgba(4, 120, 87, 0.3);
+            color: #34d399;
+        }
+        .spotify-disconnected {
+            background: rgba(180, 83, 9, 0.15);
+            border: 1px solid rgba(180, 83, 9, 0.3);
+            color: #fbbf24;
+        }
+        
+        /* Form inputs layout helper */
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+        .form-row > .input-group {
+            flex: 1;
+        }
+        @media(max-width: 500px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- AUTH GATE OVERLAY -->
+    <div id="auth-gate">
+        <div class="form-wrapper glass-panel" style="max-width: 420px;">
+            <header>
+                <h1>GROOVE <span class="pop">POP</span></h1>
+                <div class="party-text" style="font-size: 2.2rem; margin-top: 0.2rem;">ADMIN GATE</div>
+            </header>
+            <div style="margin-top: 1rem;">
+                <div class="input-group">
+                    <label for="gate-admin-key">Event Activation Key</label>
+                    <input type="text" id="gate-admin-key" placeholder="WED-XXXX-XXXX" style="text-align: center; text-transform: uppercase; letter-spacing: 0.1em; font-family: monospace;">
+                </div>
+                <button class="btn-primary" id="btn-auth-submit" onclick="submitGateKey()" style="border-radius: 100px; margin-top: 1rem;">ACCESS PANEL</button>
+                <div id="auth-error" style="color: #f87171; font-size: 0.8rem; text-align: center; display: none; margin-top: 0.8rem;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN HEADER -->
+    <header class="admin-header">
+        <div class="admin-logo">GROOVE <span>POP</span> Weddings</div>
+        <div class="event-details-header" id="header-event-details">
+            <div id="header-couple-names" style="font-weight: bold; font-size: 1.1rem; color: #f5f2ec;">Loading Event...</div>
+            <div id="header-event-date" style="margin-top: 0.15rem;"></div>
+        </div>
+    </header>
+
+    <!-- MAIN PANEL -->
+    <main class="admin-main" id="admin-main">
+        <!-- TABS -->
+        <nav class="admin-tabs">
+            <button class="admin-tab active" onclick="switchTab('gallery')">Gallery</button>
+            <button class="admin-tab" onclick="switchTab('live')">Live Control</button>
+            <button class="admin-tab" onclick="switchTab('dj')">DJ Booth</button>
+            <button class="admin-tab" onclick="switchTab('config')">Settings</button>
+        </nav>
+
+        <!-- TAB: GALLERY -->
+        <section class="admin-tab-content active" id="tab-gallery">
+            <div class="filter-pills">
+                <button class="filter-pill active" onclick="filterGallery('all')">All Photos</button>
+                <button class="filter-pill" onclick="filterGallery('pending')">Pending</button>
+                <button class="filter-pill" onclick="filterGallery('approved')">Approved</button>
+                <button class="filter-pill" onclick="filterGallery('featured')">Featured (Wrapped Pool)</button>
+            </div>
+            
+            <div class="gallery-grid" id="gallery-grid-container">
+                <!-- Dynamically populated -->
+            </div>
+            
+            <div style="margin-top: 2.5rem; display: flex; justify-content: center; gap: 1rem;">
+                <button class="btn-primary" onclick="downloadGalleryZip()" style="max-width: 250px; border-radius: 100px; padding: 0.8rem 1.5rem;">📥 DOWNLOAD ZIP</button>
+            </div>
+        </section>
+
+        <!-- TAB: LIVE CONTROL -->
+        <section class="admin-tab-content" id="tab-live">
+            <div class="admin-two-col">
+                <div>
+                    <h2><span class="event-text">Live</span> <span class="purple-text">Status</span></h2>
+                    <div class="live-status-row">
+                        <div class="stat-card">
+                            <div class="stat-label">Photos Taken</div>
+                            <div class="stat-value" id="live-photos-count">0</div>
+                        </div>
+                    </div>
+
+                    <h2><span class="event-text">Pause / Resume</span> <span class="purple-text">Toggles</span></h2>
+                    <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 1rem; line-height: 1.4;">
+                        Pause the camera booth or DJ music requests instantly. Guest PWA viewfinders and search tabs will lock out automatically.
+                    </p>
+                    <div class="toggle-pill-row">
+                        <button class="toggle-pill" id="toggle-camera" onclick="toggleField('cameraPaused')">
+                            <span>📷</span> Camera: Active
+                        </button>
+                        <button class="toggle-pill" id="toggle-dj" onclick="toggleField('djPaused')">
+                            <span>🎵</span> Music Requests: Active
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <h2><span class="event-text">Broadcast</span> <span class="purple-text">Notification</span></h2>
+                    <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 1rem; line-height: 1.4;">
+                        Send a message straight to the top of every guest's phone screen. The LED banner on the guest PWA will flash and display your text.
+                    </p>
+                    <div class="admin-panel-card">
+                        <div class="input-group">
+                            <label for="broadcast-message">Message Text</label>
+                            <textarea id="broadcast-message" placeholder="Cake cutting starting in 5 minutes! Gather at the dance floor." style="width:100%; height:80px; padding:0.6rem 0.8rem; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.08); border-radius:8px; color:#fff; font-family:inherit; font-size:0.95rem; resize:none;"></textarea>
+                        </div>
+                        <div class="input-row" style="margin-top: 1rem;">
+                            <div class="input-group">
+                                <label for="broadcast-duration">Display Duration (Seconds)</label>
+                                <input type="number" id="broadcast-duration" value="30" min="5" max="180" style="background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.6rem 0.8rem; color: #fff; font-family: inherit; font-size: 0.95rem; width: 100%;">
+                            </div>
+                        </div>
+                        <button class="btn-primary" onclick="sendBroadcast()" style="border-radius: 100px; margin-top: 1rem;">📢 SEND BROADCAST</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: DJ BOOTH -->
+        <section class="admin-tab-content" id="tab-dj">
+            <div class="admin-two-col">
+                <div>
+                    <h2><span class="event-text">Spotify</span> <span class="purple-text">Connection</span></h2>
+                    <div id="spotify-status-banner" class="spotify-device-status spotify-disconnected">
+                        Checking connection...
+                    </div>
+                    
+                    <div class="input-group" style="margin-top: 1rem;">
+                        <label for="dj-device-picker">Output Spotify Device</label>
+                        <select id="dj-device-picker" class="custom-select">
+                            <option value="">No Active Devices Found</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                        <button class="btn-ghost" onclick="refreshDevices()" style="flex: 1; padding: 0.8rem;">🔄 REFRESH</button>
+                        <button class="btn-primary" onclick="startSpotifyPlayback()" style="flex: 2; border-radius: 100px;">▶ START MUSIC</button>
+                    </div>
+
+                    <h2 style="margin-top: 2rem;"><span class="event-text">Playlist</span> <span class="purple-text">Settings</span></h2>
+                    <div class="input-group">
+                        <label for="dj-playlist-override">Backing Spotify Playlist URL / ID</label>
+                        <input type="text" id="dj-playlist-override" placeholder="https://open.spotify.com/playlist/... or ID">
+                    </div>
+                    <button class="btn-primary" onclick="savePlaylistOverride()" style="border-radius: 100px; padding: 0.6rem 1.2rem; width: auto; align-self: flex-start;">SET PLAYLIST</button>
+
+                    <h2 style="margin-top: 2rem;"><span class="event-text">DJ Mode</span> <span class="purple-text">Select</span></h2>
+                    <div class="input-group">
+                        <select id="dj-mode-select" class="custom-select" onchange="changeDJMode(this.value)">
+                            <option value="off">Off (Ambient Playlist Only)</option>
+                            <option value="live_dj">Live DJ (Moderate and queue guest requests manually)</option>
+                            <option value="auto_dj">Auto DJ (Requests automatically queue into Spotify)</option>
+                        </select>
+                    </div>
+                    <div id="auto-dj-poller-status" style="font-size: 0.8rem; color: #94a3b8; margin-top: -0.5rem; display: none;">
+                        Auto DJ Status: Polling queue...
+                    </div>
+                </div>
+
+                <div>
+                    <h2><span class="event-text">Guest Request</span> <span class="purple-text">Queue</span></h2>
+                    <p style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4;">
+                        Songs requested by guests sorted by vote count. In Auto DJ mode, the top song is queued automatically.
+                    </p>
+                    <div class="request-list" id="dj-request-list">
+                        <!-- Dynamically populated -->
+                    </div>
+
+                    <h2 style="margin-top: 2.5rem;"><span class="event-text">Banned</span> <span class="purple-text">Songs</span></h2>
+                    <p style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4;">
+                        Prevent these track URIs from being requested by guests or played via Auto DJ.
+                    </p>
+                    <div class="banned-chips" id="banned-chips-container">
+                        <!-- Chips -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: CONFIG -->
+        <section class="admin-tab-content" id="tab-config">
+            <div class="admin-panel-card" style="padding: 2.5rem;">
+                <h2><span class="event-text">Update Event</span> <span class="purple-text">Settings</span></h2>
+                <form id="config-form" onsubmit="saveConfigChanges(event)">
+                    <div class="form-grid">
+                        <div class="grid-col">
+                            <section class="form-section">
+                                <div class="form-row">
+                                    <div class="input-group">
+                                        <label for="config-partner1-name">Partner 1 Name</label>
+                                        <input type="text" id="config-partner1-name" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="config-partner2-name">Partner 2 Name</label>
+                                        <input type="text" id="config-partner2-name" required>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label for="config-wedding-hashtag">Wedding Hashtag</label>
+                                    <input type="text" id="config-wedding-hashtag">
+                                </div>
+                                <div class="input-group">
+                                    <label for="config-wedding-date">Wedding Date</label>
+                                    <input type="date" id="config-wedding-date" required>
+                                </div>
+                            </section>
+
+                            <section class="form-section">
+                                <h3>Ceremony</h3>
+                                <div class="form-row">
+                                    <div class="input-group">
+                                        <label for="config-ceremony-time">Ceremony Time</label>
+                                        <input type="time" id="config-ceremony-time">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="config-ceremony-venue">Ceremony Venue</label>
+                                        <input type="text" id="config-ceremony-venue">
+                                    </div>
+                                </div>
+                                <h3>Reception</h3>
+                                <div class="form-row">
+                                    <div class="input-group">
+                                        <label for="config-reception-time">Reception Time</label>
+                                        <input type="time" id="config-reception-time" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="config-reception-venue">Reception Venue</label>
+                                        <input type="text" id="config-reception-venue" required>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+
+                        <div class="grid-col">
+                            <section class="form-section">
+                                <div class="input-group">
+                                    <label for="config-welcome-message">Welcome Message</label>
+                                    <input type="text" id="config-welcome-message">
+                                </div>
+                                <div class="input-group">
+                                    <label for="config-website-link">Wedding Website URL</label>
+                                    <input type="text" id="config-website-link">
+                                </div>
+                                <div class="input-group">
+                                    <label for="config-registry-link">Registry URL</label>
+                                    <input type="text" id="config-registry-link">
+                                </div>
+                                <div class="input-group">
+                                    <label for="config-dress-code">Dress Code Description</label>
+                                    <input type="text" id="config-dress-code">
+                                </div>
+                            </section>
+
+                            <section class="form-section">
+                                <h3>Aesthetic Colors</h3>
+                                <div class="palette-row" style="margin-top: 0.5rem; justify-content: flex-start; gap: 2rem;">
+                                    <div class="input-group color-picker">
+                                        <label for="config-bg-color">Background</label>
+                                        <input type="color" id="config-bg-color">
+                                    </div>
+                                    <div class="input-group color-picker">
+                                        <label for="config-text-color">Text</label>
+                                        <input type="color" id="config-text-color">
+                                    </div>
+                                    <div class="input-group color-picker">
+                                        <label for="config-accent-color">Accent</label>
+                                        <input type="color" id="config-accent-color">
+                                    </div>
+                                </div>
+                            </section>
+                            
+                            <section class="form-section">
+                                <div class="input-group">
+                                    <label for="config-moderation">Gallery Moderation</label>
+                                    <select id="config-moderation" class="custom-select">
+                                        <option value="true">Moderation Enabled (Approve photos before they display)</option>
+                                        <option value="false">Moderation Disabled (Photos go straight to gallery)</option>
+                                    </select>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+                        <button type="submit" class="btn-primary" style="max-width: 200px; border-radius: 100px;">💾 SAVE SETTINGS</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- TOAST GREETING -->
+    <div id="toast">Changes Saved!</div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Zip Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
+    <!-- Admin logic script -->
+    <script src="wedding-admin.js"></script>
+</body>
+</html>

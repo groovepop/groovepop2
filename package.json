@@ -2,6 +2,9 @@
   "name": "groovepop",
   "version": "2.0.0",
   "description": "GROOVE POP — Netlify Functions",
+  "scripts": {
+    "dev": "netlify dev"
+  },
   "dependencies": {
     "firebase-admin": "^14.0.0",
     "google-auth-library": "^10.7.0",

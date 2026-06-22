@@ -3,23 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GROOVE POP WEDDINGS | App Builder</title>
-    <meta name="description" content="Create a customized Groove Pop PWA for your wedding.">
-    <!-- Google Fonts: Outfit for headers, Inter for professional body text -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@800;900&display=swap" rel="stylesheet">
-    <!-- Reusing party.css as-is: same class system (glass-panel, form-grid, grid-col,
-         form-section, input-group, input-row, palette-row, custom-select, req-field).
-         Rename/fork this file later if Weddings ends up wanting its own visual identity. -->
-    <link rel="stylesheet" href="party.css">
-    <!-- QR Code Library -->
+    <title>WhiteRose | Wedding Companion</title>
+    <meta name="description" content="Create your custom WhiteRose wedding companion app.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="whiterose.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
     <div class="app-container">
         <div class="form-wrapper glass-panel">
             <header>
-                <h1>GROOVE <span class="pop">POP</span></h1>
-                <div class="party-text">WEDDINGS</div>
+                <svg class="rose-mark" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M32 8c-7 2-11 8-11 14 0 7 6 12 11 12s11-5 11-12c0-6-4-12-11-14z" stroke="currentColor" stroke-width="1.4"/>
+                    <path d="M24 18c2 4 2 9 0 13M40 18c-2 4-2 9 0 13M28 12c1 5 1 11 4 16M36 12c-1 5-1 11-4 16" stroke="currentColor" stroke-width="1"/>
+                    <path d="M32 34v22" stroke="currentColor" stroke-width="1.4"/>
+                    <path d="M32 44c-5 0-8 3-9 7M32 50c5 0 7 3 8 6" stroke="currentColor" stroke-width="1.2"/>
+                </svg>
+                <h1>White<span class="pop">Rose</span></h1>
+                <div class="party-text">Wedding Companion</div>
             </header>
 
             <form id="wedding-form">
@@ -45,7 +46,7 @@
                         </section>
 
                         <section class="form-section">
-                            <h2><span class="event-text">Wedding</span> <span class="purple-text">Style</span></h2>
+                            <h2><span class="event-text">Your</span> <span class="purple-text">Look</span></h2>
                             <div class="input-group">
                                 <select id="wedding-style" class="req-field custom-select" required>
                                     <option value="" disabled selected>Pick a Style...</option>
@@ -55,11 +56,12 @@
                                     <option value="vintage">Vintage Glam</option>
                                     <option value="rustic">Rustic Charm</option>
                                 </select>
+                                <div class="palette-preview" id="palette-preview" aria-hidden="true"></div>
                             </div>
                         </section>
 
                         <section class="form-section">
-                            <h2><span class="event-text">Date &</span> <span class="purple-text">Locations</span></h2>
+                            <h2><span class="event-text">Your</span> <span class="purple-text">Day</span></h2>
                             <div class="input-group">
                                 <label for="wedding-date">Wedding Date *</label>
                                 <input type="date" id="wedding-date" class="req-field" required>
@@ -90,7 +92,7 @@
                     <!-- Column 2 -->
                     <div class="grid-col">
                         <section class="form-section">
-                            <h2><span class="event-text">Guest</span> <span class="purple-text">Info</span></h2>
+                            <h2><span class="event-text">For Your</span> <span class="purple-text">Guests</span></h2>
                             <div class="input-group">
                                 <label for="welcome-message">Welcome Message</label>
                                 <input type="text" id="welcome-message" placeholder="Thank you for celebrating with us!">
@@ -112,7 +114,7 @@
                         </section>
 
                         <section class="form-section">
-                            <h2><span class="event-text">Music &</span> <span class="purple-text">DJ</span></h2>
+                            <h2><span class="event-text">The</span> <span class="purple-text">Music</span></h2>
                             <div class="input-group">
                                 <label for="dj-mode">DJ Mode</label>
                                 <select id="dj-mode" class="custom-select">
@@ -128,7 +130,7 @@
                         </section>
 
                         <section class="form-section">
-                            <h2><span class="event-text">Photo</span> <span class="purple-text">Gallery</span></h2>
+                            <h2><span class="event-text">Your</span> <span class="purple-text">Gallery</span></h2>
                             <div class="input-group">
                                 <label for="moderation-enabled">Moderation</label>
                                 <select id="moderation-enabled" class="custom-select">
@@ -137,30 +139,11 @@
                                 </select>
                             </div>
                         </section>
-
-                        <section class="form-section h-100">
-                            <h2><span class="event-text">Event</span> <span class="purple-text">Design</span></h2>
-
-                            <div class="palette-row">
-                                <div class="input-group color-picker">
-                                    <label for="bg-color">Background</label>
-                                    <input type="color" id="bg-color" value="#111111">
-                                </div>
-                                <div class="input-group color-picker">
-                                    <label for="primary-color">Text</label>
-                                    <input type="color" id="primary-color" value="#f5f2ec">
-                                </div>
-                                <div class="input-group color-picker">
-                                    <label for="accent-color">Accent</label>
-                                    <input type="color" id="accent-color" value="#a00ae6">
-                                </div>
-                            </div>
-
-                            <div class="form-actions" style="margin-top: auto; padding-top: 2rem;">
-                                <button type="button" class="btn-primary" id="btn-generate">Generate Prototype PWA</button>
-                            </div>
-                        </section>
                     </div>
+                </div>
+
+                <div class="form-footer">
+                    <button type="button" class="btn-primary" id="btn-generate">Generate Prototype PWA</button>
                 </div>
             </form>
         </div>
@@ -179,21 +162,24 @@
                     <button type="button" id="copy-btn" class="btn-icon">📋</button>
                 </div>
                 <div class="share-link-wrap" style="margin-top: 0.5rem; text-align: left;">
-                    <a id="share-link" href="#" target="_blank" style="color: var(--accent); text-decoration: underline; font-size: 0.9rem; word-break: break-all; display: none;"></a>
+                    <a id="share-link" href="#" target="_blank" style="color: var(--rose-deep); text-decoration: underline; font-size: 0.9rem; word-break: break-all; display: none;"></a>
                 </div>
             </div>
             <div class="share-box" style="margin-top: 1rem;">
-                <label>Activation Key (Enter in app to activate)</label>
+                <label>Event Access & Activation Key</label>
                 <div class="url-group">
                     <input type="text" id="activation-key" readonly value="Generating...">
                     <button type="button" id="copy-key-btn" class="btn-icon">📋</button>
                 </div>
             </div>
             <div class="share-box" style="margin-top: 1rem;">
-                <label>Admin Key (for the DJ fine-tuning panel — keep this one)</label>
+                <label>Admin Panel URL (Save this to moderate photos & manage music)</label>
                 <div class="url-group">
-                    <input type="text" id="admin-key" readonly value="Generating...">
-                    <button type="button" id="copy-admin-key-btn" class="btn-icon">📋</button>
+                    <input type="text" id="admin-url" readonly value="Generating...">
+                    <button type="button" id="copy-admin-url-btn" class="btn-icon">📋</button>
+                </div>
+                <div class="share-link-wrap" style="margin-top: 0.5rem; text-align: left;">
+                    <a id="admin-link" href="#" target="_blank" style="color: var(--rose-deep); text-decoration: underline; font-size: 0.9rem; word-break: break-all; display: none;">Go to Admin Panel</a>
                 </div>
             </div>
 
@@ -210,6 +196,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
-    <script src="wedding.js?v=3"></script>
+    <script src="wedding.js?v=4"></script>
 </body>
 </html>
