@@ -318,7 +318,6 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
       <select id="count-select" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px"></select>
       <select id="quality-select" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px"></select>
       <select id="size-select" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px"></select>
-      <button class="bp" id="run-btn" onclick="runNow()" style="margin-left:auto">▶ Run</button>
     </div>
 
     <div id="freeform-bar">
@@ -343,6 +342,9 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
       <div style="position:relative">
         <textarea id="freeform-prompt" placeholder="Paste or write prompt lines here…" oninput="refreshRunBtn();autoGrow(this)"></textarea>
         <button onclick="clearFreeform()" title="Clear" style="position:absolute;top:6px;right:6px;background:transparent;border:none;font-family:var(--mono);font-size:11px;color:var(--text3);cursor:pointer;padding:0;line-height:1" onmouseover="this.style.color='var(--err)'" onmouseout="this.style.color='var(--text3)'">✕</button>
+      </div>
+      <div style="margin-top: 12px; display: flex;">
+        <button class="bp" id="run-btn" onclick="runNow()" style="width: 100%; padding: 8px; font-size: 14px; font-weight: bold; border-radius: 4px;">▶ Run Generation</button>
       </div>
     </div>
 
@@ -1442,6 +1444,31 @@ async function generateDirectRaw(prompt, signal, count = 1) {
   const quality = document.getElementById('quality-select').value;
   const format  = 'jpeg';
 
+  if (photoBlob) {
+    const fd = new FormData();
+    fd.append('image[]', photoBlob, 'photo.jpg');
+    fd.append('prompt', prompt);
+    fd.append('n', count.toString()); fd.append('size', size); fd.append('quality', quality);
+    fd.append('output_format', format);
+    if (format === 'jpeg') fd.append('output_compression', '80');
+
+    const url = `${AZURE_EP}/openai/deployments/${IMG_DEP}/images/edits?api-version=2025-04-01-preview`;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const res = await fetch(url, { method:'POST', headers:{'api-key':key}, body:fd, signal });
+      if (res.ok) {
+        const json = await res.json();
+        return json.data.map(d => `data:image/${format};base64,${d.b64_json}`);
+      }
+      if (res.status === 429 && attempt < 2) {
+        const retryAfter = parseInt(res.headers.get('retry-after') || '10');
+        await new Promise(r => setTimeout(r, (retryAfter || 10) * 1000));
+        continue;
+      }
+      const t = await res.text();
+      throw new Error(`Direct Generation ${res.status}: ${t.slice(0,200)}`);
+    }
+  }
+
   const url = `${AZURE_EP}/openai/deployments/${IMG_DEP}/images/generations?api-version=2025-04-01-preview`;
   for (let attempt = 0; attempt < 3; attempt++) {
     const res = await fetch(url, {
@@ -1581,7 +1608,7 @@ function renderCard(id) {
         ${r.status==='running'
           ? `<button class="bd bsm" onclick="cancelCard('${id}')">✕ Cancel</button>`
           : r.status==='done'
-          ? `<button class="bg bsm" onclick="dlCard('${id}')">↓ Save</button><button class="bg bsm" onclick="copyCardPrompt('${id}')">⎘ Copy</button><button class="bg bsm" onclick="rerun('${id}')">↺ Retry</button>`
+          ? `<button class="bg bsm" onclick="dlCard('${id}')">↓ Save</button><button class="bg bsm" onclick="copyPromptToClipboard('${id}', this)">⎘ Copy</button><button class="bg bsm" onclick="copyCardPrompt('${id}', this)">⎘ To Input</button><button class="bg bsm" onclick="rerun('${id}')">↺ Retry</button>`
           : `<button class="bg bsm" onclick="rerun('${id}')">↺ Retry</button>`
         }
       </div>
@@ -1917,22 +1944,22 @@ function manageDeleteSelected() {
   renderPage();
 }
 
-function copyCardPrompt(id) {
+function copyCardPrompt(id, btn) {
   const r = results[id];
   if (!r?.freeform) return;
-  // Send directly to custom prompt field
-  const bar = document.getElementById('freeform-bar');
-  const toggle = document.getElementById('freeform-toggle');
-  bar.classList.add('on');
-  toggle.classList.add('on');
   const ta = document.getElementById('freeform-prompt');
   ta.value = r.freeform;
   autoGrow(ta);
   refreshRunBtn();
-  // Flash button
-  const btns = document.querySelectorAll(`#card-${id} .rc-actions-top button`);
-  const copyBtn = [...btns].find(b => b.textContent.includes('Copy'));
-  if (copyBtn) { copyBtn.textContent = '✓ Sent'; setTimeout(() => copyBtn.textContent = '⎘ Copy', 1500); }
+  if (btn) { btn.textContent = '✓ Sent'; setTimeout(() => btn.textContent = '⎘ To Input', 1500); }
+}
+
+function copyPromptToClipboard(id, btn) {
+  const r = results[id];
+  if (!r?.freeform) return;
+  navigator.clipboard.writeText(r.freeform).then(() => {
+    if (btn) { btn.textContent = '✓ Copied'; setTimeout(() => btn.textContent = '⎘ Copy', 1500); }
+  });
 }
 
 function switchTab(name) {
