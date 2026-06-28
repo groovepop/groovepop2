@@ -273,9 +273,9 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
           ondragleave="this.classList.remove('over')"
           ondrop="handleDrop(event)"
           for="file-input">
-          <input type="file" accept="image/*" onchange="handleFile(event)" id="file-input" style="display:none">
-          <img id="upload-preview" alt="">
-          <div class="uph" id="upload-hint">Drop or click to upload</div>
+          <input type="file" accept="image/*" multiple onchange="handleFile(event)" id="file-input" style="display:none">
+          <div id="upload-previews" style="display:flex;gap:4px;align-items:center;justify-content:center;height:100%;width:100%;padding:4px;box-sizing:border-box"></div>
+          <div class="uph" id="upload-hint">Drop or click to upload up to 3</div>
         </label>
         <button id="clear-photo" onclick="clearPhoto()" title="Clear" style="display:none;position:absolute;top:5px;right:5px;background:rgba(0,0,0,.6);border:none;color:var(--err);font-family:var(--mono);font-size:10px;cursor:pointer;border-radius:2px;padding:1px 5px;line-height:1;z-index:2">✕</button>
       </div>
@@ -456,7 +456,7 @@ const IMAGE_SIZES = {
 const IMAGE_QUALITY = ["low", "medium", "high"];
 
 let allTags = [], filteredTags = [];
-let photoBlob = null, photoURL = null;
+let photoBlobs = [], photoURLs = [];
 let allResults = [], resultCount = 0; // allResults is ordered array of ids
 let results = {}; // id -> result object
 let runningControllers = {}; // id -> AbortController
@@ -475,7 +475,7 @@ let activeFolderId = 'default';
 let museDB = null;
 let muses = []; // [{id, name, blob, url}]
 let musePage_ = 0;
-let activeMuseId = null;
+let activeMuseIds = [];
 const MUSE_PER_PAGE = 30;
 
 // caption instruction (single, no variants)
@@ -557,7 +557,10 @@ function addMuse(file) {
 function removeMuse(id, e) {
   e.stopPropagation();
   muses = muses.filter(m => m.id !== id);
-  if (activeMuseId === id) { activeMuseId = null; photoBlob = null; photoURL = null; refreshRunBtn(); }
+  if (activeMuseIds.includes(id)) { 
+    activeMuseIds = activeMuseIds.filter(x => x !== id); 
+    syncActiveMuses();
+  }
   if (museDB) {
     const tx = museDB.transaction('muses', 'readwrite');
     tx.objectStore('muses').delete(id);
@@ -601,17 +604,19 @@ function renameMuse(id) {
 function setActiveMuse(id) {
   const muse = muses.find(m => m.id === id);
   if (!muse) return;
-  activeMuseId = id;
-  photoBlob    = muse.blob;
-  photoURL     = muse.url;
+  if (activeMuseIds.includes(id)) {
+    activeMuseIds = activeMuseIds.filter(x => x !== id);
+  } else {
+    if (activeMuseIds.length >= 3) activeMuseIds.shift();
+    activeMuseIds.push(id);
+  }
+  syncActiveMuses();
+}
 
-  // Update the upload preview to show active muse
-  const prev = document.getElementById('upload-preview');
-  const hint = document.getElementById('upload-hint');
-  prev.src = muse.url; prev.style.display = 'block';
-  hint.style.display = 'none';
-  document.getElementById('clear-photo').style.display = 'block';
-
+function syncActiveMuses() {
+  photoBlobs = activeMuseIds.map(id => muses.find(m => m.id === id)?.blob).filter(Boolean);
+  photoURLs  = activeMuseIds.map(id => muses.find(m => m.id === id)?.url).filter(Boolean);
+  updateUploadPreview();
   renderMuseGrid();
   refreshRunBtn();
 }
@@ -631,7 +636,7 @@ function renderMuseGrid() {
 
   const renderSlot = (muse, targetGrid) => {
     const slot = document.createElement('div');
-    slot.className = 'muse-slot' + (muse.id === activeMuseId ? ' active' : '');
+    slot.className = 'muse-slot' + (activeMuseIds.includes(muse.id) ? ' active' : '');
     slot.dataset.museId = muse.id;
     slot.draggable = true;
     slot.title = muse.name + ' (dbl-click to rename)';
@@ -908,37 +913,59 @@ function restoreLibrary() {
   }
 }
 
-function hasInput() { return !!photoURL; }
+function hasInput() { return photoURLs.length > 0; }
 
 // ── PHOTO ─────────────────────────────────────────────────────
-function handleFile(e) { if (e.target.files[0]) loadPhoto(e.target.files[0]); }
+function handleFile(e) { if (e.target.files.length) loadPhotos(Array.from(e.target.files)); }
 function handleDrop(e) {
   e.preventDefault();
   document.getElementById('upload-zone').classList.remove('over');
-  const f = e.dataTransfer.files[0];
-  if (f && f.type.startsWith('image/')) loadPhoto(f);
+  const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+  if (files.length) loadPhotos(files);
 }
-function loadPhoto(file) {
-  photoBlob = file;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    photoURL = ev.target.result;
-    document.getElementById('upload-preview').src = photoURL;
-    document.getElementById('upload-preview').style.display = 'block';
-    document.getElementById('upload-hint').style.display = 'none';
-    document.getElementById('clear-photo').style.display = 'block';
-    refreshRunBtn();
-  };
-  reader.readAsDataURL(file);
+function loadPhotos(files) {
+  activeMuseIds = [];
+  for (const file of files) {
+    if (photoBlobs.length >= 3) break;
+    photoBlobs.push(file);
+    const reader = new FileReader();
+    reader.onload = ev => {
+      photoURLs.push(ev.target.result);
+      updateUploadPreview();
+      refreshRunBtn();
+    };
+    reader.readAsDataURL(file);
+  }
 }
 function clearPhoto() {
-  photoBlob = null; photoURL = null;
-  document.getElementById('upload-preview').src = '';
-  document.getElementById('upload-preview').style.display = 'none';
-  document.getElementById('upload-hint').style.display = 'block';
-  document.getElementById('clear-photo').style.display = 'none';
+  photoBlobs = []; photoURLs = []; activeMuseIds = [];
+  updateUploadPreview();
   document.getElementById('file-input').value = '';
+  renderMuseGrid();
   refreshRunBtn();
+}
+function updateUploadPreview() {
+  const container = document.getElementById('upload-previews');
+  const hint = document.getElementById('upload-hint');
+  const clr = document.getElementById('clear-photo');
+  if (!container) return;
+  container.innerHTML = '';
+  if (photoURLs.length === 0) {
+    hint.style.display = 'block';
+    clr.style.display = 'none';
+  } else {
+    hint.style.display = 'none';
+    clr.style.display = 'block';
+    photoURLs.forEach(url => {
+      const img = document.createElement('img');
+      img.src = url;
+      img.style.maxHeight = '100%';
+      img.style.maxWidth = `calc(${100 / photoURLs.length}% - 4px)`;
+      img.style.objectFit = 'contain';
+      img.style.borderRadius = '3px';
+      container.appendChild(img);
+    });
+  }
 }
 
 
@@ -1167,7 +1194,7 @@ async function runNow() {
     const id = 'r' + Date.now() + '_' + i;
     ids.push(id);
     runningControllers[id] = controller;
-    results[id] = { status:'running', tags:fakeTags, label, freeform, quality, format:'jpeg', caption:null, baseKey, startedAt:Date.now(), elapsed:null, museId: activeMuseId };
+    results[id] = { status:'running', tags:fakeTags, label, freeform, quality, format:'jpeg', caption:null, baseKey, startedAt:Date.now(), elapsed:null, museIds: [...activeMuseIds] };
     cardFolder[id] = activeFolderId;
     allResults.unshift(id);
     resultCount++;
@@ -1218,10 +1245,13 @@ async function rerun(id) {
   const controller = new AbortController();
   runningControllers[id] = controller;
 
-  // Restore the muse that produced this result
-  if (r.museId) {
-    const muse = muses.find(m => m.id === r.museId);
-    if (muse) { photoBlob = muse.blob; photoURL = muse.url; }
+  // Restore the muses that produced this result
+  if (r.museIds && r.museIds.length > 0) {
+    activeMuseIds = [...r.museIds];
+    syncActiveMuses();
+  } else if (r.museId) { // legacy fallback
+    activeMuseIds = [r.museId];
+    syncActiveMuses();
   }
 
   results[id] = { ...r, status:'running', imageURL:null, error:null, elapsed:null, startedAt:Date.now() };
@@ -1349,7 +1379,8 @@ async function autoUpload(id) {
 
 async function getCaption(signal) {
   const key    = document.getElementById('key-input').value.trim();
-  const small  = await shrink(photoURL, 512);
+  if (!photoURLs.length) throw new Error("No photo available for captioning.");
+  const small  = await shrink(photoURLs[0], 512);
   const base64 = small.split(',')[1];
   const mime   = small.split(';')[0].split(':')[1];
   const url    = `${AZURE_EP}/openai/deployments/${CAP_DEP}/chat/completions?api-version=2025-03-01-preview`;
@@ -1415,7 +1446,7 @@ async function generateRaw(styleLines, caption, tag1, signal, count = 1) {
   const prompt  = caption + '\n\n---\n\n' + styleLines;
 
   const fd = new FormData();
-  if (photoBlob) fd.append('image[]', photoBlob, 'photo.jpg');
+  photoBlobs.forEach((blob, i) => fd.append('image[]', blob, `photo${i}.jpg`));
   fd.append('prompt', prompt);
   fd.append('n', count.toString()); fd.append('size',size); fd.append('quality',quality);
   fd.append('output_format',format);
@@ -1444,9 +1475,9 @@ async function generateDirectRaw(prompt, signal, count = 1) {
   const quality = document.getElementById('quality-select').value;
   const format  = 'jpeg';
 
-  if (photoBlob) {
+  if (photoBlobs.length > 0) {
     const fd = new FormData();
-    fd.append('image[]', photoBlob, 'photo.jpg');
+    photoBlobs.forEach((blob, i) => fd.append('image[]', blob, `photo${i}.jpg`));
     fd.append('prompt', prompt);
     fd.append('n', count.toString()); fd.append('size', size); fd.append('quality', quality);
     fd.append('output_format', format);
