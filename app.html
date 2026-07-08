@@ -1135,6 +1135,9 @@ async function startGeneration() {
 
     if (generationCancelled) return;
     clearWaitIntervals();
+    if (!imageUrl) {
+      throw new Error('Image generation succeeded but returned an empty image.');
+    }
     document.getElementById('result-img').src = imageUrl;
     document.getElementById('result-thumb').src = uploadedDataUrl;
     currentCloudinaryUrl = null;
@@ -1434,6 +1437,10 @@ function storeCaptionSnippets(caption) {
 // ══════════════════════════════════════════
 async function autoUploadToCloudinary(imageDataUrl, style) {
   if (!currentUser) return;
+  if (!imageDataUrl) {
+    console.warn('autoUploadToCloudinary: imageDataUrl is undefined');
+    return;
+  }
   try {
     const res = await fetch(`${API_BASE}/upload-image`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
