@@ -29,6 +29,7 @@ jobs:
           app_location: "/" # App source code path
           api_location: "" # Standalone function app is deployed separately
           output_location: "." # Built app content directory (static files in root)
+          skip_app_build: true
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
