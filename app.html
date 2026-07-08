@@ -472,7 +472,6 @@
       <button class="pill-btn" id="btn-randomize" disabled onclick="randomizeGeneration()">⚡ SURPRISE ME</button>
       <button class="pill-btn" id="btn-install" onclick="showInstallBanner()" style="display:none;" title="Add to home screen">⊕ INSTALL</button>
       <button class="pill-btn" onclick="drawerGoGallery()">GALLERY</button>
-      <button class="pill-btn" onclick="handleSignOut()" title="Sign out" style="opacity:0.45;font-size:0.7rem;padding:0.35rem 0.6rem;">EXIT</button>
     </div>
     <!-- Generating mode: style label + cancel -->
     <div class="app-bar-generating" id="app-bar-generating">
@@ -810,33 +809,17 @@ let imageZoneState = 'upload';
 // AUTH
 // ══════════════════════════════════════════
 function initAuth() {
-  const urlParams = new URLSearchParams(window.location.search);
-  if (window.location.protocol === 'file:' || urlParams.get('partyId')) {
-      onAuthReady(null);
-      return;
+  let anonId = localStorage.getItem('gp_anonymous_id');
+  if (!anonId) {
+    anonId = 'anon_' + Math.random().toString(36).substring(2, 15);
+    localStorage.setItem('gp_anonymous_id', anonId);
   }
-
-  fetch('/.auth/me')
-    .then(res => {
-      if (!res.ok) { redirectToLanding(); return; }
-      return res.json();
-    })
-    .then(data => {
-      const user = data?.clientPrincipal;
-      if (!user) { redirectToLanding(); return; }
-      currentUser = {
-        id: user.userId,
-        email: user.userDetails
-      };
-      onAuthReady(currentUser);
-    })
-    .catch(err => {
-      console.error('SWA Auth failed:', err);
-      redirectToLanding();
-    });
+  currentUser = {
+    id: anonId,
+    email: 'guest@groovepop.ca'
+  };
+  onAuthReady(currentUser);
 }
-function redirectToLanding() { window.location.href = '/'; }
-function handleSignOut() { window.location.href = '/.auth/logout?post_logout_redirect_uri=/'; }
 async function onAuthReady(user) { await initApp(); }
 
 // ══════════════════════════════════════════
