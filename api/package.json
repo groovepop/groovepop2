@@ -8,9 +8,15 @@
     "build": "echo \"No build step\""
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "dependencies": {
-    "@azure/functions": "^4.7.0"
+    "@azure/functions": "^4.7.0",
+    "stripe": "^14.0.0",
+    "@azure/storage-blob": "^12.26.0",
+    "sharp": "^0.33.2"
+  },
+  "devDependencies": {
+    "azure-functions-core-tools": "^4.12.1"
   }
 }

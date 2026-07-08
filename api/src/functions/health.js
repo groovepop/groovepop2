@@ -12,7 +12,11 @@ app.http('health', {
     return jsonResponse(200, {
       ok: true,
       service: 'groovepop-api',
-      functions: ['health', 'caption', 'generate', 'generate-logo'],
+      functions: [
+        'health', 'caption', 'generate', 'upload-image',
+        'get-gallery', 'delete-image', 'get-shipping',
+        'create-checkout', 'confirm-order'
+      ],
     }, request);
   },
 });

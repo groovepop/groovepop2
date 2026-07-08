@@ -1,5 +1,10 @@
-// Entry point — loads all HTTP functions for the v4 programming model
-require('./functions/health');
-require('./functions/caption');
-require('./functions/generate');
-require('./functions/generate_logo');
+// Entry point — dynamically loads all HTTP functions for the v4 programming model
+const fs = require('fs');
+const path = require('path');
+
+const functionsDir = path.join(__dirname, 'functions');
+fs.readdirSync(functionsDir).forEach(file => {
+  if (file.endsWith('.js')) {
+    require(path.join(functionsDir, file));
+  }
+});

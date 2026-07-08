@@ -12,7 +12,6 @@
 <link rel="apple-touch-icon" href="/GPicon-192.png">
 <meta name="theme-color" content="#c8a84b">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Caveat:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -891,27 +890,24 @@ function goToApp() {
 // ══════════════════════════════════════════
 // AUTH — Netlify Identity
 // ══════════════════════════════════════════
-function initAuth() {
-  if (typeof netlifyIdentity === 'undefined') return;
-
-  netlifyIdentity.on('init', user => {
+// ══════════════════════════════════════════
+// AUTH — Azure Static Web Apps Auth
+// ══════════════════════════════════════════
+async function initAuth() {
+  try {
+    const res = await fetch('/.auth/me');
+    if (!res.ok) {
+      updateAuthUI(null);
+      return;
+    }
+    const data = await res.json();
+    const user = data.clientPrincipal;
     currentUser = user;
     updateAuthUI(user);
-  });
-
-  netlifyIdentity.on('login', user => {
-    currentUser = user;
-    netlifyIdentity.close();
-    updateAuthUI(user);
-    goToApp();
-  });
-
-  netlifyIdentity.on('logout', () => {
-    currentUser = null;
+  } catch (err) {
+    console.error('Auth initialization failed:', err);
     updateAuthUI(null);
-  });
-
-  netlifyIdentity.init();
+  }
 }
 
 function updateAuthUI(user) {
@@ -921,7 +917,7 @@ function updateAuthUI(user) {
 
   if (user) {
     // Signed in state
-    const name = user.user_metadata?.full_name || user.email.split('@')[0];
+    const name = user.userDetails.split('@')[0];
     navActions.innerHTML = `
       <button class="nav-btn signin" onclick="handleSignOut()">SIGN OUT</button>
       <button class="nav-btn go-app" onclick="goToApp()">OPEN APP</button>
@@ -932,20 +928,19 @@ function updateAuthUI(user) {
   } else {
     // Signed out state
     navActions.innerHTML = `
-      <button class="nav-btn signin" onclick="showAuth('signin')">SIGN IN</button>
-      <button class="nav-btn signup" onclick="showAuth('signup')">SIGN UP</button>
+      <button class="nav-btn signin" onclick="showAuth()">SIGN IN</button>
     `;
     authCta.style.display = 'flex';
     signedIn.style.display = 'none';
   }
 }
 
-function showAuth(mode) {
-  netlifyIdentity.open(mode === 'signup' ? 'signup' : 'login');
+function showAuth() {
+  window.location.href = '/.auth/login/google?post_login_redirect_uri=/app.html';
 }
 
 function handleSignOut() {
-  if (typeof netlifyIdentity !== 'undefined') netlifyIdentity.logout();
+  window.location.href = '/.auth/logout?post_logout_redirect_uri=/';
 }
 
 
