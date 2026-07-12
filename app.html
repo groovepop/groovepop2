@@ -1483,14 +1483,73 @@ async function generateMusic(imageUrl, caption, style) {
 }
 
 async function embedMetadataInMp3(audioBase64, imageUrl, style, variant) {
+  // 1. Load lamejs if not already present
+  if (typeof lamejs === 'undefined') {
+    await new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js';
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
   const { ID3Writer } = await import('https://cdn.jsdelivr.net/npm/browser-id3-writer@4.4.0/+esm');
   
+  // 2. Decode audio base64 to ArrayBuffer
   const audioBinary = atob(audioBase64);
   const audioBytes = new Uint8Array(audioBinary.length);
   for (let i = 0; i < audioBinary.length; i++) {
     audioBytes[i] = audioBinary.charCodeAt(i);
   }
   
+  // 3. Convert WAV to MP3
+  let mp3Bytes;
+  try {
+    const wav = lamejs.WavHeader.readHeader(new DataView(audioBytes.buffer));
+    const samples = new Int16Array(audioBytes.buffer, wav.dataOffset, wav.dataLen / 2);
+    const mp3Encoder = new lamejs.Mp3Encoder(wav.channels, wav.sampleRate, 128);
+    const mp3Data = [];
+    const blockSize = 1152;
+
+    if (wav.channels === 2) {
+      const leftChannel = new Int16Array(samples.length / 2);
+      const rightChannel = new Int16Array(samples.length / 2);
+      for (let i = 0, j = 0; i < samples.length; i += 2, j++) {
+        leftChannel[j] = samples[i];
+        rightChannel[j] = samples[i + 1];
+      }
+      for (let i = 0; i < leftChannel.length; i += blockSize) {
+        const leftChunk = leftChannel.subarray(i, i + blockSize);
+        const rightChunk = rightChannel.subarray(i, i + blockSize);
+        const mp3buf = mp3Encoder.encodeBuffer(leftChunk, rightChunk);
+        if (mp3buf.length > 0) mp3Data.push(mp3buf);
+      }
+    } else {
+      for (let i = 0; i < samples.length; i += blockSize) {
+        const chunk = samples.subarray(i, i + blockSize);
+        const mp3buf = mp3Encoder.encodeBuffer(chunk);
+        if (mp3buf.length > 0) mp3Data.push(mp3buf);
+      }
+    }
+
+    const endBuf = mp3Encoder.flush();
+    if (endBuf.length > 0) mp3Data.push(endBuf);
+
+    let totalLength = 0;
+    mp3Data.forEach(buf => totalLength += buf.length);
+    mp3Bytes = new Uint8Array(totalLength);
+    let offset = 0;
+    mp3Data.forEach(buf => {
+      mp3Bytes.set(buf, offset);
+      offset += buf.length;
+    });
+  } catch (err) {
+    console.error('lamejs WAV-to-MP3 conversion failed, writing tags to raw bytes:', err);
+    mp3Bytes = audioBytes; // Fallback to raw bytes
+  }
+
+  // 4. Fetch image bytes for cover art
   let imageBytes = null;
   try {
     if (imageUrl.startsWith('data:')) {
@@ -1511,7 +1570,8 @@ async function embedMetadataInMp3(audioBase64, imageUrl, style, variant) {
   const title = `${variant ? variant.label : 'Soundtrack'}`;
   const album = `${style.family_label || 'GroovePop Originals'}`;
 
-  const writer = new ID3Writer(audioBytes.buffer);
+  // 5. Write ID3v2 tags
+  const writer = new ID3Writer(mp3Bytes.buffer);
   writer.setFrame('TIT2', title)
         .setFrame('TPE1', ['GroovePop AI'])
         .setFrame('TALB', album)
