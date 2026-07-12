@@ -56,9 +56,28 @@ function getAzureConfig(request) {
   };
 }
 
+function getGcpConfig(request) {
+  const keyBase64 = process.env.GCP_SERVICE_ACCOUNT_KEY;
+  if (!keyBase64) {
+    return { error: jsonResponse(500, { error: 'GCP credentials not configured' }, request) };
+  }
+
+  try {
+    const credentials = JSON.parse(Buffer.from(keyBase64, 'base64').toString());
+    return {
+      credentials,
+      projectId: process.env.GCP_PROJECT_ID || 'project-2f5b2aa2-6635-4a8a-9a4',
+      location: process.env.GCP_LOCATION || 'us-central1',
+    };
+  } catch (err) {
+    return { error: jsonResponse(500, { error: `Failed to parse GCP credentials: ${err.message}` }, request) };
+  }
+}
+
 module.exports = {
   corsHeaders,
   jsonResponse,
   handleOptions,
   getAzureConfig,
+  getGcpConfig,
 };
