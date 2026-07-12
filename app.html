@@ -1452,25 +1452,11 @@ async function generateMusic(imageUrl, caption, style) {
   
   const musicPrompt = buildMusicPrompt(activeStyle, chosen, caption);
   
-  let imageBase64 = null;
-  let imageMimeType = 'image/jpeg';
-  try {
-    if (imageUrl.startsWith('data:')) {
-      const parts = imageUrl.split(',');
-      imageMimeType = parts[0].split(';')[0].split(':')[1];
-      imageBase64 = parts[1];
-    }
-  } catch (e) {
-    console.error('Failed to parse image base64:', e);
-  }
-  
   const res = await fetch(`${API_BASE}/generate-music`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      prompt: musicPrompt,
-      imageBase64,
-      imageMimeType
+      prompt: musicPrompt
     })
   });
   
