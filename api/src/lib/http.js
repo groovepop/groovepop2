@@ -67,7 +67,7 @@ function getGcpConfig(request) {
     return {
       credentials,
       projectId: process.env.GCP_PROJECT_ID || 'project-2f5b2aa2-6635-4a8a-9a4',
-      location: process.env.GCP_LOCATION || 'us-central1',
+      location: process.env.GCP_LOCATION || 'global',
     };
   } catch (err) {
     return { error: jsonResponse(500, { error: `Failed to parse GCP credentials: ${err.message}` }, request) };

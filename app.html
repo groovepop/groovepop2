@@ -1503,50 +1503,56 @@ async function embedMetadataInMp3(audioBase64, imageUrl, style, variant) {
     audioBytes[i] = audioBinary.charCodeAt(i);
   }
   
-  // 3. Convert WAV to MP3
+  // 3. Convert WAV to MP3 if input is WAV
   let mp3Bytes;
-  try {
-    const wav = lamejs.WavHeader.readHeader(new DataView(audioBytes.buffer));
-    const samples = new Int16Array(audioBytes.buffer, wav.dataOffset, wav.dataLen / 2);
-    const mp3Encoder = new lamejs.Mp3Encoder(wav.channels, wav.sampleRate, 128);
-    const mp3Data = [];
-    const blockSize = 1152;
+  const isWav = audioBytes[0] === 82 && audioBytes[1] === 73 && audioBytes[2] === 70 && audioBytes[3] === 70; // "RIFF"
+  
+  if (isWav) {
+    try {
+      const wav = lamejs.WavHeader.readHeader(new DataView(audioBytes.buffer));
+      const samples = new Int16Array(audioBytes.buffer, wav.dataOffset, wav.dataLen / 2);
+      const mp3Encoder = new lamejs.Mp3Encoder(wav.channels, wav.sampleRate, 128);
+      const mp3Data = [];
+      const blockSize = 1152;
 
-    if (wav.channels === 2) {
-      const leftChannel = new Int16Array(samples.length / 2);
-      const rightChannel = new Int16Array(samples.length / 2);
-      for (let i = 0, j = 0; i < samples.length; i += 2, j++) {
-        leftChannel[j] = samples[i];
-        rightChannel[j] = samples[i + 1];
+      if (wav.channels === 2) {
+        const leftChannel = new Int16Array(samples.length / 2);
+        const rightChannel = new Int16Array(samples.length / 2);
+        for (let i = 0, j = 0; i < samples.length; i += 2, j++) {
+          leftChannel[j] = samples[i];
+          rightChannel[j] = samples[i + 1];
+        }
+        for (let i = 0; i < leftChannel.length; i += blockSize) {
+          const leftChunk = leftChannel.subarray(i, i + blockSize);
+          const rightChunk = rightChannel.subarray(i, i + blockSize);
+          const mp3buf = mp3Encoder.encodeBuffer(leftChunk, rightChunk);
+          if (mp3buf.length > 0) mp3Data.push(mp3buf);
+        }
+      } else {
+        for (let i = 0; i < samples.length; i += blockSize) {
+          const chunk = samples.subarray(i, i + blockSize);
+          const mp3buf = mp3Encoder.encodeBuffer(chunk);
+          if (mp3buf.length > 0) mp3Data.push(mp3buf);
+        }
       }
-      for (let i = 0; i < leftChannel.length; i += blockSize) {
-        const leftChunk = leftChannel.subarray(i, i + blockSize);
-        const rightChunk = rightChannel.subarray(i, i + blockSize);
-        const mp3buf = mp3Encoder.encodeBuffer(leftChunk, rightChunk);
-        if (mp3buf.length > 0) mp3Data.push(mp3buf);
-      }
-    } else {
-      for (let i = 0; i < samples.length; i += blockSize) {
-        const chunk = samples.subarray(i, i + blockSize);
-        const mp3buf = mp3Encoder.encodeBuffer(chunk);
-        if (mp3buf.length > 0) mp3Data.push(mp3buf);
-      }
+
+      const endBuf = mp3Encoder.flush();
+      if (endBuf.length > 0) mp3Data.push(endBuf);
+
+      let totalLength = 0;
+      mp3Data.forEach(buf => totalLength += buf.length);
+      mp3Bytes = new Uint8Array(totalLength);
+      let offset = 0;
+      mp3Data.forEach(buf => {
+        mp3Bytes.set(buf, offset);
+        offset += buf.length;
+      });
+    } catch (err) {
+      console.error('lamejs WAV-to-MP3 conversion failed, writing tags to raw bytes:', err);
+      mp3Bytes = audioBytes; // Fallback to raw bytes
     }
-
-    const endBuf = mp3Encoder.flush();
-    if (endBuf.length > 0) mp3Data.push(endBuf);
-
-    let totalLength = 0;
-    mp3Data.forEach(buf => totalLength += buf.length);
-    mp3Bytes = new Uint8Array(totalLength);
-    let offset = 0;
-    mp3Data.forEach(buf => {
-      mp3Bytes.set(buf, offset);
-      offset += buf.length;
-    });
-  } catch (err) {
-    console.error('lamejs WAV-to-MP3 conversion failed, writing tags to raw bytes:', err);
-    mp3Bytes = audioBytes; // Fallback to raw bytes
+  } else {
+    mp3Bytes = audioBytes; // Input is already MP3 (e.g. from Lyria 3)
   }
 
   // 4. Fetch image bytes for cover art
