@@ -1273,7 +1273,7 @@ async function startGeneration() {
     clearWaitIntervals();
     document.getElementById('gen-progress-bar').style.width = '95%';
     document.getElementById('gen-phase-label').textContent = 'COMPOSING';
-    document.getElementById('gen-main-text').textContent = 'COMPOSING YOUR SOUNDTRACK';
+    document.getElementById('gen-main-text').textContent = 'COMPOSING A FULL SONG WITH LYRICS';
 
     let musicData = null;
     try {
@@ -1639,7 +1639,7 @@ function initMusicPlayer(blobUrl, style, variant) {
   pauseIcon.style.display = 'none';
   progress.style.width = '0%';
   currentTimeEl.textContent = '0:00';
-  durationEl.textContent = '0:30';
+  durationEl.textContent = '-:--';
 
   const title = `${style.family_label.toUpperCase()} - ${variant.label.toUpperCase()}`;
   trackTitle.textContent = title;
@@ -1648,6 +1648,14 @@ function initMusicPlayer(blobUrl, style, variant) {
   audio.parentNode.replaceChild(newAudio, audio);
   
   newAudio.src = blobUrl;
+
+  newAudio.addEventListener('loadedmetadata', () => {
+    if (newAudio.duration) {
+      const durMin = Math.floor(newAudio.duration / 60);
+      const durSec = Math.floor(newAudio.duration % 60).toString().padStart(2, '0');
+      durationEl.textContent = `${durMin}:${durSec}`;
+    }
+  });
   
   newAudio.addEventListener('timeupdate', () => {
     if (newAudio.duration) {
