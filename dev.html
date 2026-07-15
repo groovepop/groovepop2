@@ -301,6 +301,16 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
       <div id="tag-list"></div>
     </div>
 
+    <div class="sb-block" id="color-picker-block" style="border-top:1px solid var(--border); padding: 12px 14px;">
+      <div class="sb-label">Color Picker</div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <input type="color" id="hex-color-picker" value="#7C8CF8" style="width:40px; height:28px; border:1px solid var(--border2); border-radius:4px; cursor:pointer; background:none; padding:0;">
+        <input type="text" id="hex-color-code" value="#7C8CF8" style="flex:1; background:var(--bg3); border:1px solid var(--border2); color:var(--text); font-family:var(--mono); font-size:11px; border-radius:3px; padding:5px 9px; text-transform:uppercase;">
+        <button class="bg bsm" id="btn-copy-color" onclick="copyColorHex()">⎘</button>
+        <button class="bg bsm" id="btn-insert-color" onclick="insertColorHex()">+</button>
+      </div>
+    </div>
+
     <div class="sb-block">
       <div class="sb-label">Azure Key</div>
       <input type="password" id="key-input" style="width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 8px" value="FfARuIc0mT0VdK75ESYHpwuPwJsDxQ91HWFstlzrFred9LSO8EZnJQQJ99CEACHYHv6XJ3w3AAAAACOGPLMh">
@@ -875,6 +885,24 @@ async function init() {
   document.getElementById('h-variants').textContent = variantCount;
   filterTags();
   refreshRunBtn();
+  // Sync color picker with hex text input
+  const hexPicker = document.getElementById('hex-color-picker');
+  const hexCode = document.getElementById('hex-color-code');
+  if (hexPicker && hexCode) {
+    hexPicker.addEventListener('input', (e) => {
+      hexCode.value = e.target.value.toUpperCase();
+    });
+    hexCode.addEventListener('input', (e) => {
+      let val = e.target.value;
+      if (!val.startsWith('#')) {
+        val = '#' + val;
+      }
+      if (/^#[0-9A-F]{6}$/i.test(val)) {
+        hexPicker.value = val;
+      }
+    });
+  }
+
   restoreLibrary();
 }
 
@@ -1099,6 +1127,33 @@ function getFreeform() {
 
 function clearFreeform() {
   document.getElementById('freeform-prompt').value = '';
+  refreshRunBtn();
+}
+
+function copyColorHex() {
+  const code = document.getElementById('hex-color-code').value.trim();
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.getElementById('btn-copy-color');
+    const oldText = btn.innerHTML;
+    btn.innerHTML = '✓';
+    setTimeout(() => { btn.innerHTML = oldText; }, 1500);
+  });
+}
+
+function insertColorHex() {
+  const code = document.getElementById('hex-color-code').value.trim();
+  const ta = document.getElementById('freeform-prompt');
+  let currentText = ta.value.trim();
+  const newLine = `"color hex ${code}",`;
+  if (currentText) {
+    if (!currentText.endsWith(',')) {
+      currentText += ',';
+    }
+    ta.value = currentText + '\n' + newLine;
+  } else {
+    ta.value = newLine;
+  }
+  autoGrow(ta);
   refreshRunBtn();
 }
 
