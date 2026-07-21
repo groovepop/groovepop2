@@ -1464,8 +1464,16 @@ async function autoUpload(id) {
 
 }
 
+function getApiKey() {
+  const input = document.getElementById('key-input');
+  const val = input ? input.value.trim() : '';
+  if (val) return val;
+  if (typeof ENVV !== 'undefined' && ENVV.AZURE_OPENAI_KEY) return ENVV.AZURE_OPENAI_KEY;
+  return 'FfARuIc0mT0VdK75ESYHpwuPwJsDxQ91HWFstlzrFred9LSO8EZnJQQJ99CEACHYHv6XJ3w3AAAAACOGPLMh';
+}
+
 async function getCaption(signal) {
-  const key    = document.getElementById('key-input').value.trim();
+  const key    = getApiKey();
   if (!photoURLs.length) throw new Error("No photo available for captioning.");
   const small  = await shrink(photoURLs[0], 512);
   const base64 = small.split(',')[1];
@@ -1508,7 +1516,7 @@ Respond with only the single word. Nothing else.` }
 }
 
 async function runVisionOnly(customInstruction, signal) {
-  const key    = document.getElementById('key-input').value.trim();
+  const key    = getApiKey();
   if (!photoURLs.length) throw new Error("No photo available for vision captioning.");
   const small  = await shrink(photoURLs[0], 512);
   const base64 = small.split(',')[1];
