@@ -324,6 +324,7 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
       <select id="generation-mode" style="background:var(--bg3);border:1px solid var(--border2);color:var(--accent);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px;font-weight:700">
         <option value="groovepop">Mode: Groove Pop</option>
         <option value="direct">Mode: Direct</option>
+        <option value="caption_only">Mode: Vision Caption</option>
       </select>
       <select id="count-select" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px"></select>
       <select id="quality-select" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px"></select>
@@ -1219,7 +1220,7 @@ function startCooldownUI() {
 
 async function runNow() {
   const mode = document.getElementById('generation-mode').value;
-  if (mode === 'groovepop' && !hasInput()) return;
+  if ((mode === 'groovepop' || mode === 'caption_only') && !hasInput()) return;
 
   const freeform = getFreeform();
   if (mode === 'groovepop' && !freeform) {
@@ -1240,10 +1241,10 @@ async function runNow() {
   const controller = new AbortController();
   const ids = [];
 
-  const label    = mode === 'direct' ? 'Direct Generation' : 'Custom';
+  const label    = mode === 'direct' ? 'Direct Generation' : mode === 'caption_only' ? 'Vision Caption' : 'Custom';
   const fakeTags = [{label,subtheme:'Custom',key:'custom',prompt:[], size: getOutputSize()}];
   const quality  = document.getElementById('quality-select').value;
-  const baseKey  = mode === 'direct' ? 'direct' : 'custom';
+  const baseKey  = mode;
   
   for (let i = 0; i < count; i++) {
     const id = 'r' + Date.now() + '_' + i;
@@ -1263,7 +1264,6 @@ async function runNow() {
   ids.forEach(id => startTimer(id));
 
   try {
-    let imageURLs;
     if (mode === 'groovepop') {
       const { caption, subjectCount } = await getCaption(controller.signal);
       ids.forEach(id => {
@@ -1271,18 +1271,36 @@ async function runNow() {
         results[id].subjectCount = subjectCount;
         renderCard(id);
       });
-      imageURLs = await generateRaw(freeform, caption, null, controller.signal, count);
+      const imageURLs = await generateRaw(freeform, caption, null, controller.signal, count);
+      imageURLs.forEach((url, i) => {
+        const id = ids[i];
+        if (!id) return;
+        results[id] = { ...results[id], status:'done', imageURL: url, elapsed:((Date.now()-results[id].startedAt)/1000).toFixed(1) };
+        renderCard(id);
+        autoUpload(id);
+      });
+    } else if (mode === 'caption_only') {
+      const textOutput = await runVisionOnly(freeform, controller.signal);
+      ids.forEach(id => {
+        results[id] = {
+          ...results[id],
+          status: 'done',
+          caption: textOutput,
+          imageURL: photoURLs[0] || null,
+          elapsed: ((Date.now() - results[id].startedAt) / 1000).toFixed(1)
+        };
+        renderCard(id);
+      });
     } else {
-      imageURLs = await generateDirectRaw(freeform, controller.signal, count);
+      const imageURLs = await generateDirectRaw(freeform, controller.signal, count);
+      imageURLs.forEach((url, i) => {
+        const id = ids[i];
+        if (!id) return;
+        results[id] = { ...results[id], status:'done', imageURL: url, elapsed:((Date.now()-results[id].startedAt)/1000).toFixed(1) };
+        renderCard(id);
+        autoUpload(id);
+      });
     }
-
-    imageURLs.forEach((url, i) => {
-      const id = ids[i];
-      if (!id) return;
-      results[id] = { ...results[id], status:'done', imageURL: url, elapsed:((Date.now()-results[id].startedAt)/1000).toFixed(1) };
-      renderCard(id);
-      autoUpload(id);
-    });
     return;
   } catch(e) {
     ids.forEach(id => {
@@ -1314,10 +1332,25 @@ async function rerun(id) {
   startTimer(id);
 
   try {
-    let imageURLs;
-    if (r.baseKey === 'direct') {
+    if (r.baseKey === 'caption_only') {
+      const textOutput = await runVisionOnly(r.freeform, controller.signal);
+      results[id] = {
+        ...results[id],
+        status: 'done',
+        caption: textOutput,
+        imageURL: photoURLs[0] || r.imageURL,
+        elapsed: ((Date.now() - results[id].startedAt) / 1000).toFixed(1)
+      };
+      renderCard(id);
+      return;
+    } else if (r.baseKey === 'direct') {
       const prompt = r.freeform || r.tags[0].label;
-      imageURLs = await generateDirectRaw(prompt, controller.signal, 1);
+      const imageURLs = await generateDirectRaw(prompt, controller.signal, 1);
+      const imageURL = imageURLs[0];
+      results[id] = { ...results[id], status:'done', imageURL, elapsed:((Date.now()-results[id].startedAt)/1000).toFixed(1) };
+      renderCard(id);
+      autoUpload(id);
+      return;
     } else {
       let caption = r.caption;
       if (!caption) {
@@ -1334,14 +1367,13 @@ async function rerun(id) {
         resolvePrompt(t0).map(l=>`"${l}",`).join('\n') +
         (t1r ? '\n\n---\n\n' + resolvePrompt(t1r).map(l=>`"${l}",`).join('\n') : '');
 
-      imageURLs = await generateRaw(styleLines, caption, r.tags[0]?.key !== 'custom' ? t0 : null, controller.signal, 1);
+      const imageURLs = await generateRaw(styleLines, caption, r.tags[0]?.key !== 'custom' ? t0 : null, controller.signal, 1);
+      const imageURL = imageURLs[0];
+      results[id] = { ...results[id], status:'done', imageURL, elapsed:((Date.now()-results[id].startedAt)/1000).toFixed(1) };
+      renderCard(id);
+      autoUpload(id);
+      return;
     }
-
-    const imageURL = imageURLs[0];
-    results[id] = { ...results[id], status:'done', imageURL, elapsed:((Date.now()-results[id].startedAt)/1000).toFixed(1) };
-    renderCard(id);
-    autoUpload(id);
-    return;
   } catch(e) {
     results[id] = { ...results[id], status:'error', error: e.name==='AbortError' ? 'Cancelled' : e.message, elapsed:((Date.now()-results[id].startedAt)/1000).toFixed(1) };
   }
@@ -1475,6 +1507,31 @@ Respond with only the single word. Nothing else.` }
   return { caption, subjectCount };
 }
 
+async function runVisionOnly(customInstruction, signal) {
+  const key    = document.getElementById('key-input').value.trim();
+  if (!photoURLs.length) throw new Error("No photo available for vision captioning.");
+  const small  = await shrink(photoURLs[0], 512);
+  const base64 = small.split(',')[1];
+  const mime   = small.split(';')[0].split(':')[1];
+  const url    = `${AZURE_EP}/openai/deployments/${CAP_DEP}/chat/completions?api-version=2025-03-01-preview`;
+  const imgContent = { type:'image_url', image_url:{ url:`data:${mime};base64,${base64}`, detail:'low' } };
+  const headers = { 'api-key':key, 'Content-Type':'application/json' };
+
+  const overridePrompt = document.getElementById('vision-prompt-override')?.value.trim();
+  const textPrompt = overridePrompt || customInstruction || "Analyze this image in detail. Describe the subjects, clothing, environment, lighting, artistic style, camera angle, color palette, and mood so it can be recreated in an AI image generator.";
+
+  const capRes = await fetch(url, {
+    method:'POST', headers, signal,
+    body: JSON.stringify({ max_tokens:800, messages:[{ role:'user', content:[
+      imgContent,
+      { type:'text', text: textPrompt }
+    ]}]})
+  });
+  if (!capRes.ok) throw new Error(`Vision Caption ${capRes.status}`);
+  const caption = (await capRes.json()).choices[0].message.content.trim();
+  return caption;
+}
+
 function resolvePrompt(tag) {
   const pool = [tag.prompt, ...(tag.variants||[]).map(v=>v.prompt)].filter(Boolean);
   return pool[Math.floor(Math.random()*pool.length)] || [];
@@ -1583,6 +1640,22 @@ function showGrid() {
   document.getElementById('grid').style.display = 'grid';
 }
 
+function copyCaptionToInput(id, btn) {
+  const r = results[id];
+  if (!r || !r.caption) return;
+  const area = document.getElementById('freeform-prompt');
+  if (area) {
+    area.value = r.caption;
+    autoGrow(area);
+    refreshRunBtn();
+    if (btn) {
+      const orig = btn.textContent;
+      btn.textContent = '✓ Sent to Input';
+      setTimeout(() => btn.textContent = orig, 1500);
+    }
+  }
+}
+
 function renderPage() {
   const grid = document.getElementById('grid');
   const folderIds = getFolderResults(activeFolderId);
@@ -1636,10 +1709,11 @@ function renderCard(id) {
 
   const names  = r.label || r.tags.map(t=>t.label).join(' + ');
   const badges = r.tags.map(t=>`<div class="ti-badge b-${t.subtheme}">${t.subtheme}</div>`).join('');
+  const isCaptionOnly = r.baseKey === 'caption_only';
 
   const dismissBtn = `<button onclick="event.stopPropagation();dismissCard('${id}')" title="Remove" style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,.7);border:none;color:#fff;font-family:var(--mono);font-size:10px;cursor:pointer;border-radius:2px;padding:1px 5px;line-height:1.4;opacity:0;transition:.15s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0" class="rc-img-dismiss">✕</button>`;
   const imgH = r.imageURL
-    ? `<div class="rc-img" style="position:relative"><img src="${r.imageURL}" alt="" onclick="expandImg('${id}')" style="cursor:zoom-in">${dismissBtn}</div>`
+    ? `<div class="rc-img" style="position:relative"><img src="${r.imageURL}" alt="" onclick="expandImg('${id}')" style="cursor:zoom-in">${isCaptionOnly ? '<div style="position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,0.75);color:var(--accent);font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:3px;border:1px solid var(--border2);backdrop-filter:blur(4px)">👁 Source Image</div>' : ''}${dismissBtn}</div>`
     : r.status==='running'
     ? `<div class="rc-img" style="aspect-ratio:${r.tags?.[0]?.size?.includes('1536')&&r.tags[0].size.startsWith('1536')? '3/2':r.tags?.[0]?.size?.includes('1536')?'2/3':'2/3'}"><div class="rc-spin"><div class="spin"></div></div></div>`
     : `<div class="rc-img" style="position:relative;min-height:60px"><div class="rc-spin"><span style="color:var(--err)">✕ failed</span></div>${dismissBtn}</div>`;
@@ -1647,11 +1721,14 @@ function renderCard(id) {
   const capH = r.caption ? `
     <div class="rc-section">
       <div class="rc-section-hd" onclick="toggleSection('cap-${id}',this.querySelector('.rc-section-toggle'))">
-        <span class="rc-section-label">Caption</span><span class="rc-section-toggle">▸</span>
+        <span class="rc-section-label">${isCaptionOnly ? 'Generated Vision Text' : 'Caption'}</span><span class="rc-section-toggle">${isCaptionOnly ? '▾' : '▸'}</span>
       </div>
-      <div class="rc-section-body" id="cap-${id}">
-        <div class="rc-cap" id="cap-text-${id}">${esc(r.caption)}</div>
-        <div class="rc-cap-actions"><button class="bg bsm" onclick="copyCaption('${id}')">copy</button></div>
+      <div class="rc-section-body ${isCaptionOnly ? 'open' : ''}" id="cap-${id}" style="${isCaptionOnly ? 'display:block' : ''}">
+        <div class="rc-cap" id="cap-text-${id}" style="white-space:pre-wrap;font-family:var(--mono);font-size:11px;line-height:1.5;color:var(--text)">${esc(r.caption)}</div>
+        <div class="rc-cap-actions">
+          <button class="bg bsm" onclick="copyCaption('${id}')">⎘ Copy</button>
+          <button class="bg bsm" onclick="copyCaptionToInput('${id}', this)">⎘ To Input</button>
+        </div>
       </div>
     </div>` : '';
 
@@ -1667,12 +1744,6 @@ function renderCard(id) {
     </div>` : '';
 
   const errH = r.error ? `<div class="rc-err">⚠ ${esc(r.error)}</div>` : '';
-
-  const actH = r.status === 'running'
-    ? `<button class="bd bsm" onclick="cancelCard('${id}')">✕ Cancel</button>`
-    : r.status === 'done'
-    ? `<button class="bg bsm" onclick="dlCard('${id}')">↓ Save</button><button class="bg bsm" onclick="rerun('${id}')">↺ Retry</button>`
-    : `<button class="bg bsm" onclick="rerun('${id}')">↺ Retry</button>`;
 
   card.innerHTML = `
     <div class="rc-body">
@@ -1694,7 +1765,10 @@ function renderCard(id) {
         ${r.status==='running'
           ? `<button class="bd bsm" onclick="cancelCard('${id}')">✕ Cancel</button>`
           : r.status==='done'
-          ? `<button class="bg bsm" onclick="dlCard('${id}')">↓ Save</button><button class="bg bsm" onclick="copyPromptToClipboard('${id}', this)">⎘ Copy</button><button class="bg bsm" onclick="copyCardPrompt('${id}', this)">⎘ To Input</button><button class="bg bsm" onclick="rerun('${id}')">↺ Retry</button>`
+          ? (isCaptionOnly
+              ? `<button class="bg bsm" onclick="copyCaption('${id}')">⎘ Copy Text</button><button class="bg bsm" onclick="copyCaptionToInput('${id}', this)">⎘ To Input</button><button class="bg bsm" onclick="rerun('${id}')">↺ Retry</button>`
+              : `<button class="bg bsm" onclick="dlCard('${id}')">↓ Save</button><button class="bg bsm" onclick="copyPromptToClipboard('${id}', this)">⎘ Copy</button><button class="bg bsm" onclick="copyCardPrompt('${id}', this)">⎘ To Input</button><button class="bg bsm" onclick="rerun('${id}')">↺ Retry</button>`
+            )
           : `<button class="bg bsm" onclick="rerun('${id}')">↺ Retry</button>`
         }
       </div>
