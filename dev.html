@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230c0c0c'/><rect x='2' y='2' width='28' height='28' rx='5' fill='none' stroke='%2300e5a0' stroke-width='1.5'/><text x='50%' y='52%' dominant-baseline='central' text-anchor='middle' font-size='18' fill='%2300e5a0'>◈</text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230e0f16'/><rect x='2' y='2' width='28' height='28' rx='5' fill='none' stroke='%237c8cf8' stroke-width='2'/><polygon points='12,9 25,16 12,23' fill='%237c8cf8'/><circle cx='24' cy='9' r='3' fill='%23e8508a'/></svg>">
 <title>GROOVE POP — Dev</title>
 <style>
 :root {
@@ -312,15 +312,17 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
     </div>
 
     <div class="sb-block" id="vision-prompts-block" style="border-top:1px solid var(--border); padding: 12px 14px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div class="sb-label" style="margin:0">Vision Prompts</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;cursor:pointer" onclick="toggleVisionPromptsBlock()">
+        <div class="sb-label" style="margin:0">Vision Prompts <span id="vp-toggle-icon" style="font-size:10px;color:var(--text3);margin-left:4px">▾</span></div>
         <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">Presets</span>
       </div>
-      <div style="display:flex;gap:6px;margin-bottom:8px">
-        <input type="text" id="new-vision-prompt-input" placeholder="New vision preset…" onkeydown="if(event.key==='Enter')addVisionPreset()" style="flex:1;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px">
-        <button class="bg bsm" onclick="addVisionPreset()" style="padding:4px 8px;font-weight:700">+</button>
+      <div id="vision-prompts-content">
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          <input type="text" id="new-vision-prompt-input" placeholder="New vision preset…" onkeydown="if(event.key==='Enter')addVisionPreset()" style="flex:1;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px">
+          <button class="bg bsm" onclick="addVisionPreset()" style="padding:4px 8px;font-weight:700">+</button>
+        </div>
+        <div id="vision-presets-list" style="display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto;scrollbar-width:thin"></div>
       </div>
-      <div id="vision-presets-list" style="display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto;scrollbar-width:thin"></div>
     </div>
 
     <div class="sb-block" id="narration-settings-block" style="border-top:1px solid var(--border); padding: 12px 14px;">
@@ -959,6 +961,7 @@ async function init() {
   }
 
   renderVisionPresets();
+  initVisionPromptsState();
   restoreLibrary();
 }
 
@@ -1914,23 +1917,14 @@ async function synthesizeNarration(text, cardId, btnEl) {
 
     const blob = await res.blob();
     const audioURL = URL.createObjectURL(blob);
+    const voiceName = voiceId.replace('en-US-', '').replace('Neural', '');
 
     if (cardId && results[cardId]) {
       results[cardId].audioURL = audioURL;
-      results[cardId].audioVoice = voiceId.replace('en-US-', '').replace('Neural', '');
+      results[cardId].audioVoice = voiceName;
       renderCard(cardId);
     } else {
-      let player = document.getElementById('deck-audio-player');
-      if (!player) {
-        player = document.createElement('audio');
-        player.id = 'deck-audio-player';
-        player.controls = true;
-        player.style.cssText = 'width:100%;margin-top:6px;display:block';
-        const freeformArea = document.getElementById('freeform-prompt');
-        if (freeformArea) freeformArea.parentNode.after(player);
-      }
-      player.src = audioURL;
-      player.play();
+      showDeckAudioWidget(audioURL, voiceName);
     }
 
     if (btnEl) {
@@ -1940,6 +1934,56 @@ async function synthesizeNarration(text, cardId, btnEl) {
   } catch (err) {
     alert("Narration Error: " + err.message);
     if (btnEl) btnEl.textContent = origText;
+  }
+}
+
+function showDeckAudioWidget(audioURL, voiceName) {
+  let widget = document.getElementById('deck-audio-widget');
+  if (!widget) {
+    widget = document.createElement('div');
+    widget.id = 'deck-audio-widget';
+    widget.style.cssText = 'display:flex;align-items:center;gap:10px;margin-top:8px;padding:8px 12px;background:var(--bg3);border:1px solid var(--accent);border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.3)';
+    const freeformArea = document.getElementById('freeform-prompt');
+    if (freeformArea) freeformArea.parentNode.after(widget);
+  }
+  widget.style.display = 'flex';
+  widget.innerHTML = `
+    <div style="font-family:var(--mono);font-size:10px;color:var(--accent);font-weight:700;white-space:nowrap">🎙 ${esc(voiceName || 'Trailer Narration')}</div>
+    <audio id="deck-audio-player" src="${audioURL}" controls style="flex:1;height:32px" autoplay></audio>
+    <a href="${audioURL}" download="narration.mp3" class="bg bsm" style="text-decoration:none;font-size:9px;white-space:nowrap;display:inline-flex;align-items:center">↓ Save MP3</a>
+    <button class="bg bsm" onclick="closeDeckAudioWidget()" title="Close Audio Player" style="padding:2px 6px;color:var(--text3)">✕</button>
+  `;
+}
+
+function closeDeckAudioWidget() {
+  const widget = document.getElementById('deck-audio-widget');
+  if (widget) widget.style.display = 'none';
+}
+
+function dismissCardAudio(id) {
+  if (results[id]) {
+    delete results[id].audioURL;
+    delete results[id].audioVoice;
+    renderCard(id);
+  }
+}
+
+function toggleVisionPromptsBlock() {
+  const content = document.getElementById('vision-prompts-content');
+  const icon = document.getElementById('vp-toggle-icon');
+  if (!content) return;
+  const isHidden = content.style.display === 'none';
+  content.style.display = isHidden ? 'block' : 'none';
+  if (icon) icon.textContent = isHidden ? '▾' : '▸';
+  localStorage.setItem('gp_vp_collapsed', isHidden ? 'false' : 'true');
+}
+
+function initVisionPromptsState() {
+  if (localStorage.getItem('gp_vp_collapsed') === 'true') {
+    const content = document.getElementById('vision-prompts-content');
+    const icon = document.getElementById('vp-toggle-icon');
+    if (content) content.style.display = 'none';
+    if (icon) icon.textContent = '▸';
   }
 }
 
@@ -2002,10 +2046,13 @@ function renderCard(id) {
     </div>` : '';
 
   const audioH = r.audioURL ? `
-    <div class="rc-audio-wrap" style="margin-top:6px;padding:6px;background:var(--bg3);border:1px solid var(--border);border-radius:4px">
+    <div class="rc-audio-wrap" id="audio-wrap-${id}" style="margin-top:6px;padding:6px 8px;background:var(--bg3);border:1px solid var(--accent);border-radius:4px">
       <div style="font-family:var(--mono);font-size:9px;color:var(--accent);margin-bottom:4px;display:flex;align-items:center;justify-content:space-between">
         <span>🎙 Trailer Narration (${esc(r.audioVoice || 'Voice')})</span>
-        <a href="${r.audioURL}" download="narration_${id}.mp3" style="color:var(--accent);text-decoration:none;font-size:8.5px">↓ Save MP3</a>
+        <div style="display:flex;gap:6px;align-items:center">
+          <a href="${r.audioURL}" download="narration_${id}.mp3" style="color:var(--accent);text-decoration:none;font-size:8.5px">↓ Save MP3</a>
+          <button onclick="dismissCardAudio('${id}')" title="Remove Audio" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:10px;line-height:1" onmouseover="this.style.color='var(--err)'" onmouseout="this.style.color='var(--text3)'">✕</button>
+        </div>
       </div>
       <audio src="${r.audioURL}" controls style="width:100%;height:32px;border-radius:3px"></audio>
     </div>` : '';
