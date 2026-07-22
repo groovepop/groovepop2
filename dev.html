@@ -323,6 +323,46 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
       <div id="vision-presets-list" style="display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto;scrollbar-width:thin"></div>
     </div>
 
+    <div class="sb-block" id="narration-settings-block" style="border-top:1px solid var(--border); padding: 12px 14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div class="sb-label" style="margin:0">Trailer Narration</div>
+        <span style="font-family:var(--mono);font-size:9px;color:var(--accent)">TTS Voice</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <select id="tts-voice-select" style="width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:5px 6px">
+          <option value="en-US-AndrewMultilingualNeural">Andrew Multilingual (Deep Baritone)</option>
+          <option value="en-US-AndrewNeural" data-style="documentary-narration">Andrew (Documentary Style)</option>
+          <option value="en-US-BrianMultilingualNeural">Brian Multilingual (Rich Cinematic)</option>
+          <option value="en-US-GuyNeural" data-style="narration-professional">Guy (Professional Narration)</option>
+          <option value="en-US-DavisNeural">Davis (Smooth Dramatic)</option>
+          <option value="en-US-TonyNeural">Tony (Bold Parody)</option>
+          <option value="en-US-SteffanMultilingualNeural">Steffan (Heavy Dramatic)</option>
+          <option value="en-US-Andrew:DragonHDLatestNeural">Andrew — Dragon HD (Expressive)</option>
+          <option value="en-US-Davis:DragonHDLatestNeural">Davis — Dragon HD (Adaptive)</option>
+        </select>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:2px">
+          <div>
+            <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Rate: <span id="tts-rate-val" style="color:var(--accent)">-8%</span></div>
+            <input type="range" id="tts-rate-slider" min="-40" max="20" value="-8" style="width:100%;accent-color:var(--accent)" oninput="document.getElementById('tts-rate-val').textContent=(this.value>0?'+':'')+this.value+'%'">
+          </div>
+          <div>
+            <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pitch: <span id="tts-pitch-val" style="color:var(--accent)">-6%</span></div>
+            <input type="range" id="tts-pitch-slider" min="-30" max="20" value="-6" style="width:100%;accent-color:var(--accent)" oninput="document.getElementById('tts-pitch-val').textContent=(this.value>0?'+':'')+this.value+'%'">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:2px">
+          <div>
+            <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Volume: <span id="tts-vol-val" style="color:var(--accent)">+0%</span></div>
+            <input type="range" id="tts-vol-slider" min="-40" max="40" value="0" style="width:100%;accent-color:var(--accent)" oninput="document.getElementById('tts-vol-val').textContent=(this.value>0?'+':'')+this.value+'%'">
+          </div>
+          <div>
+            <div style="font-family:var(--mono);font-size:8px;color:var(--text3);margin-bottom:2px">Pause: <span id="tts-pause-val" style="color:var(--accent)">400ms</span></div>
+            <input type="range" id="tts-pause-slider" min="0" max="1200" step="50" value="400" style="width:100%;accent-color:var(--accent)" oninput="document.getElementById('tts-pause-val').textContent=this.value+'ms'">
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="sb-block">
       <div class="sb-label">Azure Key</div>
       <input type="password" id="key-input" style="width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 8px" value="FfARuIc0mT0VdK75ESYHpwuPwJsDxQ91HWFstlzrFred9LSO8EZnJQQJ99CEACHYHv6XJ3w3AAAAACOGPLMh">
@@ -341,6 +381,7 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
       <select id="count-select" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px"></select>
       <select id="quality-select" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px"></select>
       <select id="size-select" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 6px"></select>
+      <div class="sel-display" id="sel-display">No tag selected</div>
     </div>
 
     <div id="freeform-bar">
@@ -358,6 +399,7 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
         <div class="sb-label" style="margin:0">Text Prompt</div>
         <span style="font-family:var(--mono);font-size:9px;color:var(--text3)">Click tags below to add · --- separates stacked tags in Groove Pop</span>
         <div style="margin-left:auto;display:flex;gap:5px">
+          <button class="bg bsm" onclick="narratePromptDeck(this)">🔊 Narrate</button>
           <button class="bg bsm" onclick="copyFreeform()">⎘ Copy</button>
           <button class="bg bsm" onclick="clearFreeform()">Clear</button>
         </div>
@@ -1807,6 +1849,114 @@ function changePage(dir) {
   document.getElementById('panel-results').scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
+// ── TRAILER NARRATION TTS ─────────────────────────────────────
+function buildSSMLText(rawText) {
+  const voiceSelect = document.getElementById('tts-voice-select');
+  const voiceId = voiceSelect ? voiceSelect.value : 'en-US-AndrewMultilingualNeural';
+  const selOption = voiceSelect ? voiceSelect.options[voiceSelect.selectedIndex] : null;
+  const style = selOption ? (selOption.getAttribute('data-style') || '') : '';
+
+  const rate = document.getElementById('tts-rate-slider')?.value || '-8';
+  const pitch = document.getElementById('tts-pitch-slider')?.value || '-6';
+  const vol = document.getElementById('tts-vol-slider')?.value || '0';
+  const pause = parseInt(document.getElementById('tts-pause-slider')?.value || '400', 10);
+
+  const sign = n => (parseInt(n, 10) > 0 ? '+' : '') + n;
+  let text = rawText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  if (pause > 0) {
+    text = text.replace(/([.!?…]+)(\s+|$)/g, `$1<break time="${pause}ms"/>$2`);
+  }
+
+  const prosodyOpen = `<prosody rate="${sign(rate)}%" pitch="${sign(pitch)}%" volume="${sign(vol)}%">`;
+  let inner = `${prosodyOpen}${text}</prosody>`;
+  if (style) {
+    inner = `<mstts:express-as style="${style}">${inner}</mstts:express-as>`;
+  }
+
+  const ssml = `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="en-US">
+  <voice name="${voiceId}">
+    ${inner}
+  </voice>
+</speak>`;
+
+  return { ssml, voiceId };
+}
+
+async function synthesizeNarration(text, cardId, btnEl) {
+  if (!text || !text.trim()) return;
+  const key = getApiKey();
+  if (!key) { alert("Azure API Key required for narration."); return; }
+
+  const region = (typeof ENVV !== 'undefined' && ENVV.AZURE_SPEECH_REGION) ? ENVV.AZURE_SPEECH_REGION : 'eastus2';
+  const url = `https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`;
+
+  const origText = btnEl ? btnEl.textContent : '';
+  if (btnEl) btnEl.textContent = '🔊 Synthesizing…';
+
+  try {
+    const { ssml, voiceId } = buildSSMLText(text.trim());
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Ocp-Apim-Subscription-Key": key,
+        "Content-Type": "application/ssml+xml",
+        "X-Microsoft-OutputFormat": "audio-24khz-96kbitrate-mono-mp3",
+        "User-Agent": "groovepop-narration"
+      },
+      body: ssml
+    });
+
+    if (!res.ok) {
+      const errTxt = await res.text();
+      throw new Error(`TTS ${res.status}: ${errTxt.slice(0, 100)}`);
+    }
+
+    const blob = await res.blob();
+    const audioURL = URL.createObjectURL(blob);
+
+    if (cardId && results[cardId]) {
+      results[cardId].audioURL = audioURL;
+      results[cardId].audioVoice = voiceId.replace('en-US-', '').replace('Neural', '');
+      renderCard(cardId);
+    } else {
+      let player = document.getElementById('deck-audio-player');
+      if (!player) {
+        player = document.createElement('audio');
+        player.id = 'deck-audio-player';
+        player.controls = true;
+        player.style.cssText = 'width:100%;margin-top:6px;display:block';
+        const freeformArea = document.getElementById('freeform-prompt');
+        if (freeformArea) freeformArea.parentNode.after(player);
+      }
+      player.src = audioURL;
+      player.play();
+    }
+
+    if (btnEl) {
+      btnEl.textContent = '✓ Audio Ready';
+      setTimeout(() => btnEl.textContent = origText, 2000);
+    }
+  } catch (err) {
+    alert("Narration Error: " + err.message);
+    if (btnEl) btnEl.textContent = origText;
+  }
+}
+
+function narratePromptDeck(btn) {
+  const text = getFreeform();
+  if (!text) { alert("Enter a prompt line to narrate."); return; }
+  synthesizeNarration(text, null, btn);
+}
+
+function narrateCard(id, btn) {
+  const r = results[id];
+  if (!r) return;
+  const text = r.caption || r.freeform || (r.tags && r.tags[0] ? r.tags[0].prompt.join(' ') : '');
+  if (!text) return;
+  synthesizeNarration(text, id, btn);
+}
+
 function renderCard(id) {
   const r    = results[id];
   let card   = document.getElementById('card-' + id);
@@ -1833,6 +1983,7 @@ function renderCard(id) {
       <div class="rc-section-body ${isCaptionOnly ? 'open' : ''}" id="cap-${id}" style="${isCaptionOnly ? 'display:block' : ''}">
         <div class="rc-cap" id="cap-text-${id}" style="white-space:pre-wrap;font-family:var(--mono);font-size:11px;line-height:1.5;color:var(--text)">${esc(r.caption)}</div>
         <div class="rc-cap-actions">
+          <button class="bg bsm" onclick="narrateCard('${id}', this)">🔊 Narrate</button>
           <button class="bg bsm" onclick="copyCaption('${id}')">⎘ Copy</button>
           <button class="bg bsm" onclick="copyCaptionToInput('${id}', this)">⎘ To Input</button>
         </div>
@@ -1846,8 +1997,17 @@ function renderCard(id) {
       </div>
       <div class="rc-section-body" id="fre-${id}">
         <div class="rc-custom-prompt" id="fre-text-${id}">${esc(r.freeform)}</div>
-        <div class="rc-cap-actions"><button class="bg bsm" onclick="copyCustom('${id}')">⎘ Copy</button></div>
+        <div class="rc-cap-actions"><button class="bg bsm" onclick="narrateCard('${id}', this)">🔊 Narrate</button><button class="bg bsm" onclick="copyCustom('${id}')">⎘ Copy</button></div>
       </div>
+    </div>` : '';
+
+  const audioH = r.audioURL ? `
+    <div class="rc-audio-wrap" style="margin-top:6px;padding:6px;background:var(--bg3);border:1px solid var(--border);border-radius:4px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--accent);margin-bottom:4px;display:flex;align-items:center;justify-content:space-between">
+        <span>🎙 Trailer Narration (${esc(r.audioVoice || 'Voice')})</span>
+        <a href="${r.audioURL}" download="narration_${id}.mp3" style="color:var(--accent);text-decoration:none;font-size:8.5px">↓ Save MP3</a>
+      </div>
+      <audio src="${r.audioURL}" controls style="width:100%;height:32px;border-radius:3px"></audio>
     </div>` : '';
 
   const errH = r.error ? `<div class="rc-err">⚠ ${esc(r.error)}</div>` : '';
@@ -1873,8 +2033,8 @@ function renderCard(id) {
           ? `<button class="bd bsm" onclick="cancelCard('${id}')">✕ Cancel</button>`
           : r.status==='done'
           ? (isCaptionOnly
-              ? `<button class="bg bsm" onclick="copyCaption('${id}')">⎘ Copy Text</button><button class="bg bsm" onclick="copyCaptionToInput('${id}', this)">⎘ To Input</button><button class="bg bsm" onclick="rerun('${id}')">↺ Retry</button>`
-              : `<button class="bg bsm" onclick="dlCard('${id}')">↓ Save</button><button class="bg bsm" onclick="copyPromptToClipboard('${id}', this)">⎘ Copy</button><button class="bg bsm" onclick="copyCardPrompt('${id}', this)">⎘ To Input</button><button class="bg bsm" onclick="rerun('${id}')">↺ Retry</button>`
+              ? `<button class="bg bsm" onclick="narrateCard('${id}', this)">🔊 Narrate</button><button class="bg bsm" onclick="copyCaption('${id}')">⎘ Copy Text</button><button class="bg bsm" onclick="copyCaptionToInput('${id}', this)">⎘ To Input</button><button class="bg bsm" onclick="rerun('${id}')">↺ Retry</button>`
+              : `<button class="bg bsm" onclick="narrateCard('${id}', this)">🔊 Narrate</button><button class="bg bsm" onclick="dlCard('${id}')">↓ Save</button><button class="bg bsm" onclick="copyPromptToClipboard('${id}', this)">⎘ Copy</button><button class="bg bsm" onclick="copyCardPrompt('${id}', this)">⎘ To Input</button><button class="bg bsm" onclick="rerun('${id}')">↺ Retry</button>`
             )
           : `<button class="bg bsm" onclick="rerun('${id}')">↺ Retry</button>`
         }
@@ -1886,6 +2046,7 @@ function renderCard(id) {
         ${errH}
         ${capH}
         ${customH}
+        ${audioH}
         ${r.status==='done' ? `<textarea class="rc-notes" placeholder="Notes…"></textarea>` : ''}
       </div>
     </div>
