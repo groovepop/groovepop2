@@ -930,11 +930,7 @@ async function init() {
 
   document.getElementById('generation-mode').addEventListener('change', refreshRunBtn);
 
-  try {
-    const r = await fetch('styles.json');
-    if (!r.ok) throw 0;
-    allTags = await r.json();
-  } catch { allTags = []; }
+  allTags = await loadStylesFile('single');
 
   const sf = document.getElementById('sub-filter');
   const subthemes = [...new Set(allTags.map(t=>t.subtheme).filter(Boolean))].sort();
@@ -1154,38 +1150,55 @@ function updateUploadPreview() {
 // ── TAG FILE SWITCHING ────────────────────────────────────────
 let currentTagFile = 'single';
 
+async function loadStylesFile(file) {
+  const primary = file === 'multi' ? 'styles-multi.json' : 'styles.json';
+  const secondary = '/' + primary;
+  try {
+    let r = await fetch(primary);
+    if (!r.ok) {
+      r = await fetch(secondary);
+    }
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return await r.json();
+  } catch (err) {
+    console.error(`Failed to load ${primary}:`, err);
+    return [];
+  }
+}
+
 async function switchTagFile(file) {
   currentTagFile = file;
-  document.getElementById('tft-single').classList.toggle('active', file === 'single');
-  document.getElementById('tft-multi').classList.toggle('active', file === 'multi');
+  const singleTab = document.getElementById('tft-single');
+  const multiTab = document.getElementById('tft-multi');
+  if (singleTab) singleTab.classList.toggle('active', file === 'single');
+  if (multiTab) multiTab.classList.toggle('active', file === 'multi');
 
-  const filename = file === 'multi' ? 'styles-multi.json' : 'styles.json';
-  try {
-    const r = await fetch(filename);
-    if (!r.ok) throw new Error('not found');
-    allTags = await r.json();
-  } catch {
-    allTags = [];
-  }
+  allTags = await loadStylesFile(file);
 
   // Rebuild subtheme filter
   const sf = document.getElementById('sub-filter');
-  sf.innerHTML = '<option value="">Subtheme…</option>';
-  const subthemes = [...new Set(allTags.map(t=>t.subtheme).filter(Boolean))].sort();
-  subthemes.forEach(s => {
-    const o = document.createElement('option');
-    o.value = s; o.textContent = s; sf.appendChild(o);
-  });
+  if (sf) {
+    sf.innerHTML = '<option value="">Subtheme…</option>';
+    const subthemes = [...new Set(allTags.map(t=>t.subtheme).filter(Boolean))].sort();
+    subthemes.forEach(s => {
+      const o = document.createElement('option');
+      o.value = s; o.textContent = s; sf.appendChild(o);
+    });
+  }
 
   // Update counts
   const subthemeSet = [...new Set(allTags.map(t=>t.subtheme).filter(Boolean))];
   const variantCount = allTags.reduce((n,t) => n + (t.variants?t.variants.length:0), 0);
-  document.getElementById('h-subthemes').textContent = subthemeSet.length;
-  document.getElementById('h-total').textContent = allTags.length;
-  document.getElementById('h-variants').textContent = variantCount;
+  const hSub = document.getElementById('h-subthemes');
+  const hTot = document.getElementById('h-total');
+  const hVar = document.getElementById('h-variants');
+  if (hSub) hSub.textContent = subthemeSet.length;
+  if (hTot) hTot.textContent = allTags.length;
+  if (hVar) hVar.textContent = variantCount;
 
   // Reset search and re-render
-  document.getElementById('tag-search').value = '';
+  const tagSearch = document.getElementById('tag-search');
+  if (tagSearch) tagSearch.value = '';
   filterTags();
 }
 
