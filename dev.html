@@ -968,6 +968,23 @@ async function init() {
   renderVisionPresets();
   initVisionPromptsState();
   restoreLibrary();
+
+  const fp = document.getElementById('freeform-prompt');
+  if (fp) {
+    autoGrow(fp);
+    fp.addEventListener('input', () => autoGrow(fp));
+    fp.addEventListener('paste', () => setTimeout(() => autoGrow(fp), 0));
+  }
+  const vp = document.getElementById('vision-prompt-override');
+  if (vp) {
+    autoGrow(vp);
+    vp.addEventListener('input', () => autoGrow(vp));
+    vp.addEventListener('paste', () => setTimeout(() => autoGrow(vp), 0));
+  }
+  window.addEventListener('resize', () => {
+    if (fp) autoGrow(fp);
+    if (vp) autoGrow(vp);
+  });
 }
 
 // ── VISION PRESETS ────────────────────────────────────────────
@@ -2482,10 +2499,19 @@ function closeLightbox() { document.getElementById('lightbox').classList.remove(
 
 
 
-// ── UTIL ──────────────────────────────────────────────────────
 function autoGrow(el) {
+  if (!el) return;
+  if (!el.offsetParent && el.scrollHeight === 0) {
+    requestAnimationFrame(() => autoGrow(el));
+    return;
+  }
   el.style.height = 'auto';
-  el.style.height = el.scrollHeight + 'px';
+  const computed = window.getComputedStyle(el);
+  const borderTop = parseFloat(computed.borderTopWidth) || 0;
+  const borderBottom = parseFloat(computed.borderBottomWidth) || 0;
+  const minH = parseFloat(computed.minHeight) || 40;
+  const newHeight = Math.max(minH, el.scrollHeight + borderTop + borderBottom);
+  el.style.height = newHeight + 'px';
 }
 
 function esc(s) {
