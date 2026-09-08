@@ -426,7 +426,7 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
 
     <div id="panel-tabs" style="display:flex;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;flex-shrink:0">
       <div class="ptab active" id="tab-results" onclick="switchTab('results')">Results</div>
-      <div class="ptab" id="tab-manage" onclick="switchTab('manage')">Manage</div>
+      <div class="ptab" id="tab-keys" onclick="switchTab('keys')">🔑 Keys</div>
     </div>
 
     <div id="panel-results">
@@ -448,47 +448,31 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
   </div>
 </div>
 
-<!-- MANAGE OVERLAY — full browser width, below topbar -->
-<div id="panel-manage" style="display:none">
-  <div id="manage-toolbar">
+<!-- KEYS OVERLAY — full browser width, below topbar -->
+<div id="panel-keys" style="display:none;position:fixed;top:44px;left:0;right:0;bottom:0;background:var(--bg);z-index:50;flex-direction:column">
+  <div id="keys-toolbar" style="display:flex;align-items:center;gap:12px;padding:10px 20px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap">
     <button class="bg bsm" onclick="switchTab('results')" style="font-size:11px">← Back</button>
-    <span class="mg-view-label" style="margin-left:4px">Viewing:</span>
-    <div id="manage-folder-dropdown-wrap" style="position:relative">
-      <button class="bg bsm" onclick="toggleManageFolderMenu()" id="manage-folder-btn" style="font-size:10px">📁 <span id="manage-folder-name">Default</span> ▾</button>
-      <div id="manage-folder-menu" style="display:none;position:absolute;top:100%;left:0;margin-top:4px;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;min-width:160px;z-index:200;box-shadow:0 4px 16px rgba(0,0,0,.5);padding:4px">
-        <div id="manage-folder-menu-list"></div>
-        <div style="border-top:1px solid var(--border);margin-top:4px;padding:4px 4px 0;display:flex;gap:4px">
-          <button class="bg bsm" onclick="newFolder()" style="flex:1">+ Add</button>
-          <button class="bd bsm" onclick="deleteActiveFolder()">✕</button>
-        </div>
-      </div>
-    </div>
-    <span id="manage-sel-count" class="mg-sel-count"></span>
-    <div class="mg-tb-actions">
-      <button class="bg bsm" onclick="manageSelectAll()">Select All</button>
-      <button class="bg bsm" onclick="manageClearSel()">Clear</button>
-      <button class="bd bsm" onclick="manageDeleteSelected()">✕ Delete</button>
-    </div>
-    <div id="manage-pagination-top" class="mg-pagination"></div>
-    <div id="manage-trash-top"
-      ondragover="event.preventDefault();this.classList.add('trash-over')"
-      ondragleave="this.classList.remove('trash-over')"
-      ondrop="trashDrop(event)"
-      style="border:1px dashed var(--border2);border-radius:3px;padding:4px 10px;font-family:var(--mono);font-size:9px;color:var(--text3);cursor:default;transition:.15s;white-space:nowrap">
-      🗑 trash
+    <div style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent)">🔑 GROOVE POP V4 — ACCESS KEY MANAGER</div>
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <input type="text" id="admin-key-search" placeholder="Filter keys or labels…" oninput="renderAdminKeys()" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:10px;border-radius:3px;padding:4px 8px;width:180px">
+      <button class="bg bsm" onclick="loadAdminKeys()">↻ Refresh</button>
+      <button class="bp bsm" onclick="promptCreateKey()">+ Issue New Key</button>
     </div>
   </div>
-  <div id="manage-grid-wrap">
-    <div id="manage-grid"></div>
-  </div>
-  <div id="manage-trash-bar">
-    <div id="manage-trash"
-      ondragover="event.preventDefault();this.classList.add('trash-over')"
-      ondragleave="this.classList.remove('trash-over')"
-      ondrop="trashDrop(event)">
-      🗑 Drag here to delete
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;padding:16px 20px 0;flex-shrink:0">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:10px 14px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase">Total Active Keys</div>
+      <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--text);margin-top:2px" id="stat-total-keys">—</div>
     </div>
-    <div id="manage-pagination-bottom" class="mg-pagination"></div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:10px 14px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase">Total Remaining Credits</div>
+      <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent);margin-top:2px" id="stat-total-credits">—</div>
+    </div>
+  </div>
+
+  <div id="keys-list-wrap" style="flex:1;overflow-y:auto;padding:16px 20px">
+    <div id="keys-table-container"></div>
   </div>
 </div>
 
@@ -2481,18 +2465,170 @@ function copyPromptToClipboard(id, btn) {
 }
 
 function switchTab(name) {
-  // results panel — inside main
   const rp = document.getElementById('panel-results');
   if (rp) rp.style.display = name === 'results' ? 'flex' : 'none';
-  // manage — full-page overlay
-  const mp = document.getElementById('panel-manage');
-  if (mp) mp.style.display = name === 'manage' ? 'flex' : 'none';
-  // tabs
-  ['results','manage'].forEach(t => {
+  const kp = document.getElementById('panel-keys');
+  if (kp) kp.style.display = name === 'keys' ? 'flex' : 'none';
+
+  ['results','keys'].forEach(t => {
     const tab = document.getElementById('tab-' + t);
     if (tab) tab.classList.toggle('active', t === name);
   });
-  if (name === 'manage') renderManageGrid();
+  if (name === 'keys') loadAdminKeys();
+}
+
+// ── V4 ACCESS KEY ADMIN PANEL ─────────────────────────────────
+const V4_API_BASE = 'https://groovepop-v4-engine.azurewebsites.net/api';
+const V4_ADMIN_SECRET = 'gpv4_sec_380175f8b911b56d4e59346db13e4bab';
+let adminKeysList = [];
+
+async function loadAdminKeys() {
+  const container = document.getElementById('keys-table-container');
+  if (container) container.innerHTML = '<div style="font-family:var(--mono);color:var(--text3);padding:20px 0">Loading keys from Cosmos DB…</div>';
+
+  try {
+    const res = await fetch(`${V4_API_BASE}/v4/admin/keys`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Secret': V4_ADMIN_SECRET
+      }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    adminKeysList = data.keys || [];
+    updateAdminKeyStats();
+    renderAdminKeys();
+  } catch (err) {
+    if (container) container.innerHTML = `<div style="font-family:var(--mono);color:var(--err);padding:20px 0">Error loading keys: ${err.message}</div>`;
+  }
+}
+
+function updateAdminKeyStats() {
+  const totalKeysEl = document.getElementById('stat-total-keys');
+  const totalCredsEl = document.getElementById('stat-total-credits');
+  if (totalKeysEl) totalKeysEl.textContent = adminKeysList.length;
+  if (totalCredsEl) {
+    const sum = adminKeysList.reduce((acc, k) => acc + (k.credits || 0), 0);
+    totalCredsEl.textContent = sum.toLocaleString();
+  }
+}
+
+function renderAdminKeys() {
+  const container = document.getElementById('keys-table-container');
+  if (!container) return;
+
+  const q = (document.getElementById('admin-key-search')?.value || '').toLowerCase();
+  const filtered = adminKeysList.filter(k =>
+    !q || k.id.toLowerCase().includes(q) || (k.label && k.label.toLowerCase().includes(q))
+  );
+
+  if (!filtered.length) {
+    container.innerHTML = '<div style="font-family:var(--mono);color:var(--text3);padding:20px 0">No keys found. Click "+ Issue New Key" above to generate one.</div>';
+    return;
+  }
+
+  let html = `
+    <table style="width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px">
+      <thead>
+        <tr style="border-bottom:1px solid var(--border);color:var(--text3);text-align:left;font-size:9.5px;text-transform:uppercase">
+          <th style="padding:8px 10px">Access Key</th>
+          <th style="padding:8px 10px">Recipient / Label</th>
+          <th style="padding:8px 10px">Credits</th>
+          <th style="padding:8px 10px">Created</th>
+          <th style="padding:8px 10px">Last Used</th>
+          <th style="padding:8px 10px;text-align:right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  filtered.forEach(k => {
+    const createdDate = k.created ? new Date(k.created).toLocaleDateString() : '—';
+    const lastUsed = k.lastUsed ? new Date(k.lastUsed).toLocaleDateString() : 'Never';
+    const isExhausted = (k.credits || 0) <= 0;
+
+    html += `
+      <tr style="border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">
+        <td style="padding:10px;font-weight:700;color:var(--accent)">
+          ${k.id}
+          <button class="bg bsm" onclick="navigator.clipboard.writeText('${k.id}');this.textContent='✓';setTimeout(()=>this.textContent='⎘',1000)" style="margin-left:6px" title="Copy Key">⎘</button>
+        </td>
+        <td style="padding:10px;color:var(--text)">${esc(k.label || 'Standard User')}</td>
+        <td style="padding:10px;font-weight:700;color:${isExhausted ? 'var(--err)' : 'var(--accent)'}">${k.credits ?? 0}</td>
+        <td style="padding:10px;color:var(--text3)">${createdDate}</td>
+        <td style="padding:10px;color:var(--text3)">${lastUsed}</td>
+        <td style="padding:10px;text-align:right">
+          <button class="bg bsm" onclick="rechargeKey('${k.id}', 100)" title="Add 100 Credits">+100 Cr</button>
+          <button class="bd bsm" onclick="deleteKey('${k.id}')" style="margin-left:4px" title="Revoke and Delete">✕</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+async function promptCreateKey() {
+  const label = prompt('Enter recipient / label for this new 100-credit key:', '');
+  if (label === null) return;
+
+  try {
+    const res = await fetch(`${V4_API_BASE}/v4/admin/create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Secret': V4_ADMIN_SECRET
+      },
+      body: JSON.stringify({ label: label.trim() || 'Standard Key', credits: 100 })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    alert(`✓ Successfully issued key:\n\n${data.key.id}\nCredits: 100\nLabel: ${data.key.label}\n\nCopied to clipboard!`);
+    navigator.clipboard.writeText(data.key.id);
+    await loadAdminKeys();
+  } catch (err) {
+    alert('Error creating key: ' + err.message);
+  }
+}
+
+async function rechargeKey(key, amount = 100) {
+  if (!confirm(`Add ${amount} credits to key ${key}?`)) return;
+
+  try {
+    const res = await fetch(`${V4_API_BASE}/v4/admin/recharge`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Secret': V4_ADMIN_SECRET
+      },
+      body: JSON.stringify({ key, amount })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    await loadAdminKeys();
+  } catch (err) {
+    alert('Error recharging key: ' + err.message);
+  }
+}
+
+async function deleteKey(key) {
+  if (!confirm(`Permanently revoke and delete key ${key}?`)) return;
+
+  try {
+    const res = await fetch(`${V4_API_BASE}/v4/admin/delete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Secret': V4_ADMIN_SECRET
+      },
+      body: JSON.stringify({ key })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    await loadAdminKeys();
+  } catch (err) {
+    alert('Error deleting key: ' + err.message);
+  }
 }
 
 function closeLightbox() { document.getElementById('lightbox').classList.remove('on'); }
