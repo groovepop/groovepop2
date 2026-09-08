@@ -143,7 +143,7 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
 .rc-section-label{font-family:var(--mono);font-size:8px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
 .rc-section-toggle{font-family:var(--mono);font-size:9px;color:var(--text3)}
 .rc-section-body{display:none;padding-bottom:6px}
-.rc-section-body.open{display:block}
+.rc-section-body.open{display:block !important}
 .rc-cap{font-size:11px;color:#c8e6ff;line-height:1.5;font-style:italic;border-left:2px solid var(--accent);padding-left:7px}
 .rc-cap-actions{display:flex;justify-content:flex-end;margin-top:4px}
 .rc-custom-prompt{font-family:var(--mono);font-size:9px;color:#ffe0a0;white-space:pre-wrap;word-break:break-all;line-height:1.6;max-height:120px;overflow-y:auto}
@@ -468,6 +468,10 @@ button{font-family:var(--mono);font-size:10px;font-weight:500;border:none;border
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:10px 14px">
       <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase">Total Remaining Credits</div>
       <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--accent);margin-top:2px" id="stat-total-credits">—</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:10px 14px">
+      <div style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase">Quality Spend (Runs / Cr)</div>
+      <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text);margin-top:4px" id="stat-total-quality">—</div>
     </div>
   </div>
 
@@ -2136,8 +2140,16 @@ function toggleCardDetail(id) {
 }
 
 function toggleSection(id, btn) {
-  const open = document.getElementById(id).classList.toggle('open');
-  btn.textContent = open ? '▾' : '▸';
+  const el = typeof id === 'string' ? document.getElementById(id) : id;
+  if (!el) return;
+  const open = el.classList.toggle('open');
+  el.style.display = open ? 'block' : 'none';
+  if (btn) {
+    btn.textContent = open ? '▾' : '▸';
+  } else {
+    const toggle = el.previousElementSibling?.querySelector?.('.rc-section-toggle');
+    if (toggle) toggle.textContent = open ? '▾' : '▸';
+  }
 }
 
 function clearResults() {
@@ -2507,10 +2519,20 @@ async function loadAdminKeys() {
 function updateAdminKeyStats() {
   const totalKeysEl = document.getElementById('stat-total-keys');
   const totalCredsEl = document.getElementById('stat-total-credits');
+  const totalQualEl = document.getElementById('stat-total-quality');
   if (totalKeysEl) totalKeysEl.textContent = adminKeysList.length;
   if (totalCredsEl) {
     const sum = adminKeysList.reduce((acc, k) => acc + (k.credits || 0), 0);
     totalCredsEl.textContent = sum.toLocaleString();
+  }
+  if (totalQualEl) {
+    const low = adminKeysList.reduce((acc, k) => acc + (k.qualitySpend?.low || 0), 0);
+    const med = adminKeysList.reduce((acc, k) => acc + (k.qualitySpend?.medium || 0), 0);
+    const high = adminKeysList.reduce((acc, k) => acc + (k.qualitySpend?.high || 0), 0);
+    const lowCr = adminKeysList.reduce((acc, k) => acc + (k.qualityCredits?.low || 0), 0);
+    const medCr = adminKeysList.reduce((acc, k) => acc + (k.qualityCredits?.medium || 0), 0);
+    const highCr = adminKeysList.reduce((acc, k) => acc + (k.qualityCredits?.high || 0), 0);
+    totalQualEl.innerHTML = `<span style="color:var(--text3)">L:</span> ${low} <span style="font-size:10px;color:var(--text3)">(${lowCr}c)</span> · <span style="color:var(--text3)">M:</span> ${med} <span style="font-size:10px;color:var(--text3)">(${medCr}c)</span> · <span style="color:var(--accent)">H:</span> ${high} <span style="font-size:10px;color:var(--accent)">(${highCr}c)</span>`;
   }
 }
 
@@ -2535,6 +2557,7 @@ function renderAdminKeys() {
           <th style="padding:8px 10px">Access Key</th>
           <th style="padding:8px 10px">Recipient / Label</th>
           <th style="padding:8px 10px">Credits</th>
+          <th style="padding:8px 10px">Quality Spend (L / M / H)</th>
           <th style="padding:8px 10px">Created</th>
           <th style="padding:8px 10px">Last Used</th>
           <th style="padding:8px 10px;text-align:right">Actions</th>
@@ -2547,6 +2570,8 @@ function renderAdminKeys() {
     const createdDate = k.created ? new Date(k.created).toLocaleDateString() : '—';
     const lastUsed = k.lastUsed ? new Date(k.lastUsed).toLocaleDateString() : 'Never';
     const isExhausted = (k.credits || 0) <= 0;
+    const qs = k.qualitySpend || { low: 0, medium: 0, high: 0 };
+    const qc = k.qualityCredits || { low: 0, medium: 0, high: 0 };
 
     html += `
       <tr style="border-bottom:1px solid var(--border);transition:background .1s" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">
@@ -2556,6 +2581,13 @@ function renderAdminKeys() {
         </td>
         <td style="padding:10px;color:var(--text)">${esc(k.label || 'Standard User')}</td>
         <td style="padding:10px;font-weight:700;color:${isExhausted ? 'var(--err)' : 'var(--accent)'}">${k.credits ?? 0}</td>
+        <td style="padding:10px">
+          <span title="Low (1 cr): ${qs.low || 0} runs · ${qc.low || 0} credits spent"><span style="color:var(--text3);font-size:9.5px">L:</span> <b style="color:var(--text)">${qs.low || 0}</b></span>
+          <span style="color:var(--border2);margin:0 4px">|</span>
+          <span title="Medium (10 cr): ${qs.medium || 0} runs · ${qc.medium || 0} credits spent"><span style="color:var(--text3);font-size:9.5px">M:</span> <b style="color:var(--text)">${qs.medium || 0}</b></span>
+          <span style="color:var(--border2);margin:0 4px">|</span>
+          <span title="High (25 cr): ${qs.high || 0} runs · ${qc.high || 0} credits spent"><span style="color:var(--text3);font-size:9.5px">H:</span> <b style="color:var(--accent)">${qs.high || 0}</b></span>
+        </td>
         <td style="padding:10px;color:var(--text3)">${createdDate}</td>
         <td style="padding:10px;color:var(--text3)">${lastUsed}</td>
         <td style="padding:10px;text-align:right">
